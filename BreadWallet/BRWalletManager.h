@@ -28,9 +28,9 @@
 #import "BRWallet.h"
 
 #define SATOSHIS     100000000
-#define MAX_MONEY    (21000000LL*SATOSHIS)
-#define BTC          @"\xC9\x83"     // capital B with stroke (utf-8)
-#define BITS         @"\xC6\x80"     // lowercase b with stroke (utf-8)
+#define MAX_MONEY    (84000000LL*SATOSHIS)
+#define BTC          @"\xC5\x81"     // capital B with stroke (utf-8)
+#define BITS         @"\xC5\x82"     // lowercase b with stroke (utf-8)
 #define NARROW_NBSP  @"\xE2\x80\xAF" // narrow no-break space (utf-8)
 #define LDQUOTE      @"\xE2\x80\x9C" // left double quote (utf-8)
 #define RDQUOTE      @"\xE2\x80\x9D" // right double quote (utf-8)

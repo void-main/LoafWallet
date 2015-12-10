@@ -25,11 +25,11 @@
 
 #import <Foundation/Foundation.h>
 
-#define BITCOIN_PUBKEY_ADDRESS      0
+#define BITCOIN_PUBKEY_ADDRESS      48
 #define BITCOIN_SCRIPT_ADDRESS      5
 #define BITCOIN_PUBKEY_ADDRESS_TEST 111
 #define BITCOIN_SCRIPT_ADDRESS_TEST 196
-#define BITCOIN_PRIVKEY             128
+#define BITCOIN_PRIVKEY             176
 #define BITCOIN_PRIVKEY_TEST        239
 
 #define BIP38_NOEC_PREFIX      0x0142

@@ -28,9 +28,9 @@
 #define PEER_LOGGING          1 // comment this out to turn off logging of bitcoin network events
 
 #if BITCOIN_TESTNET
-#define BITCOIN_STANDARD_PORT 18333
+#define BITCOIN_STANDARD_PORT 19333
 #else
-#define BITCOIN_STANDARD_PORT 8333
+#define BITCOIN_STANDARD_PORT 9333
 #endif
 
 #define BITCOIN_TIMEOUT_CODE  1001
