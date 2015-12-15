@@ -107,6 +107,7 @@ void PBKDF2(void *dk, size_t dklen, void (*hash)(void *, const void *, size_t), 
 
 - (UInt160)SHA1;
 - (UInt256)SHA256;
+- (UInt256)SCRYPT;
 - (UInt256)SHA256_2;
 - (UInt512)SHA512;
 - (UInt160)RMD160;

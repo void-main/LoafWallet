@@ -109,6 +109,7 @@
     [d appendUInt32:_target];
     [d appendUInt32:_nonce];
     _blockHash = d.SHA256_2;
+    _powHash = [message subdataWithRange:NSMakeRange(0, 80)].SCRYPT;
 
     return self;
 }
@@ -175,8 +176,8 @@ totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSD
     else t.u32[0] = CFSwapInt32HostToLittle(target >> (3 - size)*8);
     
     for (int i = sizeof(t)/sizeof(uint32_t) - 1; i >= 0; i--) { // check proof-of-work
-        if (CFSwapInt32LittleToHost(_blockHash.u32[i]) < CFSwapInt32LittleToHost(t.u32[i])) break;
-        if (CFSwapInt32LittleToHost(_blockHash.u32[i]) > CFSwapInt32LittleToHost(t.u32[i])) return NO;
+        if (CFSwapInt32LittleToHost(_powHash.u32[i]) < CFSwapInt32LittleToHost(t.u32[i])) break;
+        if (CFSwapInt32LittleToHost(_powHash.u32[i]) > CFSwapInt32LittleToHost(t.u32[i])) return NO;
     }
     
     return YES;

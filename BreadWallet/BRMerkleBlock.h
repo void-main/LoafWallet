@@ -33,6 +33,7 @@ typedef union _UInt256 UInt256;
 @interface BRMerkleBlock : NSObject
 
 @property (nonatomic, readonly) UInt256 blockHash;
+@property (nonatomic, readonly) UInt256 powHash;
 @property (nonatomic, readonly) uint32_t version;
 @property (nonatomic, readonly) UInt256 prevBlock;
 @property (nonatomic, readonly) UInt256 merkleRoot;

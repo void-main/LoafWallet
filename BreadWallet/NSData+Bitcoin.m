@@ -23,6 +23,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
+#import "BRKey+BIP38.h"
 #import "NSData+Bitcoin.h"
 
 // bitwise left rotation
@@ -380,6 +381,13 @@ void PBKDF2(void *dk, size_t dklen, void (*hash)(void *, const void *, size_t), 
     SHA256(&sha256, self.bytes, self.length);
     RMD160(&rmd160, &sha256, sizeof(sha256));
     return rmd160;
+}
+
+- (UInt256)SCRYPT
+{
+    UInt256 scryptHash;
+    scrypt(self.bytes, self.length, self.bytes, self.length, 1024, 1, 1, &scryptHash, sizeof(scryptHash));
+    return scryptHash;
 }
 
 - (NSData *)reverse

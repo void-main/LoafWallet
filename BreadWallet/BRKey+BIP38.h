@@ -28,6 +28,9 @@
 // BIP38 is a method for encrypting private keys with a passphrase
 // https://github.com/bitcoin/bips/blob/master/bip-0038.mediawiki
 
+void scrypt(const void *pw, size_t pwlen, const void *salt, size_t slen, long n, int r, int p,
+            void *dk, size_t dklen);
+
 @interface BRKey (BIP38)
 
 // decrypts a BIP38 key using the given passphrase or retuns nil if passphrase is incorrect
