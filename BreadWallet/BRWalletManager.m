@@ -221,9 +221,9 @@ static NSString *getKeychainString(NSString *key, NSError **error)
     self.format.negativeFormat = [self.format.positiveFormat
                                   stringByReplacingCharactersInRange:[self.format.positiveFormat rangeOfString:@"#"]
                                   withString:@"-#"];
-    self.format.currencyCode = @"XBT";
+    self.format.currencyCode = @"LTC";
     self.format.currencySymbol = BITS NARROW_NBSP;
-    self.format.maximumFractionDigits = 2;
+    self.format.maximumFractionDigits = 0;
     self.format.minimumFractionDigits = 0; // iOS 8 bug, minimumFractionDigits now has to be set after currencySymbol
     self.format.maximum = @(MAX_MONEY/(int64_t)pow(10.0, self.format.maximumFractionDigits));
     _localFormat = [NSNumberFormatter new];
