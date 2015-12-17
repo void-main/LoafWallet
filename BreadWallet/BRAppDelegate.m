@@ -89,7 +89,7 @@ shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication
 annotation:(id)annotation
 {
-    if (! [url.scheme isEqual:@"bitcoin"] && ! [url.scheme isEqual:@"bread"]) {
+    if (! [url.scheme isEqual:@"litecoin"] && ! [url.scheme isEqual:@"loafwallet"]) {
         [[[UIAlertView alloc] initWithTitle:@"Not a bitcoin URL" message:url.absoluteString delegate:nil
           cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         return NO;
