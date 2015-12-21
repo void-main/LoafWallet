@@ -156,7 +156,7 @@ static const char *dns_seeds[] = {
 @interface BRPeerManager ()
 
 @property (nonatomic, strong) NSMutableOrderedSet *peers;
-@property (nonatomic, strong) NSMutableSet *connectedPeers, *misbehavinPeers;
+@property (nonatomic, strong) NSMutableSet *connectedPeers, *misbehavinPeers, *nonFpTx;
 @property (nonatomic, strong) BRPeer *downloadPeer;
 @property (nonatomic, assign) uint32_t tweak, syncStartHeight, filterUpdateHeight;
 @property (nonatomic, strong) BRBloomFilter *bloomFilter;
@@ -192,6 +192,7 @@ static const char *dns_seeds[] = {
     self.earliestKeyTime = [BRWalletManager sharedInstance].seedCreationTime;
     self.connectedPeers = [NSMutableSet set];
     self.misbehavinPeers = [NSMutableSet set];
+    self.nonFpTx = [NSMutableSet set];
     self.tweak = arc4random();
     self.taskId = UIBackgroundTaskInvalid;
     self.q = dispatch_queue_create("peermanager", NULL);
@@ -1130,6 +1131,7 @@ static const char *dns_seeds[] = {
         });
     }
     
+    [self.nonFpTx addObject:hash];
     [self.txRequests[hash] removeObject:peer];
     if (! _bloomFilter) return; // bloom filter is aready being updated
 
@@ -1181,6 +1183,7 @@ static const char *dns_seeds[] = {
         });
     }
     
+    [self.nonFpTx addObject:hash];
     [self.txRequests[hash] removeObject:peer];
 }
 
@@ -1235,7 +1238,8 @@ static const char *dns_seeds[] = {
         NSMutableSet *fp = [NSMutableSet setWithArray:txHashes];
     
         // 1% low pass filter, also weights each block by total transactions, using 800 tx per block as typical
-        for (NSValue *hash in self.txRelays.allKeys) [fp removeObject:hash]; // wallet tx are not false-positives
+        [fp minusSet:self.nonFpTx]; // wallet tx are not false-positives
+        [self.nonFpTx removeAllObjects];
         self.fpRate = self.fpRate*(1.0 - 0.01*block.totalTransactions/800) + 0.01*fp.count/800;
 
         // false positive rate sanity check
@@ -1443,6 +1447,7 @@ static const char *dns_seeds[] = {
 
     if (! self.txRelays[hash]) self.txRelays[hash] = [NSMutableSet set];
     [self.txRelays[hash] addObject:peer];
+    [self.nonFpTx addObject:hash];
     [self.publishedCallback removeObjectForKey:hash];
     
     if (callback && ! [manager.wallet transactionIsValid:tx]) {

@@ -324,6 +324,7 @@
     label.textColor = [UIColor redColor];
     label.textAlignment = NSTextAlignmentRight;
     label.text = @"testnet";
+    label.tag = 0xbeef;
     [label sizeToFit];
     label.center = CGPointMake(self.view.frame.size.width - label.frame.size.width,
                                self.view.frame.size.height - (label.frame.size.height + 5));
@@ -331,6 +332,7 @@
 #endif
 
 #if SNAPSHOT
+    [self.view viewWithTag:0xbeef].hidden = YES;
     [self.navigationController
      presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"NewWalletNav"] animated:NO
      completion:^{
