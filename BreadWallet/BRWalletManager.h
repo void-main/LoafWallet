@@ -27,7 +27,7 @@
 #import <Foundation/Foundation.h>
 #import "BRWallet.h"
 
-#define SATOSHIS     1
+#define SATOSHIS     100000000
 #define MAX_MONEY    (84000000LL*SATOSHIS)
 #define BTC          @"\xC5\x81"     // uppercase Ł with stroke (utf-8)
 #define BITS         @"\xC5\x81"     // uppercase Ł with stroke (utf-8)
