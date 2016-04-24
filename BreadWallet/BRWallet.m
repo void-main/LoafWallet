@@ -531,6 +531,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     if (self.allTx[hash] != nil) return YES;
 
     //TODO: handle tx replacement with input sequence numbers (now replacements appear invalid until confirmation)
+    NSLog(@"[BRWallet] received unseen transaction %@", transaction);
     
     self.allTx[hash] = transaction;
     [self.transactions insertObject:transaction atIndex:0];
@@ -715,6 +716,9 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
                 }
             
                 if (height != TX_UNCONFIRMED) {
+                    // BUG: XXX saving the tx.blockHeight and the block it's contained in both need to happen together
+                    // as an atomic db operation. If the tx.blockHeight is saved but the block isn't when the app exits,
+                    // then a re-org that happens afterward can potentially result in an invalid tx showing as confirmed
                     [BRTxMetadataEntity saveContext];
 
                     for (NSManagedObject *e in entities) {
@@ -824,6 +828,32 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     uint64_t amount = self.feePerKb*148/1000;
     
     return (amount > TX_MIN_OUTPUT_AMOUNT) ? amount : TX_MIN_OUTPUT_AMOUNT;
+}
+
+- (uint64_t)maxOutputAmount
+{
+    BRUTXO o;
+    BRTransaction *tx;
+    NSUInteger inputCount;
+    uint64_t amount = 0, fee;
+    size_t cpfpSize = 0, txSize;
+
+    for (NSValue *output in self.utxos) {
+        [output getValue:&o];
+        tx = self.allTx[uint256_obj(o.hash)];
+        if (o.n >= tx.outputAmounts.count) continue;
+        inputCount++;
+        amount += [tx.outputAmounts[o.n] unsignedLongLongValue];
+        
+        // size of unconfirmed, non-change inputs for child-pays-for-parent fee
+        if (tx.blockHeight == TX_UNCONFIRMED && [self amountSentByTransaction:tx] == 0) cpfpSize += tx.size;
+    }
+    
+    
+    txSize = 8 + [NSMutableData sizeOfVarInt:inputCount] + TX_INPUT_SIZE*inputCount +
+             [NSMutableData sizeOfVarInt:2] + TX_OUTPUT_SIZE*2;
+    fee = [self feeForTxSize:txSize + cpfpSize];
+    return (amount > fee) ? amount - fee : 0;
 }
 
 @end

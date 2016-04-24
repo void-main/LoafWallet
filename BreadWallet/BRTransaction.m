@@ -199,15 +199,29 @@ outputAddresses:(NSArray *)addresses outputAmounts:(NSArray *)amounts
     return self.outScripts;
 }
 
+- (NSString *)description
+{
+    NSString *txid = [NSString hexWithData:[NSData dataWithBytes:self.txHash.u8 length:sizeof(UInt256)].reverse];
+    return [NSString stringWithFormat:@"%@(id=%@)", [self class], txid];
+}
+
+- (NSString *)longDescription
+{
+    NSString *txid = [NSString hexWithData:[NSData dataWithBytes:self.txHash.u8 length:sizeof(UInt256)].reverse];
+    return [NSString stringWithFormat:
+            @"%@(id=%@, inputHashes=%@, inputIndexes=%@, inputScripts=%@, inputSignatures=%@, inputSequences=%@, "
+                           "outputAmounts=%@, outputAddresses=%@, outputScripts=%@)",
+            [[self class] description], txid,
+            self.inputHashes, self.inputIndexes, self.inputScripts, self.inputSignatures, self.inputSequences,
+            self.outputAmounts, self.outputAddresses, self.outputScripts];
+}
+
 // size in bytes if signed, or estimated size assuming compact pubkey sigs
 - (size_t)size
 {
-    static const size_t sigSize = 149; // signature size using a compact pubkey
-//    static const size_t sigSize = 181; // signature size using a non-compact pubkey
-    
     if (! uint256_is_zero(_txHash)) return self.data.length;
     return 8 + [NSMutableData sizeOfVarInt:self.hashes.count] + [NSMutableData sizeOfVarInt:self.addresses.count] +
-           sigSize*self.hashes.count + 34*self.addresses.count;
+           TX_INPUT_SIZE*self.hashes.count + TX_OUTPUT_SIZE*self.addresses.count;
 }
 
 - (uint64_t)standardFee
@@ -296,11 +310,12 @@ sequence:(uint32_t)sequence
 }
 
 // Returns the binary transaction data that needs to be hashed and signed with the private key for the tx input at
-// subscriptIndex. A subscriptIndex of NSNotFound will return the entire signed transaction
+// subscriptIndex. A subscriptIndex of NSNotFound will return the entire signed transaction.
 - (NSData *)toDataWithSubscriptIndex:(NSUInteger)subscriptIndex
 {
-    NSMutableData *d = [NSMutableData dataWithCapacity:10 + 149*self.hashes.count + 34*self.addresses.count];
     UInt256 hash;
+    NSMutableData *d = [NSMutableData dataWithCapacity:10 + TX_INPUT_SIZE*self.hashes.count +
+                        TX_OUTPUT_SIZE*self.addresses.count];
 
     [d appendUInt32:self.version];
     [d appendVarInt:self.hashes.count];

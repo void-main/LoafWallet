@@ -648,7 +648,6 @@
     }
 
     if (self.timeout > 1.0 && 0.1 + 0.9*elapsed/self.timeout < progress) progress = 0.1 + 0.9*elapsed/self.timeout;
-    if (progress <= DBL_EPSILON) progress = self.progress.progress;
 
     if ((counter % 13) == 0) {
         self.pulse.alpha = 1.0;
@@ -673,7 +672,14 @@
 
     counter++;
     self.percent.text = [NSString stringWithFormat:@"%0.1f%%", (progress > 0.1 ? progress - 0.1 : 0.0)*111.0];
-    if (progress + DBL_EPSILON < 1.0) [self performSelector:@selector(updateProgress) withObject:nil afterDelay:0.2];
+
+    if (progress + DBL_EPSILON >= 1.0) {
+        if (self.timeout < 1.0) [self stopActivityWithSuccess:YES];
+        if (! self.percent.hidden) [self hideTips];
+        self.percent.hidden = YES;
+        if (! [BRWalletManager sharedInstance].didAuthenticate) self.navigationItem.titleView = self.logo;
+    }
+    else [self performSelector:@selector(updateProgress) withObject:nil afterDelay:0.2];
 }
 
 - (void)ping
@@ -1009,7 +1015,7 @@ viewControllerAfterViewController:(UIViewController *)viewController
     else if ([to isKindOfClass:[UINavigationController class]] && from == self.navigationController) { // modal display
         // to.view must be added to superview prior to positioning it off screen for its navbar to underlap statusbar
         [self.navigationController.navigationBar.superview insertSubview:to.view
-         belowSubview:self.navigationController.navigationBar];
+                                                            belowSubview:self.navigationController.navigationBar];
         [containerView layoutIfNeeded];
         to.view.center = CGPointMake(to.view.center.x, containerView.frame.size.height*3/2);
 
