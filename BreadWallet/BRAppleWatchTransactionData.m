@@ -24,24 +24,51 @@
 //  THE SOFTWARE.
 
 #import "BRAppleWatchTransactionData.h"
+#import "BRTransaction+Utils.h"
 
-#define AW_TRANSACTION_DATA_AMOUNT_KEY                      @"AW_TRANSACTION_DATA_AMOUNT_KEY"
-#define AW_TRANSACTION_DATA_AMOUNT_IN_LOCAL_CURRENCY_KEY    @"AW_TRANSACTION_DATA_AMOUNT_IN_LOCAL_CURRENCY_KEY"
-#define AW_TRANSACTION_DATA_DATE_KEY                        @"AW_TRANSACTION_DATA_DATE_KEY"
-#define AW_TRANSACTION_DATA_TYPE_KEY                        @"AW_TRANSACTION_DATA_TYPE_KEY"
+#define AW_TRANSACTION_DATA_AMOUNT_KEY @"AW_TRANSACTION_DATA_AMOUNT_KEY"
+#define AW_TRANSACTION_DATA_AMOUNT_IN_LOCAL_CURRENCY_KEY @"AW_TRANSACTION_DATA_AMOUNT_IN_LOCAL_CURRENCY_KEY"
+#define AW_TRANSACTION_DATA_DATE_KEY @"AW_TRANSACTION_DATA_DATE_KEY"
+#define AW_TRANSACTION_DATA_TYPE_KEY @"AW_TRANSACTION_DATA_TYPE_KEY"
 
 @implementation BRAppleWatchTransactionData
-- (id)initWithCoder:(NSCoder *)decoder {
+
+- (instancetype)initWithCoder:(NSCoder *)decoder
+{
     if ((self = [super init])) {
         _amountText = [decoder decodeObjectForKey:AW_TRANSACTION_DATA_AMOUNT_KEY];
         _amountTextInLocalCurrency = [decoder decodeObjectForKey:AW_TRANSACTION_DATA_AMOUNT_IN_LOCAL_CURRENCY_KEY];
         _dateText = [decoder decodeObjectForKey:AW_TRANSACTION_DATA_DATE_KEY];
         _type = [[decoder decodeObjectForKey:AW_TRANSACTION_DATA_TYPE_KEY] intValue];
     }
+    
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)encoder {
++ (instancetype)appleWatchTransactionDataFrom:(BRTransaction *)transaction
+{
+    BRAppleWatchTransactionData *appleWatchTransactionData;
+    
+    if (transaction) {
+        appleWatchTransactionData = [BRAppleWatchTransactionData new];
+        appleWatchTransactionData.amountText = transaction.amountText;
+        appleWatchTransactionData.amountTextInLocalCurrency = transaction.localCurrencyTextForAmount;
+        appleWatchTransactionData.dateText = transaction.dateText;
+        
+        switch (transaction.transactionType) {
+            case BRTransactionTypeSent: appleWatchTransactionData.type = BRAWTransactionTypeSent; break;
+            case BRTransactionTypeReceive: appleWatchTransactionData.type = BRAWTransactionTypeReceive; break;
+            case BRTransactionTypeMove: appleWatchTransactionData.type = BRAWTransactionTypeMove; break;
+            case BRTransactionTypeInvalid: appleWatchTransactionData.type = BRAWTransactionTypeInvalid; break;
+        }
+    }
+    
+    return appleWatchTransactionData;
+}
+
+
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
     if (_amountText) [encoder encodeObject:_amountText forKey:AW_TRANSACTION_DATA_AMOUNT_KEY];
     if (_amountTextInLocalCurrency) [encoder encodeObject:_amountTextInLocalCurrency
                                                    forKey:AW_TRANSACTION_DATA_AMOUNT_IN_LOCAL_CURRENCY_KEY];
@@ -49,16 +76,16 @@
     if (_type) [encoder encodeObject:@(_type) forKey:AW_TRANSACTION_DATA_TYPE_KEY];
 }
 
-- (BOOL)isEqual:(id)object {
+- (BOOL)isEqual:(id)object
+{
     if ([object isKindOfClass:[self class]]) {
-        BRAppleWatchTransactionData *otherTransaction = object;
-        return [self.amountText isEqual:otherTransaction.amountText] &&
-        [self.amountTextInLocalCurrency isEqual:otherTransaction.amountTextInLocalCurrency] &&
-        [self.dateText isEqual:otherTransaction.dateText] &&
-        self.type == otherTransaction.type;
-    } else {
-        return NO;
+        BRAppleWatchTransactionData *otherTx = object;
+
+        return ([self.amountText isEqual:otherTx.amountText] &&
+                [self.amountTextInLocalCurrency isEqual:otherTx.amountTextInLocalCurrency] &&
+                [self.dateText isEqual:otherTx.dateText] && self.type == otherTx.type) ? YES : NO;
     }
+    else return NO;
 }
 
 @end

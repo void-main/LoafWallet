@@ -1,9 +1,9 @@
 //
-//  BRBIP32Sequence.h
+//  BreadWalletUITests-Bridging-Header.h
 //  BreadWallet
 //
-//  Created by Aaron Voisine on 7/19/13.
-//  Copyright (c) 2013 Aaron Voisine <voisine@gmail.com>
+//  Created by Aaron Voisine on 5/3/16.
+//  Copyright (c) 2016 breadwallet LLC
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +23,15 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-#import <Foundation/Foundation.h>
-#import "BRKeySequence.h"
+#ifndef BreadWalletUITests_Bridging_Header_h
+#define BreadWalletUITests_Bridging_Header_h
 
-#define BIP32_HARD 0x80000000
+#include "BreadWallet-Prefix.pch"
 
-// BIP32 is a scheme for deriving chains of addresses from a seed value
-// https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
+#if SNAPSHOT
+static const bool _SNAPSHOT = 1;
+#else
+static const bool _SNAPSHOT = 0;
+#endif
 
-@interface BRBIP32Sequence : NSObject<BRKeySequence>
-
-- (NSData *)masterPublicKeyFromSeed:(NSData *)seed;
-- (NSData *)publicKey:(uint32_t)n internal:(BOOL)internal masterPublicKey:(NSData *)masterPublicKey;
-- (NSString *)privateKey:(uint32_t)n internal:(BOOL)internal fromSeed:(NSData *)seed;
-- (NSArray *)privateKeys:(NSArray *)n internal:(BOOL)internal fromSeed:(NSData *)seed;
-
-// key used for authenticated API calls, i.e. bitauth: https://github.com/bitpay/bitauth
-- (NSString *)authPrivateKeyFromSeed:(NSData *)seed;
-
-- (NSString *)serializedPrivateMasterFromSeed:(NSData *)seed;
-- (NSString *)serializedMasterPublicKey:(NSData *)masterPublicKey;
-
-@end
+#endif /* BreadWalletUITests_Bridging_Header_h */

@@ -1,9 +1,9 @@
 //
-//  BRAppleWatchTransactionData+Factory.h
+//  BreadWalletTests-Bridging-Header.h
 //  BreadWallet
 //
-//  Created by Henry on 10/27/15.
-//  Copyright (c) 2015 Aaron Voisine <voisine@gmail.com>
+//  Created by Samuel Sutch on 12/1/15.
+//  Copyright (c) 2016 breadwallet LLC
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-#import "BRAppleWatchTransactionData.h"
-#import "BRTransaction.h"
+#ifndef BreadWalletTests_Bridging_Header_h
+#define BreadWalletTests_Bridging_Header_h
 
-@interface BRAppleWatchTransactionData (Factory)
-+ (instancetype)appleWatchTransactionDataFrom:(BRTransaction*)transaction;
-@end
+#endif /* BreadWalletTests_Bridging_Header_h */

@@ -32,10 +32,14 @@
 
 typedef struct _BRUTXO {
     UInt256 hash;
-    unsigned long n; // unsigned long instead of uint32_t to avoid trailing struct padding
+    unsigned long n; // use unsigned long instead of uint32_t to avoid trailing struct padding (for NSValue comparisons)
 } BRUTXO;
 
-#define brutxo_obj(o) [NSValue value:(o).hash.u8 withObjCType:@encode(BRUTXO)]
+#define brutxo_obj(o) [NSValue value:&(o) withObjCType:@encode(BRUTXO)]
+#define brutxo_data(o) [NSData dataWithBytes:&((struct { uint32_t u[256/32 + 1]; }) {\
+    o.hash.u32[0], o.hash.u32[1], o.hash.u32[2], o.hash.u32[3],\
+    o.hash.u32[4], o.hash.u32[5], o.hash.u32[6], o.hash.u32[7],\
+    CFSwapInt32HostToLittle((uint32_t)o.n) }) length:sizeof(UInt256) + sizeof(uint32_t)]
 
 @class BRTransaction;
 @protocol BRKeySequence;
@@ -47,7 +51,8 @@ typedef struct _BRUTXO {
 @property (nonatomic, readonly) NSString *changeAddress; // returns the first unused internal address
 @property (nonatomic, readonly) NSSet *addresses; // all previously generated internal and external addresses
 @property (nonatomic, readonly) NSArray *unspentOutputs; // NSValue objects containing UTXO structs
-@property (nonatomic, readonly) NSArray *recentTransactions; // BRTransaction objects sorted by date, most recent first
+@property (nonatomic, readonly) NSArray *recentTransactions; //latest 100 transactions sorted by date, most recent first
+@property (nonatomic, readonly) NSArray *allTransactions; // all wallet transactions sorted by date, most recent first
 @property (nonatomic, readonly) uint64_t totalSent; // the total amount spent from the wallet (excluding change)
 @property (nonatomic, readonly) uint64_t totalReceived; // the total amount received by the wallet (excluding change)
 @property (nonatomic, assign) uint64_t feePerKb; // fee per kb of transaction size to use when including tx fee
@@ -90,15 +95,14 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 // returns the transaction with the given hash if it's been registered in the wallet (might also return non-registered)
 - (BRTransaction *)transactionForHash:(UInt256)txHash;
 
-// true if no previous wallet transaction spends any of the given transaction's inputs, and no input tx is invalid
+// true if no previous wallet transaction spends any of the given transaction's inputs, and no inputs are invalid
 - (BOOL)transactionIsValid:(BRTransaction *)transaction;
 
-// returns true if all sequence numbers are final (otherwise transaction can be replaced-by-fee), if no outputs are
-// dust, transaction size is not over TX_MAX_SIZE, timestamp is greater than 0, and no inputs are known to be unverfied
-- (BOOL)transactionIsVerified:(BRTransaction *)transaction;
+// true if transaction cannot be immediately spent (i.e. if it or an input tx can be replaced-by-fee)
+- (BOOL)transactionIsPending:(BRTransaction *)transaction;
 
-// returns true if transaction won't be valid by blockHeight + 1 or within the next 10 minutes
-- (BOOL)transactionIsPostdated:(BRTransaction *)transaction atBlockHeight:(uint32_t)blockHeight;
+// true if tx is considered 0-conf safe (valid and not pending, timestamp is greater than 0, and no unverified inputs)
+- (BOOL)transactionIsVerified:(BRTransaction *)transaction;
 
 // set the block heights and timestamps for the given transactions, use a height of TX_UNCONFIRMED and timestamp of 0 to
 // indicate a transaction and it's dependents should remain marked as unverified (not 0-conf safe)

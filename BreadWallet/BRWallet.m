@@ -53,7 +53,7 @@ static NSUInteger txAddressIndex(BRTransaction *tx, NSArray *chain) {
 @property (nonatomic, strong) NSData *masterPublicKey;
 @property (nonatomic, strong) NSMutableArray *internalAddresses, *externalAddresses;
 @property (nonatomic, strong) NSMutableSet *allAddresses, *usedAddresses;
-@property (nonatomic, strong) NSSet *spentOutputs, *invalidTx;
+@property (nonatomic, strong) NSSet *spentOutputs, *invalidTx, *pendingTx;
 @property (nonatomic, strong) NSMutableOrderedSet *transactions;
 @property (nonatomic, strong) NSOrderedSet *utxos;
 @property (nonatomic, strong) NSMutableDictionary *allTx;
@@ -152,6 +152,11 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     return self;
 }
 
+- (void)dealloc
+{
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+}
+
 - (NSData *)masterPublicKey
 {
     if (! _masterPublicKey) {
@@ -237,18 +242,20 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
         if (tx1.blockHeight < tx2.blockHeight) return NO;
         if ([tx1.inputHashes containsObject:uint256_obj(tx2.txHash)]) return YES;
         if ([tx2.inputHashes containsObject:uint256_obj(tx1.txHash)]) return NO;
+        if ([self.invalidTx containsObject:tx1] && ! [self.invalidTx containsObject:tx2]) return YES;
+        if ([self.pendingTx containsObject:tx1] && ! [self.pendingTx containsObject:tx2]) return YES;
         
         for (NSValue *hash in tx1.inputHashes) {
             if (_isAscending(self.allTx[hash], tx2)) return YES;
         }
-                
+        
         return NO;
     };
 
     [self.transactions sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(id tx1, id tx2) {
         if (isAscending(tx1, tx2)) return NSOrderedAscending;
         if (isAscending(tx2, tx1)) return NSOrderedDescending;
-
+        
         NSUInteger i = txAddressIndex(tx1, self.internalAddresses),
                    j = txAddressIndex(tx2, (i == NSNotFound) ? self.externalAddresses : self.internalAddresses);
 
@@ -262,13 +269,15 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 {
     uint64_t balance = 0, prevBalance = 0, totalSent = 0, totalReceived = 0;
     NSMutableOrderedSet *utxos = [NSMutableOrderedSet orderedSet];
-    NSMutableSet *spentOutputs = [NSMutableSet set], *invalidTx = [NSMutableSet set];
+    NSMutableSet *spentOutputs = [NSMutableSet set], *invalidTx = [NSMutableSet set], *pendingTx = [NSMutableSet set];
     NSMutableArray *balanceHistory = [NSMutableArray array];
 
     for (BRTransaction *tx in [self.transactions reverseObjectEnumerator]) {
         @autoreleasepool {
             NSMutableSet *spent = [NSMutableSet set];
+            NSSet *inputs;
             uint32_t i = 0, n = 0;
+            BOOL pending = NO;
             BRTransaction *transaction;
             UInt256 h;
             BRUTXO o;
@@ -279,9 +288,11 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
                 [spent addObject:brutxo_obj(((BRUTXO) { h, n }))];
             }
             
+            inputs = [NSSet setWithArray:tx.inputHashes];
+            
             // check if any inputs are invalid or already spent
             if (tx.blockHeight == TX_UNCONFIRMED &&
-                ([spent intersectsSet:spentOutputs] || [[NSSet setWithArray:tx.inputHashes] intersectsSet:invalidTx])) {
+                ([spent intersectsSet:spentOutputs] || [inputs intersectsSet:invalidTx])) {
                 [invalidTx addObject:uint256_obj(tx.txHash)];
                 [balanceHistory insertObject:@(balance) atIndex:0];
                 continue;
@@ -290,8 +301,27 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
             [spentOutputs unionSet:spent]; // add inputs to spent output set
             n = 0;
             
+            // check if any inputs are pending
+            if (tx.blockHeight == TX_UNCONFIRMED) {
+                if (transaction.size > TX_MAX_SIZE) pending = YES; // check transaction size is under TX_MAX_SIZE
+                
+                for (NSNumber *sequence in tx.inputSequences) { // check that all sequence numbers are final (not RBF)
+                    if (sequence.unsignedIntValue < UINT32_MAX) pending = YES;
+                }
+            
+                for (NSNumber *amount in tx.outputAmounts) { // check that no outputs are dust
+                    if (amount.unsignedLongLongValue < TX_MIN_OUTPUT_AMOUNT) pending = YES;
+                }
+                
+                if (pending || [inputs intersectsSet:pendingTx]) {
+                    [pendingTx addObject:uint256_obj(tx.txHash)];
+                    [balanceHistory insertObject:@(balance) atIndex:0];
+                    continue;
+                }
+            }
+
             //TODO: don't add outputs below TX_MIN_OUTPUT_AMOUNT
-            //TODO: don't add coin generation outputs < 100 blocks deep, or non-final lockTime > 1 block/10min in future
+            //TODO: don't add coin generation outputs < 100 blocks deep
             //NOTE: balance/UTXOs will then need to be recalculated when last block changes
             for (NSString *address in tx.outputAddresses) { // add outputs to UTXO set
                 if ([self containsAddress:address]) {
@@ -321,6 +351,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     }
 
     self.invalidTx = invalidTx;
+    self.pendingTx = pendingTx;
     self.spentOutputs = spentOutputs;
     self.utxos = utxos;
     self.balanceHistory = balanceHistory;
@@ -329,11 +360,16 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 
     if (balance != _balance) {
         _balance = balance;
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:BRWalletBalanceChangedNotification object:nil];
-        });
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(balanceNotification) object:nil];
+        [self performSelector:@selector(balanceNotification) withObject:nil afterDelay:0.1];
     }
+}
+
+- (void)balanceNotification
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:BRWalletBalanceChangedNotification object:nil];
+    });
 }
 
 #pragma mark - wallet info
@@ -366,10 +402,17 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     return self.utxos.array;
 }
 
-// BRTransaction objects sorted by date, most recent first
+// last 100 transactions sorted by date, most recent first
 - (NSArray *)recentTransactions
 {
     //TODO: don't include receive transactions that don't have at least one wallet output >= TX_MIN_OUTPUT_AMOUNT
+    return [self.transactions.array subarrayWithRange:NSMakeRange(0, (self.transactions.count > 100) ? 100 :
+                                                                  self.transactions.count)];
+}
+
+// all wallet transactions sorted by date, most recent first
+- (NSArray *)allTransactions
+{
     return self.transactions.array;
 }
 
@@ -623,49 +666,40 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     return YES;
 }
 
-// returns true if all sequence numbers are final (otherwise transaction can be replaced-by-fee), if no outputs are
-// dust, transaction size is not over TX_MAX_SIZE, timestamp is greater than 0, and no inputs are known to be unverfied
+// true if transaction cannot be immediately spent (i.e. if it or an input tx can be replaced-by-fee)
+- (BOOL)transactionIsPending:(BRTransaction *)transaction
+{
+    if (transaction.blockHeight != TX_UNCONFIRMED) return NO; // confirmed transactions are not pending
+    if (transaction.size > TX_MAX_SIZE) return YES; // check transaction size is under TX_MAX_SIZE
+    
+    for (NSNumber *sequence in transaction.inputSequences) { // check that all sequence numbers are final (not RBF)
+        if (sequence.unsignedIntValue < UINT32_MAX) return YES;
+    }
+    
+    for (NSNumber *amount in transaction.outputAmounts) { // check that no outputs are dust
+        if (amount.unsignedLongLongValue < TX_MIN_OUTPUT_AMOUNT) return YES;
+    }
+
+    for (NSValue *txHash in transaction.inputHashes) { // check if any inputs are known to be pending
+        if ([self transactionIsPending:self.allTx[txHash]]) return YES;
+    }
+
+    return NO;
+}
+
+// true if tx is considered 0-conf safe (valid and not pending, timestamp is greater than 0, and no unverified inputs)
 - (BOOL)transactionIsVerified:(BRTransaction *)transaction
 {
     if (transaction.blockHeight != TX_UNCONFIRMED) return YES; // confirmed transactions are always verified
     if (transaction.timestamp == 0) return NO; // a timestamp of 0 indicates transaction is to remain unverified
-    if (transaction.size > TX_MAX_SIZE) return NO; // check transaction size is under TX_MAX_SIZE
+    if (! [self transactionIsValid:transaction] || [self transactionIsPending:transaction]) return NO;
     
-    for (NSNumber *sequence in transaction.inputSequences) { // check that all sequence numbers are final
-        if (sequence.unsignedIntValue < UINT32_MAX) return NO;
-    }
-
-    for (NSNumber *amount in transaction.outputAmounts) { // check that no outputs are dust
-        if (amount.unsignedLongLongValue < TX_MIN_OUTPUT_AMOUNT) return NO;
-    }
-
     for (NSValue *txHash in transaction.inputHashes) { // check if any inputs are known to be unverfied
         if (! self.allTx[txHash]) continue;
         if (! [self transactionIsVerified:self.allTx[txHash]]) return NO;
     }
-
+    
     return YES;
-}
-
-// returns true if transaction won't be valid by blockHeight + 1 or within the next 10 minutes
-- (BOOL)transactionIsPostdated:(BRTransaction *)transaction atBlockHeight:(uint32_t)blockHeight
-{
-    if (transaction.blockHeight != TX_UNCONFIRMED) return NO; // confirmed transactions are not postdated
-
-    for (NSValue *txHash in transaction.inputHashes) { // check if any inputs are known to be postdated
-        if ([self transactionIsPostdated:self.allTx[txHash] atBlockHeight:blockHeight]) return YES;
-    }
-
-    if (transaction.lockTime <= blockHeight + 1) return NO;
-
-    if (transaction.lockTime >= TX_MAX_LOCK_HEIGHT &&
-        transaction.lockTime < [NSDate timeIntervalSinceReferenceDate] + NSTimeIntervalSince1970 + 10*60) return NO;
-
-    for (NSNumber *sequence in transaction.inputSequences) { // lockTime is ignored if all sequence numbers are final
-        if (sequence.unsignedIntValue < UINT32_MAX) return YES;
-    }
-
-    return NO;
 }
 
 // set the block heights and timestamps for the given transactions, use a height of TX_UNCONFIRMED and timestamp of 0 to
@@ -673,6 +707,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 - (void)setBlockHeight:(int32_t)height andTimestamp:(NSTimeInterval)timestamp forTxHashes:(NSArray *)txHashes
 {
     NSMutableArray *hashes = [NSMutableArray array];
+    BOOL needsUpdate = NO;
 
     for (NSValue *hash in txHashes) {
         BRTransaction *tx = self.allTx[hash];
@@ -685,13 +720,16 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
         if ([self containsTransaction:tx]) {
             [hash getValue:&h];
             [hashes addObject:[NSData dataWithBytes:&h length:sizeof(h)]];
+            if ([self.pendingTx containsObject:tx] || [self.invalidTx containsObject:tx]) needsUpdate = YES;
         }
         else if (height != TX_UNCONFIRMED) [self.allTx removeObjectForKey:hash]; // remove confirmed non-wallet tx
     }
 
     if (hashes.count > 0) {
-        [self sortTransactions];
-        [self updateBalance];
+        if (needsUpdate) {
+            [self sortTransactions];
+            [self updateBalance];
+        }
 
         [self.moc performBlockAndWait:^{
             @autoreleasepool {
@@ -753,7 +791,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 
     for (NSValue *hash in transaction.inputHashes) {
         BRTransaction *tx = self.allTx[hash];
-        uint32_t n = [transaction.inputIndexes[i++] intValue];
+        uint32_t n = [transaction.inputIndexes[i++] unsignedIntValue];
 
         if (n < tx.outputAddresses.count && [self containsAddress:tx.outputAddresses[n]]) {
             amount += [tx.outputAmounts[n] unsignedLongLongValue];
@@ -771,7 +809,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 
     for (NSValue *hash in transaction.inputHashes) {
         BRTransaction *tx = self.allTx[hash];
-        uint32_t n = [transaction.inputIndexes[i++] intValue];
+        uint32_t n = [transaction.inputIndexes[i++] unsignedIntValue];
 
         if (n >= tx.outputAmounts.count) return UINT64_MAX;
         amount += [tx.outputAmounts[n] unsignedLongLongValue];
@@ -834,7 +872,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 {
     BRUTXO o;
     BRTransaction *tx;
-    NSUInteger inputCount;
+    NSUInteger inputCount = 0;
     uint64_t amount = 0, fee;
     size_t cpfpSize = 0, txSize;
 

@@ -3,7 +3,7 @@
 //  BreadWallet
 //
 //  Created by Samuel Sutch on 11/4/15.
-//  Copyright © 2015 Aaron Voisine. All rights reserved.
+//  Copyright (c) 2016 breadwallet LLC
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,20 @@
 import Foundation
 
 let BRAPIClientErrorDomain = "BRApiClientErrorDomain"
+
+// these flags map to api feature flag name values
+// eg "buy-bitcoin-with-cash" is a persistent name in the /me/features list
+@objc public enum BRFeatureFlags: Int, CustomStringConvertible {
+    case BuyBitcoin
+    case EarlyAccess
+    
+    public var description: String {
+        switch self {
+        case .BuyBitcoin: return "buy-bitcoin";
+        case .EarlyAccess: return "early-access";
+        }
+    }
+}
 
 public typealias URLSessionTaskHandler = (NSData?, NSHTTPURLResponse?, NSError?) -> Void
 public typealias URLSessionChallengeHandler = (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void
@@ -119,19 +133,6 @@ func buildRequestSigningString(r: NSMutableURLRequest) -> String {
         }
     default: break
     }
-    return parts.joinWithSeparator("\n")
-}
-
-func buildResponseSigningString(req: NSMutableURLRequest, res: NSHTTPURLResponse, data: NSData? = nil) -> String {
-    let parts: [String] = [
-        req.HTTPMethod,
-        "\(res.statusCode)",
-        data != nil ? NSData(UInt256: data!.SHA256()).base58String() : "",
-        getHeaderValue("content-type", d: res.allHeaderFields) ?? "",
-        getHeaderValue("date", d: res.allHeaderFields) ?? "",
-        buildURLResourceString(res.URL)
-    ]
-    
     return parts.joinWithSeparator("\n")
 }
 
@@ -231,26 +232,7 @@ func httpDateNow() -> String {
         return mutableRequest.copy() as! NSURLRequest
     }
     
-    func verifyResponse(request: NSMutableURLRequest, response: NSHTTPURLResponse, data: NSData?) -> Bool {
-        // ensure the signature header is present and in the correct format
-        guard let sigHeader = getHeaderValue("signature", d: response.allHeaderFields),
-            sigRange = sigHeader.rangeOfString("bread ")
-            where sigHeader.startIndex.distanceTo(sigRange.startIndex) == 0 else { return false }
-        
-        // extract signing signature bytes and signing string
-        let sigStr = sigHeader[sigRange.endIndex..<sigHeader.endIndex],
-            sig = NSData(base58String: sigStr),
-            signingString = buildResponseSigningString(request, res: response, data: data)
-        
-        // extract the public key and ensure it equals the one we have configured
-        if let sha = signingString.dataUsingEncoding(NSUTF8StringEncoding)?.SHA256_2(),
-            pk = BRKey(recoveredFromCompactSig: sig, andMessageDigest: sha),
-            pkDatA = pk.publicKey, pkDatB = serverPubKey.publicKey
-            where pkDatA.isEqualToData(pkDatB) { return true }
-        return false
-    }
-    
-    func dataTaskWithRequest(request: NSURLRequest, authenticated: Bool = false, verify: Bool = true,
+    func dataTaskWithRequest(request: NSURLRequest, authenticated: Bool = false,
                              retryCount: Int = 0, handler: URLSessionTaskHandler) -> NSURLSessionDataTask {
         let start = NSDate()
         var logLine = ""
@@ -272,19 +254,9 @@ func httpDateNow() -> String {
                         errStr = s as String
                     }
                 }
-                var verified = true
-                if verify {
-                    let mreq = actualRequest.mutableCopy() as! NSMutableURLRequest
-                    verified = self.verifyResponse(mreq, response: httpResp, data: data)
-                }
                 
-                self.log("\(logLine) -> status=\(httpResp.statusCode) duration=\(dur)ms " +
-                         "verified=\(verified) errStr=\(errStr)")
+                self.log("\(logLine) -> status=\(httpResp.statusCode) duration=\(dur)ms errStr=\(errStr)")
                 
-                if !verified {
-                    return handler(nil, nil, NSError(domain: BRAPIClientErrorDomain, code: 500, userInfo: [
-                        NSLocalizedDescriptionKey: NSLocalizedString("Unable to verify server identity", comment: "")]))
-                }
                 if authenticated && isBreadChallenge(httpResp) {
                     self.log("got authentication challenge from API - will attempt to get token")
                     self.getToken({ (err) -> Void in
@@ -439,16 +411,42 @@ func httpDateNow() -> String {
         task.resume()
     }
     
-    public func me() {
-        let req = NSURLRequest(URL: url("/me"))
-        let task = dataTaskWithRequest(req, authenticated: true) { (data, resp, err) -> Void in
-            if let data = data {
-                if let s = String(data: data, encoding: NSUTF8StringEncoding) {
-                    self.log("GET /me: \(s)")
+    // MARK: feature flags API
+    
+    public func defaultsKeyForFeatureFlag(name: String) -> String {
+        return "ff:\(name)"
+    }
+    
+    public func updateFeatureFlags() {
+        let req = NSURLRequest(URL: url("/me/features"))
+        dataTaskWithRequest(req, authenticated: true) { (data, resp, err) in
+            if let resp = resp, data = data {
+                if resp.statusCode == 200 {
+                    let defaults = NSUserDefaults.standardUserDefaults()
+                    do {
+                        let j = try NSJSONSerialization.JSONObjectWithData(data, options: [])
+                        let features = j as! [[String: AnyObject]]
+                        for feat in features {
+                            if let fn = feat["name"], fname = fn as? String, fe = feat["enabled"], fenabled = fe as? Bool {
+                                self.log("feature \(fname) enabled: \(fenabled)")
+                                defaults.setBool(fenabled, forKey: self.defaultsKeyForFeatureFlag(fname))
+                            } else {
+                                self.log("malformed feature: \(feat)")
+                            }
+                        }
+                    } catch let e {
+                        self.log("error loading features json: \(e)")
+                    }
                 }
+            } else {
+                self.log("error fetching features: \(err)")
             }
-        }
-        task.resume()
+        }.resume()
+    }
+    
+    public func featureEnabled(flag: BRFeatureFlags) -> Bool {
+        let defaults = NSUserDefaults.standardUserDefaults()
+        return defaults.boolForKey(defaultsKeyForFeatureFlag(flag.description))
     }
     
     // MARK: Assets API
@@ -501,8 +499,21 @@ func httpDateNow() -> String {
             try BRTar.createFilesAndDirectoriesAtPath(bundleExtractedPath, withTarPath: bundlePath)
         }
         
-        guard let bundleExists = try? exists() else {
+        guard var bundleExists = try? exists() else {
             return handler(error: NSLocalizedString("error determining if bundle exists", comment: "")) }
+        
+        // attempt to use the tar file that was bundled with the binary
+        if !bundleExists {
+            if let bundledBundleUrl = NSBundle.mainBundle().URLForResource(bundleName, withExtension: "tar") {
+                do {
+                    try fm.copyItemAtURL(bundledBundleUrl, toURL: bundleUrl)
+                    bundleExists = true
+                    log("used bundled bundle for \(bundleName)")
+                } catch let e {
+                    log("unable to copy bundled bundle `\(bundleName)` \(bundledBundleUrl) -> \(bundleUrl): \(e)")
+                }
+            }
+        }
         
         if bundleExists {
             // bundle exists, download and apply the diff, then remove diff file

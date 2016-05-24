@@ -3,8 +3,25 @@
 //  BreadWallet
 //
 //  Created by Samuel Sutch on 2/8/16.
-//  Copyright © 2016 Aaron Voisine. All rights reserved.
+//  Copyright (c) 2016 breadwallet LLC
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 
 import Foundation
 
@@ -39,6 +56,7 @@ enum BRHTTPServerError: ErrorType {
     var middleware: [BRHTTPMiddleware] = [BRHTTPMiddleware]()
     var isStarted: Bool { return fd != -1 }
     var port: in_port_t = 0
+    var listenAddress: String = "127.0.0.1"
     
     var _Q: dispatch_queue_t? = nil
     var Q: dispatch_queue_t {
@@ -65,8 +83,24 @@ enum BRHTTPServerError: ErrorType {
             // get a random port
             let port = in_port_t(arc4random() % (49152 - 1024) + 1024)
             do {
-                try start(port)
+                try listenServer(port)
                 self.port = port
+                // backgrounding
+                NSNotificationCenter.defaultCenter().addObserver(
+                    self, selector: #selector(BRHTTPServer.suspend(_:)),
+                    name: UIApplicationWillResignActiveNotification, object: nil
+                )
+                NSNotificationCenter.defaultCenter().addObserver(
+                    self, selector: #selector(BRHTTPServer.suspend(_:)),
+                    name: UIApplicationDidEnterBackgroundNotification, object: nil)
+                // foregrounding
+                NSNotificationCenter.defaultCenter().addObserver(
+                    self, selector: #selector(BRHTTPServer.resume(_:)),
+                    name: UIApplicationWillEnterForegroundNotification, object: nil)
+                NSNotificationCenter.defaultCenter().addObserver(
+                    self, selector: #selector(BRHTTPServer.resume(_:)),
+                    name: UIApplicationDidBecomeActiveNotification, object: nil
+                )
                 return
             } catch {
                 continue
@@ -75,8 +109,8 @@ enum BRHTTPServerError: ErrorType {
         throw BRHTTPServerError.SocketBindFailed
     }
     
-    func start(port: in_port_t, maxPendingConnections: Int32 = SOMAXCONN) throws {
-        stop()
+    func listenServer(port: in_port_t, maxPendingConnections: Int32 = SOMAXCONN) throws {
+        shutdownServer()
         
         let sfd = socket(AF_INET, SOCK_STREAM, 0)
         if sfd == -1 {
@@ -94,7 +128,7 @@ enum BRHTTPServerError: ErrorType {
         addr.sin_len = __uint8_t(sizeof(sockaddr_in))
         addr.sin_family = sa_family_t(AF_INET)
         addr.sin_port = Int(OSHostByteOrder()) == OSLittleEndian ? _OSSwapInt16(port) : port
-        addr.sin_addr = in_addr(s_addr: inet_addr("127.0.0.1"))
+        addr.sin_addr = in_addr(s_addr: inet_addr(listenAddress))
         addr.sin_zero = (0, 0, 0, 0, 0, 0, 0 ,0)
         
         var bind_addr = sockaddr()
@@ -116,10 +150,10 @@ enum BRHTTPServerError: ErrorType {
         
         fd = sfd
         acceptClients()
-        print("[BRHTTPServer] Serving on \(port)")
+        print("[BRHTTPServer] listening on \(port)")
     }
     
-    func stop() {
+    func shutdownServer() {
         Darwin.shutdown(fd, SHUT_RDWR)
         close(fd)
         fd = -1
@@ -129,7 +163,43 @@ enum BRHTTPServerError: ErrorType {
             Darwin.shutdown(cli_fd, SHUT_RDWR)
         }
         self.clients.removeAll(keepCapacity: true)
-        print("[BRHTTPServer] no longer serving")
+        print("[BRHTTPServer] no longer listening")
+    }
+    
+    func stop() {
+        shutdownServer()
+        // background
+        NSNotificationCenter.defaultCenter().removeObserver(
+            self, name: UIApplicationDidEnterBackgroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(
+            self, name: UIApplicationWillResignActiveNotification, object: nil)
+        // foreground
+        NSNotificationCenter.defaultCenter().removeObserver(
+            self, name: UIApplicationWillEnterForegroundNotification, object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(
+            self, name: UIApplicationDidBecomeActiveNotification, object: nil)
+    }
+    
+    func suspend(_: NSNotification) {
+        if isStarted {
+            shutdownServer()
+            print("[BRHTTPServer] suspended")
+        } else {
+            print("[BRHTTPServer] already suspended")
+        }
+    }
+    
+    func resume(_: NSNotification) {
+        if !isStarted {
+            do {
+                try listenServer(port)
+                print("[BRHTTPServer] resumed")
+            } catch let e {
+                print("[BRHTTPServer] unable to start \(e)")
+            }
+        } else {
+            print("[BRHTTPServer] already resumed")
+        }
     }
     
     func addClient(cli_fd: Int32) {
@@ -169,7 +239,7 @@ enum BRHTTPServerError: ErrorType {
                     }
                 }
             }
-            self.stop()
+//            self.shutdownServer()
         }
     }
     

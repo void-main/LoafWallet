@@ -301,7 +301,7 @@ static const char *dns_seeds[] = {
                     freeaddrinfo(servinfo);
                 }
             });
-            
+                        
             for (NSArray *a in peers) [_peers addObjectsFromArray:a];
 
 #if BITCOIN_TESTNET
@@ -417,7 +417,7 @@ static const char *dns_seeds[] = {
 - (double)syncProgress
 {
     if (! self.downloadPeer && self.syncStartHeight == 0) return 0.0;
-    if (self.lastBlockHeight == self.syncStartHeight) return 0.05;
+    if (self.downloadPeer.status != BRPeerStatusConnected) return 0.05;
     if (self.lastBlockHeight >= self.estimatedBlockHeight) return 1.0;
     return 0.1 + 0.9*(self.lastBlockHeight - self.syncStartHeight)/(self.estimatedBlockHeight - self.syncStartHeight);
 }
@@ -451,9 +451,12 @@ static const char *dns_seeds[] = {
     self.filterUpdateHeight = self.lastBlockHeight;
     self.fpRate = BLOOM_REDUCED_FALSEPOSITIVE_RATE;
 
-    NSUInteger elemCount = manager.wallet.addresses.count + manager.wallet.unspentOutputs.count;
+    BRUTXO o;
+    NSData *d;
+    NSUInteger i, elemCount = manager.wallet.addresses.count + manager.wallet.unspentOutputs.count;
     BRBloomFilter *filter = [[BRBloomFilter alloc] initWithFalsePositiveRate:self.fpRate
-                             forElementCount:elemCount + 100 tweak:self.tweak flags:BLOOM_UPDATE_ALL];
+                             forElementCount:(elemCount < 200 ? 300 : elemCount + 100) tweak:self.tweak
+                             flags:BLOOM_UPDATE_ALL];
 
     for (NSString *address in manager.wallet.addresses) {// add addresses to watch for tx receiveing money to the wallet
         NSData *hash = address.addressToHash160;
@@ -462,12 +465,26 @@ static const char *dns_seeds[] = {
     }
 
     for (NSValue *utxo in manager.wallet.unspentOutputs) { // add UTXOs to watch for tx sending money from the wallet
-        BRUTXO o;
-        NSData *d;
-        
         [utxo getValue:&o];
-        d = [NSData dataWithBytes:&o length:sizeof(o)];
+        d = brutxo_data(o);
         if (! [filter containsData:d]) [filter insertData:d];
+    }
+    
+    for (BRTransaction *tx in manager.wallet.allTransactions) { // also add TXOs spent within the last 100 blocks
+        if (tx.blockHeight != TX_UNCONFIRMED && tx.blockHeight + 100 < self.lastBlockHeight) break;
+        i = 0;
+        
+        for (NSValue *hash in tx.inputHashes) {
+            [hash getValue:&o.hash];
+            o.n = [tx.inputIndexes[i++] unsignedIntValue];
+            
+            BRTransaction *t = [manager.wallet transactionForHash:o.hash];
+
+            if (o.n < t.outputAddresses.count && [manager.wallet containsAddress:t.outputAddresses[o.n]]) {
+                d = brutxo_data(o);
+                if (! [filter containsData:d]) [filter insertData:d];
+            }
+        }
     }
 
     // TODO: XXXX if already synced, recursively add inputs of unconfirmed receives
@@ -803,7 +820,7 @@ static const char *dns_seeds[] = {
         if (! p.synced) return;
     }
 
-    for (BRTransaction *tx in manager.wallet.recentTransactions) {
+    for (BRTransaction *tx in manager.wallet.allTransactions) {
         if (tx.blockHeight != TX_UNCONFIRMED) break;
         hash = uint256_obj(tx.txHash);
         if (self.publishedCallback[hash] != NULL) continue;
@@ -998,7 +1015,7 @@ static const char *dns_seeds[] = {
         return;
     }
 
-    for (BRTransaction *tx in manager.wallet.recentTransactions) {
+    for (BRTransaction *tx in manager.wallet.allTransactions) {
         if (tx.blockHeight != TX_UNCONFIRMED) break;
 
         if ([manager.wallet amountSentByTransaction:tx] > 0 && [manager.wallet transactionIsValid:tx]) {
@@ -1425,7 +1442,7 @@ static const char *dns_seeds[] = {
         NSLog(@"reorganizing chain from height %d, new height is %d", b.height, block.height);
 
         // mark transactions after the join point as unconfirmed
-        for (BRTransaction *tx in [BRWalletManager sharedInstance].wallet.recentTransactions) {
+        for (BRTransaction *tx in [BRWalletManager sharedInstance].wallet.allTransactions) {
             if (tx.blockHeight <= b.height) break;
             [txHashes addObject:uint256_obj(tx.txHash)];
         }

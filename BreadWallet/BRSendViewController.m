@@ -466,11 +466,11 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
         if (! manager.didAuthenticate) [manager seedWithPrompt:prompt forAmount:amount];
         
         if (manager.didAuthenticate) {
+            uint64_t fuzz = [manager amountForLocalCurrencyString:[manager localCurrencyStringForAmount:1]]*2;
+            
             // if user selected an amount equal to or below wallet balance, but the fee will bring the total above the
             // balance, offer to reduce the amount to available funds minus fee
-            if ((self.amount <= [manager amountForLocalCurrencyString:
-                                 [manager localCurrencyStringForAmount:manager.wallet.balance]] ||
-                 self.amount <= manager.wallet.balance) && self.amount > 0) {
+            if (self.amount <= manager.wallet.balance + fuzz && self.amount > 0) {
                 int64_t amount = manager.wallet.maxOutputAmount;
 
                 if (amount > 0 && amount < self.amount) {
@@ -752,47 +752,51 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
 
 - (void)updateClipboardText
 {
-    NSString *str = [[UIPasteboard generalPasteboard].string
-                   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    UIImage *img = [UIPasteboard generalPasteboard].image;
-    NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSet];
-    NSCharacterSet *separators = [NSCharacterSet alphanumericCharacterSet].invertedSet;
-    
-    if (str) {
-        [set addObject:str];
-        [set addObjectsFromArray:[str componentsSeparatedByCharactersInSet:separators]];
-    }
-    
-    if (img && &CIDetectorTypeQRCode) {
-        for (CIQRCodeFeature *qr in [[CIDetector detectorOfType:CIDetectorTypeQRCode context:nil options:nil]
-                                     featuresInImage:[CIImage imageWithCGImage:img.CGImage]]) {
-            [set addObject:[qr.messageString
-                            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
-        }
-    }
-
-    self.clipboardText.text = @"";
-    
-    for (NSString *s in set) {
-        BRPaymentRequest *req = [BRPaymentRequest requestWithString:s];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *str = [[UIPasteboard generalPasteboard].string
+                         stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSString *text = @"";
+        UIImage *img = [UIPasteboard generalPasteboard].image;
+        NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSet];
+        NSCharacterSet *separators = [NSCharacterSet alphanumericCharacterSet].invertedSet;
         
-        if ([req.paymentAddress isValidBitcoinAddress]) {
-            self.clipboardText.text = (req.label.length > 0) ? sanitizeString(req.label) : req.paymentAddress;
-            break;
+        if (str) {
+            [set addObject:str];
+            [set addObjectsFromArray:[str componentsSeparatedByCharactersInSet:separators]];
         }
-        else if ([s hasPrefix:@"litecoin:"]) {
-            self.clipboardText.text = sanitizeString(s);
-            break;
+        
+        if (img && &CIDetectorTypeQRCode) {
+            for (CIQRCodeFeature *qr in [[CIDetector detectorOfType:CIDetectorTypeQRCode
+                                          context:[CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer:@(YES)}]
+                                          options:nil] featuresInImage:[CIImage imageWithCGImage:img.CGImage]]) {
+                [set addObject:[qr.messageString
+                                stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+            }
         }
-    }
-
-    CGFloat textWidth = [self.clipboardText.text
-                         sizeWithAttributes:@{NSFontAttributeName:self.clipboardText.font}].width + 12;
     
-    if (textWidth < self.clipboardButton.bounds.size.width ) textWidth = self.clipboardButton.bounds.size.width;
-    if (textWidth > self.view.bounds.size.width - 16.0) textWidth = self.view.bounds.size.width - 16.0;
-    self.clipboardXLeft.constant = (self.view.bounds.size.width - textWidth)/2.0;
-    [self.clipboardText scrollRangeToVisible:NSMakeRange(0, 0)];
+        for (NSString *s in set) {
+            BRPaymentRequest *req = [BRPaymentRequest requestWithString:s];
+            
+            if ([req.paymentAddress isValidBitcoinAddress]) {
+                text = (req.label.length > 0) ? sanitizeString(req.label) : req.paymentAddress;
+                break;
+            }
+            else if ([s hasPrefix:@"litecoin:"]) {
+                text = sanitizeString(s);
+                break;
+            }
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGFloat textWidth = [text sizeWithAttributes:@{NSFontAttributeName:self.clipboardText.font}].width + 12;
+
+            self.clipboardText.text = text;
+            if (textWidth < self.clipboardButton.bounds.size.width ) textWidth = self.clipboardButton.bounds.size.width;
+            if (textWidth > self.view.bounds.size.width - 16.0) textWidth = self.view.bounds.size.width - 16.0;
+            self.clipboardXLeft.constant = (self.view.bounds.size.width - textWidth)/2.0;
+            [self.clipboardText scrollRangeToVisible:NSMakeRange(0, 0)];
+        });
+    });
 }
 
 - (void)payFirstFromArray:(NSArray *)array
@@ -884,8 +888,9 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     }
     
     if (img && &CIDetectorTypeQRCode) {
-        for (CIQRCodeFeature *qr in [[CIDetector detectorOfType:CIDetectorTypeQRCode context:nil options:nil]
-                                     featuresInImage:[CIImage imageWithCGImage:img.CGImage]]) {
+        for (CIQRCodeFeature *qr in [[CIDetector detectorOfType:CIDetectorTypeQRCode
+                                      context:[CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer:@(YES)}]
+                                      options:nil] featuresInImage:[CIImage imageWithCGImage:img.CGImage]]) {
             [set addObject:[qr.messageString
              stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
         }

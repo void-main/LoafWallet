@@ -41,19 +41,19 @@ class BreadWalletUISnapshot: XCTestCase {
     }
     
     func testTakeScreenshots() {
-        
-        let app = XCUIApplication()
-        snapshot("1")
-        
-        app.childrenMatchingType(.Window).elementBoundByIndex(0).tap()
-        snapshot("3")
-        
-        app.pageIndicators.elementBoundByIndex(0).tap()
-        snapshot("2")
-        
-        app.navigationBars.buttons["burger"].tap()
-        snapshot("4")
-        
+        if (_SNAPSHOT) {
+            let app = XCUIApplication()
+            snapshot("1")
+            
+            app.childrenMatchingType(.Window).elementBoundByIndex(0).tap()
+            snapshot("3")
+            
+            app.pageIndicators.elementBoundByIndex(0).tap()
+            snapshot("2")
+            
+            app.navigationBars.buttons["burger"].tap()
+            snapshot("4")
+        }
     }
     
 }

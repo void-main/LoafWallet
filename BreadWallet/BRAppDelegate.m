@@ -29,6 +29,7 @@
 #import "BREventManager.h"
 #import "breadwallet-Swift.h"
 #import "BRPhoneWCSessionManager.h"
+#import <WebKit/WebKit.h>
 
 #if BITCOIN_TESTNET
 #pragma message "testnet build"
@@ -38,15 +39,15 @@
 #pragma message "snapshot build"
 #endif
 
-
 @interface BRAppDelegate ()
-// balance notification properties -
-// the nsnotificationcenter observer for wallet balance
-@property id balanceNotificationObserver;
-// the most recent balance as received by notification
-@property uint64_t balanceNotificationBalance;
-@end
 
+// the nsnotificationcenter observer for wallet balance
+@property id balanceObserver;
+
+// the most recent balance as received by notification
+@property uint64_t balance;
+
+@end
 
 @implementation BRAppDelegate
 
@@ -86,27 +87,22 @@
 
     //TODO: figure out deterministic builds/removing app sigs: http://www.afp548.com/2012/06/05/re-signining-ios-apps/
 
-    BRAPIClient *c = [BRAPIClient sharedClient];
-    [c updateBundle:@"bread-buy" handler:^(NSString * _Nullable error) {
-        if (error != nil) {
-            NSLog(@"got update bundle error: %@", error);
-        } else {
-            NSLog(@"successfully updated bundle!");
-        }
-    }];
-
     //TODO: implement importing of private keys split with shamir's secret sharing:
     //      https://github.com/cetuscetus/btctool/blob/bip/bip-xxxx.mediawiki
 
-    // start WCSession manager
     [BRPhoneWCSessionManager sharedInstance];
     
     // observe balance and create notifications
     [self setupBalanceNotification:application];
-    
     [self setupPreferenceDefaults];
-
     return YES;
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self updatePlatform];
+    });
 }
 
 // Applications may reject specific types of extensions based on the extension point identifier.
@@ -137,17 +133,14 @@ annotation:(id)annotation
 - (void)application:(UIApplication *)application
 performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
-    BRWalletManager *manager = [BRWalletManager sharedInstance];
-    __block uint64_t balance = UINT64_MAX;
-    __block id protectedObserver = nil, balanceObserver = nil, syncFinishedObserver = nil, syncFailedObserver = nil;
+    __block id protectedObserver = nil, syncFinishedObserver = nil, syncFailedObserver = nil;
     __block void (^completion)(UIBackgroundFetchResult) = completionHandler;
     void (^cleanup)() = ^() {
         completion = nil;
         if (protectedObserver) [[NSNotificationCenter defaultCenter] removeObserver:protectedObserver];
-        if (balanceObserver) [[NSNotificationCenter defaultCenter] removeObserver:balanceObserver];
         if (syncFinishedObserver) [[NSNotificationCenter defaultCenter] removeObserver:syncFinishedObserver];
         if (syncFailedObserver) [[NSNotificationCenter defaultCenter] removeObserver:syncFailedObserver];
-        protectedObserver = balanceObserver = syncFinishedObserver = syncFailedObserver = nil;
+        protectedObserver = syncFinishedObserver = syncFailedObserver = nil;
     };
 
     if ([BRPeerManager sharedInstance].syncProgress >= 1.0) {
@@ -174,17 +167,6 @@ performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionH
             [[BRPeerManager sharedInstance] connect];
         }];
 
-    balanceObserver =
-        [[NSNotificationCenter defaultCenter] addObserverForName:BRWalletBalanceChangedNotification object:nil queue:nil
-        usingBlock:^(NSNotification *note) {
-            if (manager.wallet.balance > balance) {
-                [UIApplication sharedApplication].applicationIconBadgeNumber =
-                    [UIApplication sharedApplication].applicationIconBadgeNumber + 1;
-            }
-            NSLog(@"background got new balance notification %@ %llu -> %llu", note, balance, manager.wallet.balance);
-            balance = manager.wallet.balance;
-        }];
-
     syncFinishedObserver =
         [[NSNotificationCenter defaultCenter] addObserverForName:BRPeerManagerSyncFinishedNotification object:nil
         queue:nil usingBlock:^(NSNotification *note) {
@@ -203,7 +185,6 @@ performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionH
 
     NSLog(@"background fetch starting");
     [[BRPeerManager sharedInstance] connect];
-    balance = manager.wallet.balance;
 
     // sync events to the server
     [[BREventManager sharedEventManager] sync];
@@ -212,55 +193,79 @@ performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionH
 - (void)setupBalanceNotification:(UIApplication *)application
 {
     BRWalletManager *manager = [BRWalletManager sharedInstance];
-    void (^balanceUpdate)(NSNotification * _Nonnull) = ^(NSNotification *_Nonnull _) {
-        if (self.balanceNotificationBalance < manager.wallet.balance) {
-            NSString *noteText = [NSString stringWithFormat:
-                                  NSLocalizedString(@"received %@ (%@)", nil),
-                                  [manager stringForAmount:manager.wallet.balance - self.balanceNotificationBalance],
-                                  [manager localCurrencyStringForAmount:
-                                   manager.wallet.balance - self.balanceNotificationBalance]];
-            
-            // send a local notification if in the background
-            BOOL send = [[NSUserDefaults standardUserDefaults] boolForKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_KEY];
-            NSLog(@"local notifications enabled=%d", send);
-            if ((application.applicationState == UIApplicationStateBackground
-                    || application.applicationState == UIApplicationStateInactive) && send) {
-                UILocalNotification *note = [[UILocalNotification alloc] init];
-                note.alertBody = noteText;
-                note.soundName = @"coinflip";
-                [[UIApplication sharedApplication] presentLocalNotificationNow:note];
-                NSLog(@"sent local notification %@", note);
-            }
-            // send a custom notification to the watch if the watch app is up
-            [[BRPhoneWCSessionManager sharedInstance] notifyTransactionString:noteText];
-        }
-        self.balanceNotificationBalance = manager.wallet.balance;
-    };
     
-    self.balanceNotificationObserver = [[NSNotificationCenter defaultCenter]
-                                        addObserverForName:BRWalletBalanceChangedNotification
-                                        object:nil
-                                        queue:nil
-                                        usingBlock:balanceUpdate];
-    self.balanceNotificationBalance = manager.wallet.balance;
+    self.balanceObserver =
+        [[NSNotificationCenter defaultCenter] addObserverForName:BRWalletBalanceChangedNotification object:nil queue:nil
+        usingBlock:^(NSNotification * _Nonnull note) {
+            if (self.balance < manager.wallet.balance) {
+                BOOL send = [[NSUserDefaults standardUserDefaults] boolForKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_KEY];
+                NSString *noteText = [NSString stringWithFormat:NSLocalizedString(@"received %@ (%@)", nil),
+                                      [manager stringForAmount:manager.wallet.balance - self.balance],
+                                      [manager localCurrencyStringForAmount:manager.wallet.balance - self.balance]];
+                
+                NSLog(@"local notifications enabled=%d", send);
+                
+                // send a local notification if in the background
+                if (application.applicationState == UIApplicationStateBackground ||
+                    application.applicationState == UIApplicationStateInactive) {
+                    [UIApplication sharedApplication].applicationIconBadgeNumber =
+                        [UIApplication sharedApplication].applicationIconBadgeNumber + 1;
+                    
+                    if (send) {
+                        UILocalNotification *note = [[UILocalNotification alloc] init];
+                        
+                        note.alertBody = noteText;
+                        note.soundName = @"coinflip";
+                        [[UIApplication sharedApplication] presentLocalNotificationNow:note];
+                        NSLog(@"sent local notification %@", note);
+                    }
+                }
+                
+                // send a custom notification to the watch if the watch app is up
+                [[BRPhoneWCSessionManager sharedInstance] notifyTransactionString:noteText];
+            }
+            
+            self.balance = manager.wallet.balance;
+        }];
+    
+    self.balance = manager.wallet.balance;
 }
 
 - (void)setupPreferenceDefaults {
     NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
     
     // turn on local notifications by default
-    if (![defs boolForKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_SWITCH_KEY]) {
+    if (! [defs boolForKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_SWITCH_KEY]) {
         NSLog(@"enabling local notifications by default");
         [defs setBool:true forKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_SWITCH_KEY];
         [defs setBool:true forKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_KEY];
     }
 }
 
-- (void)application:(UIApplication *)application
-handleEventsForBackgroundURLSession:(NSString *)identifier
+- (void)updatePlatform {
+    if ([WKWebView class]) { // platform features are only available on iOS 8.0+
+        BRAPIClient *client = [BRAPIClient sharedClient];
+        
+        [client updateBundle:@"bread-buy" handler:^(NSString * _Nullable error) {
+            if (error) {
+                NSLog(@"got update bundle error: %@", error);
+            }
+            else NSLog(@"successfully updated bundle!");
+        }];
+        
+        [client updateFeatureFlags];
+    }
+}
+
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier
   completionHandler:(void (^)())completionHandler
 {
     NSLog(@"Handle events for background url session; identifier=%@", identifier);
+}
+
+- (void)dealloc
+{
+    if (self.balanceObserver) [[NSNotificationCenter defaultCenter] removeObserver:self.balanceObserver];
 }
 
 @end

@@ -27,11 +27,12 @@
 #import "BRSeedViewController.h"
 #import "BRWalletManager.h"
 #import "BRBubbleView.h"
+#import "BRPeerManager.h"
 #import "BREventManager.h"
-#include <asl.h>
 #import "BRUserDefaultsSwitchCell.h"
 #import "breadwallet-Swift.h"
-
+#include <WebKit/WebKit.h>
+#include <asl.h>
 
 @interface BRSettingsViewController ()
 
@@ -44,7 +45,6 @@
 @property (nonatomic, strong) id balanceObserver;
 @property (nonatomic, strong) BRWebViewController *eaController;
 
-
 @end
 
 
@@ -56,12 +56,14 @@
     
     self.touchId = [BRWalletManager sharedInstance].touchIdEnabled;
     
-    self.eaController = [[BRWebViewController alloc] initWithBundleName:@"bread-buy" mountPoint:@"/ea"];
+    if ([WKWebView class] && [[BRAPIClient sharedClient] featureEnabled:BRFeatureFlagsEarlyAccess]) { // only available on iOS 8 and above
+        self.eaController = [[BRWebViewController alloc] initWithBundleName:@"bread-buy" mountPoint:@"/ea"];
 #if DEBUG
-//    self.eaController.debugEndpoint = @"http://localhost:8080";
+        //    self.eaController.debugEndpoint = @"http://localhost:8080";
 #endif
-    [self.eaController startServer];
-    [self.eaController preload];
+        [self.eaController startServer];
+        [self.eaController preload];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -122,9 +124,39 @@
 
 #pragma mark - IBAction
 
+- (IBAction)done:(id)sender
+{
+    [BREventManager saveEvent:@"settings:dismiss"];
+    [self.navigationController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (IBAction)about:(id)sender
 {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://breadwallet.com"]];
+    if ([MFMailComposeViewController canSendMail]) {
+        MFMailComposeViewController *composeController = [MFMailComposeViewController new];
+        NSString *msg;
+        struct utsname systemInfo;
+        
+        uname(&systemInfo);
+        msg = [NSString stringWithFormat:@"%s / iOS %@ / breadwallet v%@%@\n\n",
+               systemInfo.machine, UIDevice.currentDevice.systemVersion,
+               NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"],
+               ([BRWalletManager sharedInstance].watchOnly) ? @" (watch only)" : @""];
+        
+        composeController.toRecipients = @[@"support@breadwallet.com"];
+        composeController.subject = @"support request";
+        [composeController setMessageBody:msg isHTML:NO];
+        composeController.mailComposeDelegate = self;
+        [self.navigationController presentViewController:composeController animated:YES completion:nil];
+        composeController.view.backgroundColor =
+            [UIColor colorWithPatternImage:[UIImage imageNamed:@"wallpaper-default"]];
+        [BREventManager saveEvent:@"about:send_email"];
+    }
+    else {
+        [BREventManager saveEvent:@"about:email_not_configured"];
+        [[[UIAlertView alloc] initWithTitle:@"" message:NSLocalizedString(@"email not configured", nil) delegate:nil
+          cancelButtonTitle:NSLocalizedString(@"ok", nil) otherButtonTitles:nil] show];
+    }
 }
 
 #if DEBUG
@@ -213,7 +245,7 @@
     switch (section) {
         case 0: return 2;
         case 1: return (self.touchId) ? 3 : 2;
-        case 2: return 2;
+        case 2: return 3;
         case 3: return 1;
     }
     
@@ -296,14 +328,28 @@ _switch_cell:
                 case 1:
                     cell = [tableView dequeueReusableCellWithIdentifier:restoreIdent];
                     break;
+                    
+                case 2:
+                    cell = [tableView dequeueReusableCellWithIdentifier:actionIdent];
+                    cell.textLabel.text = NSLocalizedString(@"rescan blockchain", nil);
+                    break;
+
             }
             break;
+            
         case 3:
             cell = [tableView dequeueReusableCellWithIdentifier:actionIdent];
             cell.textLabel.text = @"early access";
+
+            if (![WKWebView class] || ![[BRAPIClient sharedClient] featureEnabled:BRFeatureFlagsEarlyAccess]) {
+                cell = [[UITableViewCell alloc] initWithFrame:CGRectZero];
+                cell.userInteractionEnabled = NO;
+                cell.hidden = YES;
+            }
+
             break;
     }
-
+    
     [self setBackgroundForCell:cell tableView:tableView indexPath:indexPath];
     return cell;
 }
@@ -311,6 +357,22 @@ _switch_cell:
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     if (tableView == self.selectorController.tableView && self.selectorOptions.count == 0) return self.noOptionsText;
+    
+    switch (section) {
+        case 0:
+            return nil;
+            
+        case 1:
+            return nil;
+            
+        case 2:
+            return nil;
+            
+        case 3:
+            return NSLocalizedString(@"rescan blockchain if you think you may have missing transactions, "
+                                     "or are having trouble sending (rescanning can take several minutes)", nil);
+    }
+    
     return nil;
 }
 
@@ -364,19 +426,16 @@ _switch_cell:
 
 - (void)showAbout
 {
-    //TODO: XXXX add a link to support
     [BREventManager saveEvent:@"settings:show_about"];
-    UIViewController *c;
-    UILabel *l;
-    NSMutableAttributedString *s;
-    c = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutViewController"];
-    l = (id)[c.view viewWithTag:411];
-    s = [[NSMutableAttributedString alloc] initWithAttributedString:l.attributedText];
+    UIViewController *c = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutViewController"];
+    UILabel *l = (id)[c.view viewWithTag:411];
+    NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithAttributedString:l.attributedText];
+    
 #if BITCOIN_TESTNET
     [s replaceCharactersInRange:[s.string rangeOfString:@"%net%"] withString:@"%net% (testnet)"];
 #endif
     [s replaceCharactersInRange:[s.string rangeOfString:@"%ver%"]
-                     withString:NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"]];
+     withString:NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"]];
     [s replaceCharactersInRange:[s.string rangeOfString:@"%net%"] withString:@""];
     l.attributedText = s;
     [l.superview.gestureRecognizers.firstObject addTarget:self action:@selector(about:)];
@@ -396,20 +455,20 @@ _switch_cell:
 {
     [BREventManager saveEvent:@"settings:show_recovery_phrase"];
     [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"WARNING", nil)
-                                message:[NSString stringWithFormat:@"\n%@\n\n%@\n\n%@\n",
-                                         [NSLocalizedString(@"\nDO NOT let anyone see your recovery\n"
-                                                            "phrase or they can spend your bitcoins.\n", nil)
-                                          stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]],
-                                         [NSLocalizedString(@"\nNEVER type your recovery phrase into\n"
-                                                            "password managers or elsewhere.\n"
-                                                            "Other devices may be infected.\n", nil)
-                                          stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]],
-                                         [NSLocalizedString(@"\nDO NOT take a screenshot.\n"
-                                                            "Screenshots are visible to other apps\n"
-                                                            "and devices.\n", nil)
-                                          stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]]]
-                               delegate:self cancelButtonTitle:NSLocalizedString(@"cancel", nil)
-                      otherButtonTitles:NSLocalizedString(@"show", nil), nil] show];
+      message:[NSString stringWithFormat:@"\n%@\n\n%@\n\n%@\n",
+               [NSLocalizedString(@"\nDO NOT let anyone see your recovery\n"
+                                  "phrase or they can spend your bitcoins.\n", nil)
+                stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]],
+               [NSLocalizedString(@"\nNEVER type your recovery phrase into\n"
+                                  "password managers or elsewhere.\n"
+                                  "Other devices may be infected.\n", nil)
+                stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]],
+               [NSLocalizedString(@"\nDO NOT take a screenshot.\n"
+                                  "Screenshots are visible to other apps\n"
+                                  "and devices.\n", nil)
+                stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]]]
+      delegate:self cancelButtonTitle:NSLocalizedString(@"cancel", nil)
+      otherButtonTitles:NSLocalizedString(@"show", nil), nil] show];
 }
 
 - (void)showCurrencySelector
@@ -534,6 +593,12 @@ _deselect_switch:
                 case 1: // start/recover another wallet (handled by storyboard)
                     [BREventManager saveEvent:@"settings:recover"];
                     break;
+                    
+                case 2: // rescan blockchain
+                    [[BRPeerManager sharedInstance] rescan];
+                    [BREventManager saveEvent:@"settings:rescan"];
+                    [self done:nil];
+                    break;
             }
             
             break;
@@ -541,6 +606,14 @@ _deselect_switch:
             [self showEarlyAccess];
             break;
     }
+}
+
+#pragma mark - MFMailComposeViewControllerDelegate
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result
+error:(NSError *)error
+{
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - UIAlertViewDelegate
