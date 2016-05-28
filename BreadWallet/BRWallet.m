@@ -506,7 +506,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
         return nil;
     }
     
-    if (balance - (amount + feeAmount) >= self.minOutputAmount) {
+    if (balance - (amount + feeAmount) > self.minOutputAmount) {
         [transaction addOutputAddress:self.changeAddress amount:balance - (amount + feeAmount)];
         [transaction shuffleOutputOrder];
     }
@@ -854,18 +854,20 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 // fee that will be added for a transaction of the given size in bytes
 - (uint64_t)feeForTxSize:(NSUInteger)size
 {
-    uint64_t standardFee = ((size + 999)/1000)*TX_FEE_PER_KB, // standard fee based on tx size rounded up to nearest kb
-             fee = (((size*self.feePerKb/1000) + 99)/100)*100; // fee using feePerKb, rounded up to nearest 100 satoshi
+    uint64_t standardFee = ((size + 999)/1000)*TX_FEE_PER_KB; // standard fee based on tx size rounded up to nearest kb
+//             fee = (((size*self.feePerKb/1000) + 99)/100)*100; // fee using feePerKb, rounded up to nearest 100 satoshi
     
-    return (fee > standardFee) ? fee : standardFee;
+    return standardFee;
 }
 
 // outputs below this amount are uneconomical due to fees
 - (uint64_t)minOutputAmount
 {
-    uint64_t amount = self.feePerKb*148/1000;
+//    uint64_t amount = self.feePerKb*148/1000;
     
-    return (amount > TX_MIN_OUTPUT_AMOUNT) ? amount : TX_MIN_OUTPUT_AMOUNT;
+//    return (amount > TX_MIN_OUTPUT_AMOUNT) ? amount : TX_MIN_OUTPUT_AMOUNT;
+    
+    return TX_MIN_OUTPUT_AMOUNT;
 }
 
 - (uint64_t)maxOutputAmount
