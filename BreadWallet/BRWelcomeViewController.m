@@ -56,6 +56,16 @@
     self.newwalletButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     self.recoverButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     
+    self.newwalletButton.layer.cornerRadius = 2;
+    self.newwalletButton.layer.borderWidth = 2;
+    self.newwalletButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.newwalletButton.clipsToBounds = YES;
+    
+    self.recoverButton.layer.cornerRadius = 2;
+    self.recoverButton.layer.borderWidth = 2;
+    self.recoverButton.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.recoverButton.clipsToBounds = YES;
+    
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     self.newwalletButton.titleLabel.adjustsLetterSpacingToFitWidth = YES;
@@ -65,7 +75,6 @@
     self.foregroundObserver =
         [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationWillEnterForegroundNotification object:nil
         queue:nil usingBlock:^(NSNotification *note) {
-            [self animateWallpaper];
         }];
     
     self.backgroundObserver =
@@ -148,8 +157,6 @@
                 [self.navigationController.view layoutIfNeeded];
             } completion:nil];
         }
-        
-        [self animateWallpaper];
     });
 }
 
@@ -160,21 +167,21 @@
 ////    [segue.destinationViewController setModalPresentationStyle:UIModalPresentationCustom];
 //}
 
-- (void)animateWallpaper
-{
-    if (self.animating) return;
-    self.animating = YES;
-
-    self.wallpaperXLeft.constant = -240.0;
-
-    [UIView animateWithDuration:30.0 delay:0.0
-    options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse
-    animations:^{
-        [self.wallpaper.superview layoutIfNeeded];
-    } completion:^(BOOL finished) {
-        self.animating = NO;
-    }];
-}
+//- (void)animateWallpaper
+//{
+//    if (self.animating) return;
+//    self.animating = YES;
+//
+//    self.wallpaperXLeft.constant = -240.0;
+//
+//    [UIView animateWithDuration:30.0 delay:0.0
+//    options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse
+//    animations:^{
+//        [self.wallpaper.superview layoutIfNeeded];
+//    } completion:^(BOOL finished) {
+//        self.animating = NO;
+//    }];
+//}
 
 #pragma mark IBAction
 
