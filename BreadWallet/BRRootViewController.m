@@ -949,7 +949,7 @@ viewControllerAfterViewController:(UIViewController *)viewController
 
 - (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
 {
-    return 2;
+    return 0;
 }
 
 - (NSInteger)presentationIndexForPageViewController:(UIPageViewController *)pageViewController

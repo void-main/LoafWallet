@@ -40,13 +40,12 @@
 
 //TODO: create a secure version of UILabel and use it for seedLabel, but make sure there's an accessibility work around
 @property (nonatomic, strong) IBOutlet UILabel *seedLabel, *writeLabel;
-@property (nonatomic, strong) IBOutlet UIButton *writeButton;
-@property (nonatomic, strong) IBOutlet UIToolbar *toolbar;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *remindButton, *doneButton;
 @property (nonatomic, strong) IBOutlet UIImageView *wallpaper;
 
 @property (nonatomic, strong) NSString *seedPhrase;
 @property (nonatomic, strong) id resignActiveObserver, screenshotObserver;
+@property (strong, nonatomic) IBOutlet UIButton *continueButton;
 
 @end
 
@@ -92,6 +91,11 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    self.continueButton.layer.cornerRadius = 2;
+    self.continueButton.layer.borderWidth = 2;
+    self.continueButton.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:40.0 green:40.0 blue:40.0 alpha:0.90]);
+    self.continueButton.clipsToBounds = YES;
     
     if (self.navigationController.viewControllers.firstObject != self) {
         self.wallpaper.hidden = YES;
@@ -139,19 +143,7 @@
 {
     [super viewWillAppear:animated];
  
-    NSTimeInterval delay = WRITE_TOGGLE_DELAY;
- 
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
- 
-    // remove done button if we're not the root of the nav stack
-    if (self.navigationController.viewControllers.firstObject != self) {
-        self.toolbar.hidden = YES;
-    }
-    else delay *= 2; // extra delay before showing toggle when starting a new wallet
-    
-    if ([[NSUserDefaults standardUserDefaults] boolForKey:WALLET_NEEDS_BACKUP_KEY]) {
-        [self performSelector:@selector(showWriteToggle) withObject:nil afterDelay:delay];
-    }
     
     [UIView animateWithDuration:0.1 animations:^{
         self.seedLabel.alpha = 1.0;
@@ -219,16 +211,6 @@
     if (self.screenshotObserver) [[NSNotificationCenter defaultCenter] removeObserver:self.screenshotObserver];
 }
 
-- (void)showWriteToggle
-{
-    self.writeLabel.alpha = self.writeButton.alpha = 0.0;
-    self.writeLabel.hidden = self.writeButton.hidden = NO;
-    
-    [UIView animateWithDuration:0.5 animations:^{
-        self.writeLabel.alpha = self.writeButton.alpha = 1.0;
-    }];
-}
-
 #pragma mark - IBAction
 
 - (IBAction)done:(id)sender
@@ -239,25 +221,6 @@
     self.navigationController.presentingViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self.navigationController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES
      completion:nil];
-}
-
-- (IBAction)toggleWrite:(id)sender
-{
-    [BREventManager saveEvent:@"seed:toggle_write"];
-    NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-
-    if ([defs boolForKey:WALLET_NEEDS_BACKUP_KEY]) {
-        [self.toolbar setItems:@[self.toolbar.items[0], self.doneButton] animated:YES];
-        [self.writeButton setImage:[UIImage imageNamed:@"checkbox-checked"] forState:UIControlStateNormal];
-        [defs removeObjectForKey:WALLET_NEEDS_BACKUP_KEY];
-    }
-    else {
-        [self.toolbar setItems:@[self.toolbar.items[0], self.remindButton] animated:YES];
-        [self.writeButton setImage:[UIImage imageNamed:@"checkbox-empty"] forState:UIControlStateNormal];
-        [defs setBool:YES forKey:WALLET_NEEDS_BACKUP_KEY];
-    }
-    
-    [defs synchronize];
 }
 
 @end
