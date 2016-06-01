@@ -45,14 +45,15 @@
 #define DOT     @"\xE2\x97\x8F" // black circle (utf-8)
 
 #define BASE_URL            @"https://api.breadwallet.com"
+#define LITECOIN_URL        @"https://www.loshan.co.uk:4567"
 #define UNSPENT_URL         BASE_URL @"/q/addr/%@/utxo"
 #define FEE_PER_KB_URL      BASE_URL @"/fee-per-kb"
-#define TICKER_URL          BASE_URL @"/rates"
-#define TICKER_FAILOVER_URL @"https://bitpay.com/rates"
+#define TICKER_URL          LITECOIN_URL @"/api/v1/info"
+#define TICKER_FAILOVER_URL @"https://litecoin.com:4567/api/v1/info"
 
 #define SEED_ENTROPY_LENGTH   (128/8)
 #define SEC_ATTR_SERVICE      @"org.voisine.breadwallet"
-#define DEFAULT_CURRENCY_CODE @"USD"
+#define DEFAULT_CURRENCY_CODE @"EUR"
 #define DEFAULT_SPENT_LIMIT   SATOSHIS
 #define DEFAULT_FEE_PER_KB    ((TX_FEE_PER_KB*1000 + 190)/191) // default fee-per-kb to match standard fee on 191byte tx
 #define MAX_FEE_PER_KB        ((100100*1000 + 190)/191) // slightly higher than a 1000bit fee on 191byte tx
@@ -893,17 +894,17 @@ static NSString *getKeychainString(NSString *key, NSError **error)
         
         for (NSDictionary *d in json[jsonKey]) {
             if (! [d isKindOfClass:[NSDictionary class]] || ! [d[@"code"] isKindOfClass:[NSString class]] ||
-                ! [d[@"name"] isKindOfClass:[NSString class]] || ! [d[@"rate"] isKindOfClass:[NSNumber class]]) {
+                ! [d[@"code"] isKindOfClass:[NSString class]] || ! [d[@"n"] isKindOfClass:[NSNumber class]]) {
                 NSLog(@"unexpected response from %@:\n%@", req.URL.host,
                       [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
                 if (failover) failover();
                 return;
             }
             
-            if ([d[@"code"] isEqual:@"BTC"]) continue;
+//            if ([d[@"code"] isEqual:@"USD"]) continue;
             [codes addObject:d[@"code"]];
-            [names addObject:d[@"name"]];
-            [rates addObject:d[@"rate"]];
+            [names addObject:d[@"code"]];
+            [rates addObject:d[@"n"]];
         }
         
         _currencyCodes = codes;
@@ -933,8 +934,8 @@ static NSString *getKeychainString(NSString *key, NSError **error)
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateExchangeRate) object:nil];
     [self performSelector:@selector(updateExchangeRate) withObject:nil afterDelay:60.0];
 
-    [self loadTicker:TICKER_URL withJSONKey:@"body" failoverHandler:^{
-        [self loadTicker:TICKER_FAILOVER_URL withJSONKey:@"data" failoverHandler:nil];
+    [self loadTicker:TICKER_URL withJSONKey:@"price" failoverHandler:^{
+        [self loadTicker:TICKER_FAILOVER_URL withJSONKey:@"price" failoverHandler:nil];
     }];
 }
 
