@@ -4,6 +4,7 @@
 //
 //  Created by Aaron Voisine on 5/9/13.
 //  Copyright (c) 2013 Aaron Voisine <voisine@gmail.com>
+//  Copyright © 2016 Litecoin Association <loshan1212@gmail.com>
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -226,7 +227,7 @@ completion:(void (^)(BRPaymentProtocolRequest *req, NSError *error))completion
 //  [req addValue:@"text/uri-list" forHTTPHeaderField:@"Accept"]; // breaks some BIP72 implementations, notably bitpay's
 
     if (! req) {
-        completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417
+        completion(nil, [NSError errorWithDomain:@"LoafWallet" code:417
                          userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"bad payment request URL", nil)}]);
         return;
     }
@@ -260,12 +261,12 @@ completion:(void (^)(BRPaymentProtocolRequest *req, NSError *error))completion
         if (! req) {
             NSLog(@"unexpected response from %@:\n%@", u.host,
                   [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-            completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+            completion(nil, [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                              [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil), u.host]
                             }]);
         }
         else if (! [req.details.network isEqual:network]) {
-            completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+            completion(nil, [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                              [NSString stringWithFormat:NSLocalizedString(@"requested network \"%@\" instead of \"%@\"",
                                                                           nil), req.details.network, network]}]);
         }
@@ -280,7 +281,7 @@ completion:(void (^)(BRPaymentProtocolACK *ack, NSError *error))completion
 
     if (! u) {
         if (completion) {
-            completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417
+            completion(nil, [NSError errorWithDomain:@"LoafWallet" code:417
                              userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"bad payment URL", nil)}]);
         }
         
@@ -313,7 +314,7 @@ completion:(void (^)(BRPaymentProtocolACK *ack, NSError *error))completion
             NSLog(@"unexpected response from %@:\n%@", u.host,
                   [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
             if (completion) {
-                completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+                completion(nil, [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                                  [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil),
                                   u.host]}]);
             }

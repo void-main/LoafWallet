@@ -4,6 +4,7 @@
 //
 //  Created by Aaron Voisine on 5/8/13.
 //  Copyright (c) 2013 Aaron Voisine <voisine@gmail.com>
+//  Copyright © 2016 Litecoin Association <loshan1212@gmail.com>
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -73,6 +74,12 @@ static NSString *sanitizeString(NSString *s)
 @property (nonatomic, strong) IBOutlet UIButton *scanButton, *clipboardButton;
 @property (nonatomic, strong) IBOutlet UITextView *clipboardText;
 @property (nonatomic, strong) IBOutlet NSLayoutConstraint *clipboardXLeft;
+@property (strong, nonatomic) IBOutlet UIView *addressView;
+@property (strong, nonatomic) IBOutlet UITextField *amountField;
+@property (strong, nonatomic) IBOutlet UILabel *localCurrencyLabel;
+@property (strong, nonatomic) IBOutlet UIView *amountView;
+@property (strong, nonatomic) IBOutlet UIView *localCurrencyView;
+@property (strong, nonatomic) IBOutlet UILabel *localCurrencyNameLabel;
 
 @end
 
@@ -82,6 +89,21 @@ static NSString *sanitizeString(NSString *s)
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    self.addressView.layer.cornerRadius = 3;
+    self.addressView.layer.borderWidth = 3;
+    self.addressView.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.addressView.clipsToBounds = YES;
+    self.amountView.layer.cornerRadius = 3;
+    self.amountView.layer.borderWidth = 3;
+    self.amountView.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.amountView.clipsToBounds = YES;
+    self.localCurrencyView.layer.cornerRadius = 3;
+    self.localCurrencyView.layer.borderWidth = 3;
+    self.localCurrencyView.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.localCurrencyView.clipsToBounds = YES;
+    
+    //manager.localCurrencyCode;
     
     // TODO: XXX redesign page with round buttons like the iOS power down screen... apple watch also has round buttons
     self.scanButton.titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -103,6 +125,25 @@ static NSString *sanitizeString(NSString *s)
             }
             else [self updateClipboardText];
         }];
+    
+    BRWalletManager *manager = [BRWalletManager sharedInstance];
+    
+    self.amountField.placeholder = [manager stringForAmount:0];
+    [self updateLocalCurrencyLabel];
+    
+    // Done and cancel button for decimal pad
+    
+    UIToolbar* decimalPad = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 50)];
+    decimalPad.barStyle = UIBarStyleDefault;
+    decimalPad.items = @[[[UIBarButtonItem alloc]initWithTitle:@"Cancel" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelNumberPad)],
+                            [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                            [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(doneNumberPad)]];
+    [decimalPad sizeToFit];
+    self.amountField.inputAccessoryView = decimalPad;
+    
+    // Change default Currency Code (USD) to Local Currency Code
+    
+    self.localCurrencyNameLabel.text = manager.localCurrencyCode;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -122,6 +163,7 @@ static NSString *sanitizeString(NSString *s)
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    self.amount = 0;
     [self hideTips];
     [super viewWillDisappear:animated];
 }
@@ -129,6 +171,27 @@ static NSString *sanitizeString(NSString *s)
 - (void)dealloc
 {
     if (self.clipboardObserver) [[NSNotificationCenter defaultCenter] removeObserver:self.clipboardObserver];
+}
+
+-(void)cancelNumberPad{
+    [self.amountField resignFirstResponder];
+    self.amountField.text = @"0.00";
+}
+
+-(void)doneNumberPad{
+    [self updateLocalCurrencyLabel];
+    [self.amountField resignFirstResponder];
+}
+
+- (void)updateLocalCurrencyLabel
+{
+    BRWalletManager *manager = [BRWalletManager sharedInstance];
+    uint64_t amount = [manager amountForString:self.amountField.text];
+    
+    self.localCurrencyLabel.hidden = NO;
+    self.localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
+                                    [manager localCurrencyStringForAmount:amount]];
+    self.localCurrencyLabel.textColor = (amount > 0) ? [UIColor blackColor] : [UIColor grayColor];
 }
 
 - (void)handleURL:(NSURL *)url
@@ -393,7 +456,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
             else amountController.to = sanitizeString(protoReq.commonName);
         }
         else amountController.to = address;
-        
+
         amountController.navigationItem.title = [NSString stringWithFormat:@"%@ (%@)",
                                                  [manager stringForAmount:manager.wallet.balance],
                                                  [manager localCurrencyStringForAmount:manager.wallet.balance]];
@@ -871,17 +934,30 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     [self.navigationController presentViewController:self.scanController animated:YES completion:nil];
 }
 
-- (IBAction)payToClipboard:(id)sender
-{
+- (IBAction)tapPay:(id)sender {
+    // TODO:- Test that this works
+    // Clear up stuff that's not needed.
+    
+    BRWalletManager *manager = [BRWalletManager sharedInstance];
+                                
     if ([self nextTip]) return;
+    self.amount = [manager amountForString:self.amountField.text];
+    
+    if (self.amount == 0){
+        [BREventManager saveEvent:@"amount:pay_zero"];
+        return;
+    }
+    
+    [BREventManager saveEvent:@"amount:pay"];
     [BREventManager saveEvent:@"send:pay_clipboard"];
-
+    
+    
     NSString *str = [[UIPasteboard generalPasteboard].string
-                   stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+                     stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     UIImage *img = [UIPasteboard generalPasteboard].image;
     NSMutableOrderedSet *set = [NSMutableOrderedSet orderedSet];
     NSCharacterSet *separators = [NSCharacterSet alphanumericCharacterSet].invertedSet;
-
+    
     if (str) {
         [set addObject:str];
         [set addObjectsFromArray:[str componentsSeparatedByCharactersInSet:separators]];
@@ -889,16 +965,21 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     
     if (img && &CIDetectorTypeQRCode) {
         for (CIQRCodeFeature *qr in [[CIDetector detectorOfType:CIDetectorTypeQRCode
-                                      context:[CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer:@(YES)}]
-                                      options:nil] featuresInImage:[CIImage imageWithCGImage:img.CGImage]]) {
+                                                        context:[CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer:@(YES)}]
+                     
+                                      
+                                      
+                                      
+                                                        options:nil] featuresInImage:[CIImage imageWithCGImage:img.CGImage]]) {
             [set addObject:[qr.messageString
-             stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+                            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
         }
     }
     
     [sender setEnabled:NO];
     self.clearClipboard = YES;
     [self payFirstFromArray:set.array];
+    
 }
 
 - (IBAction)reset:(id)sender
@@ -1089,18 +1170,18 @@ fromConnection:(AVCaptureConnection *)connection
     self.clipboardText.text = [UIPasteboard generalPasteboard].string;
     [textView scrollRangeToVisible:textView.selectedRange];
     
-    [UIView animateWithDuration:0.35 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.view.center = CGPointMake(self.view.center.x, self.view.bounds.size.height/2.0 - 100.0);
-        self.sendLabel.alpha = 0.0;
-    } completion:nil];
+//    [UIView animateWithDuration:0.35 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+//        self.view.center = CGPointMake(self.view.center.x, self.view.bounds.size.height/2.0 - 100.0);
+//        self.sendLabel.alpha = 0.0;
+//    } completion:nil];
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
-    [UIView animateWithDuration:0.35 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        self.view.center = CGPointMake(self.view.center.x, self.view.bounds.size.height/2.0);
-        self.sendLabel.alpha = 1.0;
-    } completion:nil];
+//    [UIView animateWithDuration:0.35 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+//        self.view.center = CGPointMake(self.view.center.x, self.view.bounds.size.height/2.0);
+//        self.sendLabel.alpha = 1.0;
+//    } completion:nil];
     
     if (! self.useClipboard) [UIPasteboard generalPasteboard].string = textView.text;
     [self updateClipboardText];

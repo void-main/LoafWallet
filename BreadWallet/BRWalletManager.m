@@ -4,6 +4,7 @@
 //
 //  Created by Aaron Voisine on 3/2/14.
 //  Copyright (c) 2014 Aaron Voisine <voisine@gmail.com>
+//  Copyright © 2016 Litecoin Association <loshan1212@gmail.com>
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -52,8 +53,8 @@
 #define TICKER_FAILOVER_URL @"https://litecoin.com:4567/api/v1/info"
 
 #define SEED_ENTROPY_LENGTH   (128/8)
-#define SEC_ATTR_SERVICE      @"org.voisine.breadwallet"
-#define DEFAULT_CURRENCY_CODE @"EUR"
+#define SEC_ATTR_SERVICE      @"com.litecoin.loafwallet"
+#define DEFAULT_CURRENCY_CODE @"USD"
 #define DEFAULT_SPENT_LIMIT   SATOSHIS
 #define DEFAULT_FEE_PER_KB    ((TX_FEE_PER_KB*1000 + 190)/191) // default fee-per-kb to match standard fee on 191byte tx
 #define MAX_FEE_PER_KB        ((100100*1000 + 190)/191) // slightly higher than a 1000bit fee on 191byte tx
@@ -901,7 +902,6 @@ static NSString *getKeychainString(NSString *key, NSError **error)
                 return;
             }
             
-//            if ([d[@"code"] isEqual:@"USD"]) continue;
             [codes addObject:d[@"code"]];
             [names addObject:d[@"code"]];
             [rates addObject:d[@"n"]];
@@ -992,7 +992,7 @@ completion:(void (^)(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError
 
         if (! [json isKindOfClass:[NSArray class]]) {
             completion(nil, nil, nil,
-                       [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+                       [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                         [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil), u.host]}]);
             return;
         }
@@ -1006,7 +1006,7 @@ completion:(void (^)(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError
                 ! [utxo[@"scriptPubKey"] hexToData] ||
                 ! [utxo[@"amount"] isKindOfClass:[NSNumber class]]) {
                 completion(nil, nil, nil,
-                           [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+                           [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                             [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil),
                              u.host]}]);
                 return;
@@ -1048,13 +1048,13 @@ completion:(void (^)(BRTransaction *tx, uint64_t fee, NSError *error))completion
     BRKey *key = [BRKey keyWithPrivateKey:privKey];
 
     if (! key.address) {
-        completion(nil, 0, [NSError errorWithDomain:@"BreadWallet" code:187 userInfo:@{NSLocalizedDescriptionKey:
+        completion(nil, 0, [NSError errorWithDomain:@"LoafWallet" code:187 userInfo:@{NSLocalizedDescriptionKey:
                             NSLocalizedString(@"not a valid private key", nil)}]);
         return;
     }
 
     if ([self.wallet containsAddress:key.address]) {
-        completion(nil, 0, [NSError errorWithDomain:@"BreadWallet" code:187 userInfo:@{NSLocalizedDescriptionKey:
+        completion(nil, 0, [NSError errorWithDomain:@"LoafWallet" code:187 userInfo:@{NSLocalizedDescriptionKey:
                             NSLocalizedString(@"this private key is already in your wallet", nil)}]);
         return;
     }
@@ -1079,7 +1079,7 @@ completion:(void (^)(BRTransaction *tx, uint64_t fee, NSError *error))completion
         }
 
         if (balance == 0) {
-            completion(nil, 0, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+            completion(nil, 0, [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                                 NSLocalizedString(@"this private key is empty", nil)}]);
             return;
         }
@@ -1088,7 +1088,7 @@ completion:(void (^)(BRTransaction *tx, uint64_t fee, NSError *error))completion
         if (fee) feeAmount = [self.wallet feeForTxSize:tx.size + 34 + (key.publicKey.length - 33)*tx.inputHashes.count];
 
         if (feeAmount + self.wallet.minOutputAmount > balance) {
-            completion(nil, 0, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
+            completion(nil, 0, [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                                 NSLocalizedString(@"transaction fees would cost more than the funds available on this "
                                                   "private key (due to tiny \"dust\" deposits)",nil)}]);
             return;
@@ -1097,7 +1097,7 @@ completion:(void (^)(BRTransaction *tx, uint64_t fee, NSError *error))completion
         [tx addOutputAddress:self.wallet.changeAddress amount:balance - feeAmount];
 
         if (! [tx signWithPrivateKeys:@[privKey]]) {
-            completion(nil, 0, [NSError errorWithDomain:@"BreadWallet" code:401 userInfo:@{NSLocalizedDescriptionKey:
+            completion(nil, 0, [NSError errorWithDomain:@"LoafWallet" code:401 userInfo:@{NSLocalizedDescriptionKey:
                                 NSLocalizedString(@"error signing transaction", nil)}]);
             return;
         }

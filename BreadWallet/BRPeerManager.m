@@ -4,6 +4,7 @@
 //
 //  Created by Aaron Voisine on 10/6/13.
 //  Copyright (c) 2013 Aaron Voisine <voisine@gmail.com>
+//  Copyright © 2016 Litecoin Association <loshan1212@gmail.com>
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -556,7 +557,7 @@ static const char *dns_seeds[] = {
             [self syncStopped];
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSError *error = [NSError errorWithDomain:@"BreadWallet" code:1
+                NSError *error = [NSError errorWithDomain:@"LoafWallet" code:1
                                   userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"no peers found", nil)}];
 
                 [[NSNotificationCenter defaultCenter] postNotificationName:BRPeerManagerSyncFailedNotification
@@ -617,7 +618,7 @@ static const char *dns_seeds[] = {
     if (! transaction.isSigned) {
         if (completion) {
             [[BREventManager sharedEventManager] saveEvent:@"peer_manager:not_signed"];
-            completion([NSError errorWithDomain:@"BreadWallet" code:401 userInfo:@{NSLocalizedDescriptionKey:
+            completion([NSError errorWithDomain:@"LoafWallet" code:401 userInfo:@{NSLocalizedDescriptionKey:
                         NSLocalizedString(@"bitcoin transaction not signed", nil)}]);
         }
         
@@ -626,7 +627,7 @@ static const char *dns_seeds[] = {
     else if (! self.connected && self.connectFailures >= MAX_CONNECT_FAILURES) {
         if (completion) {
             [[BREventManager sharedEventManager] saveEvent:@"peer_manager:not_connected"];
-            completion([NSError errorWithDomain:@"BreadWallet" code:-1009 userInfo:@{NSLocalizedDescriptionKey:
+            completion([NSError errorWithDomain:@"LoafWallet" code:-1009 userInfo:@{NSLocalizedDescriptionKey:
                         NSLocalizedString(@"not connected to the bitcoin network", nil)}]);
         }
         
@@ -727,7 +728,7 @@ static const char *dns_seeds[] = {
 
     if (callback) {
         [[BREventManager sharedEventManager] saveEvent:@"peer_manager:tx_canceled_timeout"];
-        callback([NSError errorWithDomain:@"BreadWallet" code:BITCOIN_TIMEOUT_CODE userInfo:@{NSLocalizedDescriptionKey:
+        callback([NSError errorWithDomain:@"LoafWallet" code:BITCOIN_TIMEOUT_CODE userInfo:@{NSLocalizedDescriptionKey:
                   NSLocalizedString(@"transaction canceled, network timeout", nil)}]);
     }
 }
@@ -1083,7 +1084,7 @@ static const char *dns_seeds[] = {
 {
     NSLog(@"%@:%d disconnected%@%@", peer.host, peer.port, (error ? @", " : @""), (error ? error : @""));
     
-    if ([error.domain isEqual:@"BreadWallet"] && error.code != BITCOIN_TIMEOUT_CODE) {
+    if ([error.domain isEqual:@"LoafWallet"] && error.code != BITCOIN_TIMEOUT_CODE) {
         [self peerMisbehavin:peer]; // if it's protocol error other than timeout, the peer isn't following the rules
     }
     else if (error) { // timeout or some non-protocol related network error
@@ -1508,7 +1509,7 @@ static const char *dns_seeds[] = {
     
     if (callback && ! [manager.wallet transactionIsValid:tx]) {
         [self.publishedTx removeObjectForKey:hash];
-        error = [NSError errorWithDomain:@"BreadWallet" code:401
+        error = [NSError errorWithDomain:@"LoafWallet" code:401
                  userInfo:@{NSLocalizedDescriptionKey:NSLocalizedString(@"double spend", nil)}];
     }
     else if (tx && ! [manager.wallet transactionForHash:txHash] && [manager.wallet registerTransaction:tx]) {

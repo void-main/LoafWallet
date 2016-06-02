@@ -4,6 +4,7 @@
 //
 //  Created by Loshan T on 30/05/2016.
 //  Copyright © 2016 Aaron Voisine. All rights reserved.
+//  Copyright © 2016 Litecoin Association <loshan1212@gmail.com>
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal

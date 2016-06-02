@@ -66,7 +66,7 @@
 "fQN-xb-SYb.title" = "confirm:";
 
 /* Class = "UILabel"; text = "send money:"; ObjectID = "l5l-JR-LKA"; */
-"l5l-JR-LKA.text" = "send money:";
+"l5l-JR-LKA.text" = "Pay To";
 
 /* Class = "UILabel"; text = "app support:"; ObjectID = "lYb-eg-NfF"; */
 "lYb-eg-NfF.text" = "app support:";

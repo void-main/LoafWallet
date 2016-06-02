@@ -4,6 +4,7 @@
 //
 //  Created by Aaron Voisine on 9/15/13.
 //  Copyright (c) 2013 Aaron Voisine <voisine@gmail.com>
+//  Copyright © 2016 Litecoin Association <loshan1212@gmail.com>
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -79,6 +80,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     // Do any additional setup after loading the view.
 
     // detect jailbreak so we can throw up an idiot warning, in viewDidLoad so it can't easily be swizzled out

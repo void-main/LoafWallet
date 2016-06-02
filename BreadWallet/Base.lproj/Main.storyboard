@@ -25,6 +25,10 @@
             <string>HelveticaNeue</string>
             <string>HelveticaNeue</string>
             <string>HelveticaNeue</string>
+            <string>HelveticaNeue</string>
+            <string>HelveticaNeue</string>
+            <string>HelveticaNeue</string>
+            <string>HelveticaNeue</string>
             <string>HelveticaNeue-Bold</string>
             <string>HelveticaNeue</string>
             <string>HelveticaNeue</string>
@@ -52,8 +56,6 @@
             <string>HelveticaNeue-UltraLight</string>
             <string>HelveticaNeue-UltraLight</string>
             <string>HelveticaNeue-UltraLight</string>
-            <string>HelveticaNeue-Light</string>
-            <string>HelveticaNeue-Light</string>
             <string>HelveticaNeue-Light</string>
             <string>HelveticaNeue-Light</string>
             <string>HelveticaNeue-Light</string>
@@ -455,7 +457,7 @@
                                         </constraints>
                                     </view>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="not connected" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UyF-OV-QVY">
-                                        <rect key="frame" x="145.5" y="5" width="84.5" height="16.5"/>
+                                        <rect key="frame" x="145" y="5" width="84.5" height="16.5"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="13"/>
                                         <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
@@ -512,6 +514,7 @@
                                 <subviews>
                                     <imageView userInteractionEnabled="NO" contentMode="bottomLeft" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wallpaper-welcome" translatesAutoresizingMaskIntoConstraints="NO" id="YfU-Ll-3CJ">
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" red="1" green="0.75294117647058822" blue="0.50196078431372548" alpha="1" colorSpace="calibratedRGB"/>
@@ -548,7 +551,6 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="3hG-i3-g4Y">
-                        <nil key="title"/>
                         <barButtonItem key="backBarButtonItem" title=" " id="Huq-Vk-LaF"/>
                         <barButtonItem key="leftBarButtonItem" image="burger" id="lsn-hc-KRM">
                             <connections>
@@ -574,7 +576,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z8K-GT-woD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1014" y="703"/>
+            <point key="canvasLocation" x="1013.5" y="702.5"/>
         </scene>
         <!--Scan View Controller-->
         <scene sceneID="2f7-Nl-i6P">
@@ -1064,7 +1066,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Eo1-Mc-5Xo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2461" y="1430"/>
+            <point key="canvasLocation" x="2460.5" y="1429.5"/>
         </scene>
         <!--Receive View Controller-->
         <scene sceneID="qxd-iA-4Pl">
@@ -1242,15 +1244,14 @@
                         <outlet property="recieveButton" destination="wgi-qN-zQi" id="1YE-Fc-7Mq"/>
                     </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="gHQ-qn-UpO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="lfc-2w-Glf">
+                    <connections>
+                        <action selector="tip:" destination="XLw-gP-lYw" id="2Hw-ST-BSW"/>
+                    </connections>
+                </swipeGestureRecognizer>
                 <tapGestureRecognizer id="4jo-t8-aAT">
                     <connections>
                         <action selector="tip:" destination="XLw-gP-lYw" id="70v-e6-T9W"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <tapGestureRecognizer id="e04-Mx-zfv">
-                    <connections>
-                        <action selector="tip:" destination="XLw-gP-lYw" id="crq-8V-rKB"/>
                     </connections>
                 </tapGestureRecognizer>
                 <tapGestureRecognizer id="wBJ-0U-BOy">
@@ -1258,15 +1259,16 @@
                         <action selector="tip:" destination="XLw-gP-lYw" id="mfR-zP-xd3"/>
                     </connections>
                 </tapGestureRecognizer>
-                <swipeGestureRecognizer direction="right" id="lfc-2w-Glf">
+                <tapGestureRecognizer id="e04-Mx-zfv">
                     <connections>
-                        <action selector="tip:" destination="XLw-gP-lYw" id="2Hw-ST-BSW"/>
+                        <action selector="tip:" destination="XLw-gP-lYw" id="crq-8V-rKB"/>
                     </connections>
-                </swipeGestureRecognizer>
+                </tapGestureRecognizer>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gHQ-qn-UpO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1466.5" y="1429.5"/>
         </scene>
-        <!--Item-->
+        <!--Send View Controller-->
         <scene sceneID="sMR-re-NXa">
             <objects>
                 <viewController storyboardIdentifier="SendViewController" id="RsQ-W7-grB" customClass="BRSendViewController" sceneMemberID="viewController">
@@ -1278,118 +1280,202 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="send money:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l5l-JR-LKA">
-                                <rect key="frame" x="140" y="226" width="95" height="45"/>
+                            <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pay To" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l5l-JR-LKA">
+                                <rect key="frame" x="16" y="184" width="45" height="18"/>
                                 <gestureRecognizers/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="45" id="TC5-Ce-4Ic"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
-                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="EKr-Gi-AHW" appends="YES" id="nUb-Yv-XS0"/>
-                                </connections>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ce6-Wi-wk4">
-                                <rect key="frame" x="77" y="299" width="220" height="44"/>
-                                <gestureRecognizers/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
-                                <inset key="contentEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
-                                <inset key="imageEdgeInsets" minX="-10" minY="0.0" maxX="10" maxY="0.0"/>
-                                <size key="titleShadowOffset" width="0.0" height="1"/>
-                                <state key="normal" title="scan QR code" image="cameraguide-blue-small" backgroundImage="button-bg-blue">
-                                    <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="disabled" image="cameraguide-small" backgroundImage="button-bg-blue-pressed">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted" image="cameraguide-small" backgroundImage="button-bg-blue-pressed">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="scanQR:" destination="RsQ-W7-grB" eventType="touchUpInside" id="wbh-n6-WR8"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bfj-xS-5rN">
-                                <rect key="frame" x="77" y="383" width="220" height="44"/>
-                                <gestureRecognizers/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h25-q0-rtl" userLabel="Address View">
+                                <rect key="frame" x="12" y="210" width="351" height="30"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ce6-Wi-wk4">
+                                        <rect key="frame" x="319" y="6" width="20" height="20"/>
+                                        <gestureRecognizers/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="ce6-Wi-wk4" secondAttribute="height" multiplier="1:1" id="1DI-KF-zrJ"/>
+                                            <constraint firstAttribute="height" constant="20" id="7Bp-Uk-HlU"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                        <inset key="contentEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
+                                        <inset key="imageEdgeInsets" minX="-10" minY="0.0" maxX="10" maxY="0.0"/>
+                                        <size key="titleShadowOffset" width="0.0" height="1"/>
+                                        <state key="normal" backgroundImage="qr-icon">
+                                            <color key="titleShadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <state key="disabled" image="cameraguide-small" backgroundImage="button-bg-blue-pressed">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <state key="highlighted" backgroundImage="button-bg-blue-pressed">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="scanQR:" destination="RsQ-W7-grB" eventType="touchUpInside" id="wbh-n6-WR8"/>
+                                        </connections>
+                                    </button>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SgP-DR-cyl">
+                                        <rect key="frame" x="8" y="2" width="256" height="20"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="256" id="5Zx-Gf-c3L"/>
+                                            <constraint firstAttribute="height" constant="20" id="BeF-s0-n1L"/>
+                                            <constraint firstAttribute="width" secondItem="SgP-DR-cyl" secondAttribute="height" multiplier="64:5" id="p0h-yd-orI"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="10"/>
+                                        <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="alphabet" returnKeyType="done"/>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="p0h-yd-orI"/>
+                                            </mask>
+                                        </variation>
+                                        <connections>
+                                            <outlet property="delegate" destination="RsQ-W7-grB" id="r8I-vJ-Pvw"/>
+                                        </connections>
+                                    </textView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="nsj-xF-Ebz"/>
+                                    <constraint firstAttribute="height" constant="50" id="9J1-De-B7T"/>
+                                    <constraint firstAttribute="width" secondItem="h25-q0-rtl" secondAttribute="height" multiplier="6:1" id="AP8-gj-ccb"/>
+                                    <constraint firstItem="ce6-Wi-wk4" firstAttribute="top" secondItem="SgP-DR-cyl" secondAttribute="top" constant="4" id="Avg-Xu-igN"/>
+                                    <constraint firstItem="SgP-DR-cyl" firstAttribute="leading" secondItem="h25-q0-rtl" secondAttribute="leadingMargin" id="G7W-8N-gXN"/>
+                                    <constraint firstItem="ce6-Wi-wk4" firstAttribute="height" secondItem="SgP-DR-cyl" secondAttribute="height" id="PsA-Ug-fES"/>
+                                    <constraint firstItem="SgP-DR-cyl" firstAttribute="top" secondItem="h25-q0-rtl" secondAttribute="top" constant="2" id="Usx-23-UcL"/>
+                                    <constraint firstItem="ce6-Wi-wk4" firstAttribute="bottom" secondItem="SgP-DR-cyl" secondAttribute="bottom" constant="4" id="cxk-rJ-kUv"/>
+                                    <constraint firstAttribute="trailing" secondItem="ce6-Wi-wk4" secondAttribute="trailing" constant="12" id="lY8-aF-aG2"/>
+                                    <constraint firstItem="SgP-DR-cyl" firstAttribute="centerY" secondItem="h25-q0-rtl" secondAttribute="centerY" constant="-3" id="m6q-hh-q5U"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
-                                <inset key="contentEdgeInsets" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
-                                <size key="titleShadowOffset" width="0.0" height="1"/>
-                                <state key="normal" title="pay address from clipboard" backgroundImage="button-bg-blue">
-                                    <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                </state>
-                                <state key="disabled" backgroundImage="button-bg-blue-pressed">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted" backgroundImage="button-bg-blue-pressed">
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="9J1-De-B7T"/>
+                                        <exclude reference="AP8-gj-ccb"/>
+                                    </mask>
+                                </variation>
+                            </view>
+                            <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Amount" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mt8-yX-D7H">
+                                <rect key="frame" x="16" y="248" width="53" height="18"/>
+                                <gestureRecognizers/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="highlightedColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                            </label>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3ev-mN-FNd" userLabel="Litecoin View">
+                                <rect key="frame" x="12" y="274" width="162" height="30"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LTC" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YjE-W8-yAb">
+                                        <rect key="frame" x="129" y="4" width="23" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="23" id="B4X-Me-gB9"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="0.00" textAlignment="right" adjustsFontSizeToFit="NO" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="mIE-Mf-HG3">
+                                        <rect key="frame" x="8" y="1" width="113" height="28"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="decimalPad" returnKeyType="done"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="RsQ-W7-grB" id="zaY-Sx-YST"/>
+                                        </connections>
+                                    </textField>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="YjE-W8-yAb" firstAttribute="leading" secondItem="mIE-Mf-HG3" secondAttribute="trailing" constant="8" symbolic="YES" id="9XL-9I-BzP"/>
+                                    <constraint firstItem="YjE-W8-yAb" firstAttribute="top" secondItem="3ev-mN-FNd" secondAttribute="top" constant="4" id="DG7-MJ-6Xv"/>
+                                    <constraint firstAttribute="trailing" secondItem="YjE-W8-yAb" secondAttribute="trailing" constant="10" id="DTK-Dr-hip"/>
+                                    <constraint firstItem="mIE-Mf-HG3" firstAttribute="top" secondItem="3ev-mN-FNd" secondAttribute="top" constant="1" id="FU2-vx-wIW"/>
+                                    <constraint firstItem="mIE-Mf-HG3" firstAttribute="leading" secondItem="3ev-mN-FNd" secondAttribute="leadingMargin" id="cgF-KV-Htd"/>
+                                    <constraint firstItem="YjE-W8-yAb" firstAttribute="centerY" secondItem="3ev-mN-FNd" secondAttribute="centerY" id="lrH-eh-aNN"/>
+                                    <constraint firstItem="mIE-Mf-HG3" firstAttribute="centerY" secondItem="YjE-W8-yAb" secondAttribute="centerY" id="oMC-Eb-uLj"/>
+                                </constraints>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kfi-Aj-Ca6" userLabel="Local Currency View">
+                                <rect key="frame" x="201" y="274" width="162" height="30"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="USD" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S0v-Js-xX8">
+                                        <rect key="frame" x="122" y="4" width="28" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="28" id="llh-nP-i7h"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$0.00" textAlignment="right" lineBreakMode="clip" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Fb-qs-HIu">
+                                        <rect key="frame" x="6" y="-1" width="108" height="31"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="2Fb-qs-HIu" firstAttribute="leading" secondItem="kfi-Aj-Ca6" secondAttribute="leading" constant="6" id="2EE-qG-XHj"/>
+                                    <constraint firstItem="2Fb-qs-HIu" firstAttribute="centerY" secondItem="S0v-Js-xX8" secondAttribute="centerY" id="6l4-ab-9sC"/>
+                                    <constraint firstItem="S0v-Js-xX8" firstAttribute="top" secondItem="kfi-Aj-Ca6" secondAttribute="top" constant="4" id="NRr-sK-eZC"/>
+                                    <constraint firstItem="S0v-Js-xX8" firstAttribute="leading" secondItem="2Fb-qs-HIu" secondAttribute="trailing" constant="8" symbolic="YES" id="QEc-9D-gRo"/>
+                                    <constraint firstAttribute="width" secondItem="kfi-Aj-Ca6" secondAttribute="height" multiplier="27:5" id="Rzh-VV-hQ0"/>
+                                    <constraint firstAttribute="height" constant="30" id="fER-Ps-7wr"/>
+                                    <constraint firstItem="S0v-Js-xX8" firstAttribute="centerY" secondItem="kfi-Aj-Ca6" secondAttribute="centerY" id="hib-KR-yYS"/>
+                                    <constraint firstAttribute="bottom" secondItem="2Fb-qs-HIu" secondAttribute="bottom" id="rmf-au-2EE"/>
+                                    <constraint firstAttribute="trailing" secondItem="S0v-Js-xX8" secondAttribute="trailing" constant="12" id="xio-3v-1Og"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="crD-Yc-EK9">
+                                <rect key="frame" x="141" y="464" width="92" height="39"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="92" id="GMO-EZ-uce"/>
+                                    <constraint firstAttribute="height" constant="39" id="ucG-8S-6xw"/>
+                                </constraints>
+                                <state key="normal" title="Send" backgroundImage="button-bg-brown">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="payToClipboard:" destination="RsQ-W7-grB" eventType="touchUpInside" id="qNZ-Ff-JNL"/>
+                                    <action selector="tapPay:" destination="RsQ-W7-grB" eventType="touchUpInside" id="PhV-nz-zWO"/>
                                 </connections>
                             </button>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SgP-DR-cyl">
-                                <rect key="frame" x="12" y="427" width="351" height="162"/>
-                                <color key="textColor" white="0.5" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="13"/>
-                                <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="alphabet" returnKeyType="done"/>
-                                <connections>
-                                    <outlet property="delegate" destination="RsQ-W7-grB" id="r8I-vJ-Pvw"/>
-                                </connections>
-                            </textView>
                         </subviews>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstAttribute="centerX" secondItem="l5l-JR-LKA" secondAttribute="centerX" id="BsW-Di-um1"/>
-                            <constraint firstItem="bfj-xS-5rN" firstAttribute="centerX" secondItem="SgP-DR-cyl" secondAttribute="centerX" id="FIk-PE-925"/>
-                            <constraint firstItem="bfj-xS-5rN" firstAttribute="centerY" secondItem="Nmx-0C-BXz" secondAttribute="centerY" constant="72" id="KuY-Hv-Ke7"/>
-                            <constraint firstAttribute="bottom" secondItem="SgP-DR-cyl" secondAttribute="bottom" constant="78" id="Pqy-bh-DIk"/>
-                            <constraint firstItem="SgP-DR-cyl" firstAttribute="top" secondItem="bfj-xS-5rN" secondAttribute="bottom" id="QP8-Ux-Sgh"/>
-                            <constraint firstAttribute="centerY" secondItem="l5l-JR-LKA" secondAttribute="centerY" constant="85" id="UCj-qz-yjt"/>
-                            <constraint firstItem="SgP-DR-cyl" firstAttribute="leading" secondItem="Nmx-0C-BXz" secondAttribute="leading" constant="12" id="tzu-xe-VUc"/>
-                            <constraint firstAttribute="centerX" secondItem="bfj-xS-5rN" secondAttribute="centerX" id="wtK-vc-r7p"/>
+                            <constraint firstItem="kfi-Aj-Ca6" firstAttribute="width" secondItem="3ev-mN-FNd" secondAttribute="width" id="5tz-gp-hbv"/>
+                            <constraint firstItem="kfi-Aj-Ca6" firstAttribute="trailing" secondItem="h25-q0-rtl" secondAttribute="trailing" id="7Fc-8e-p0K"/>
+                            <constraint firstItem="kfi-Aj-Ca6" firstAttribute="centerY" secondItem="3ev-mN-FNd" secondAttribute="centerY" id="7g2-zE-bx0"/>
+                            <constraint firstItem="Mt8-yX-D7H" firstAttribute="top" secondItem="h25-q0-rtl" secondAttribute="bottom" constant="8" symbolic="YES" id="C75-Qf-O3y"/>
+                            <constraint firstItem="kfi-Aj-Ca6" firstAttribute="leading" secondItem="3ev-mN-FNd" secondAttribute="trailing" constant="27" id="D9q-ot-al3"/>
+                            <constraint firstItem="kfi-Aj-Ca6" firstAttribute="height" secondItem="3ev-mN-FNd" secondAttribute="height" id="Dmh-dF-u1O"/>
+                            <constraint firstItem="kfi-Aj-Ca6" firstAttribute="top" secondItem="h25-q0-rtl" secondAttribute="bottom" constant="34" id="If0-1v-jvO"/>
+                            <constraint firstItem="Mt8-yX-D7H" firstAttribute="leading" secondItem="l5l-JR-LKA" secondAttribute="leading" id="JJ1-7Y-s90"/>
+                            <constraint firstItem="l5l-JR-LKA" firstAttribute="leading" secondItem="Nmx-0C-BXz" secondAttribute="leadingMargin" id="Oa1-6J-hLN"/>
+                            <constraint firstItem="h25-q0-rtl" firstAttribute="leading" secondItem="Nmx-0C-BXz" secondAttribute="leadingMargin" constant="-4" id="XQV-bX-JIc"/>
+                            <constraint firstItem="3ev-mN-FNd" firstAttribute="leading" secondItem="h25-q0-rtl" secondAttribute="leading" id="ZKU-wq-a52"/>
+                            <constraint firstItem="h25-q0-rtl" firstAttribute="top" secondItem="l5l-JR-LKA" secondAttribute="bottom" constant="8" symbolic="YES" id="chM-VH-Q4E"/>
+                            <constraint firstItem="kfi-Aj-Ca6" firstAttribute="height" secondItem="3ev-mN-FNd" secondAttribute="height" id="fDA-g1-Gqw"/>
+                            <constraint firstItem="crD-Yc-EK9" firstAttribute="centerX" secondItem="h25-q0-rtl" secondAttribute="centerX" id="jsA-js-emR"/>
+                            <constraint firstItem="l5l-JR-LKA" firstAttribute="leading" secondItem="Nmx-0C-BXz" secondAttribute="leadingMargin" id="lKT-8b-cf2"/>
+                            <constraint firstItem="h25-q0-rtl" firstAttribute="centerX" secondItem="Nmx-0C-BXz" secondAttribute="centerX" id="mqe-8S-EKF"/>
+                            <constraint firstItem="h25-q0-rtl" firstAttribute="centerY" secondItem="Nmx-0C-BXz" secondAttribute="centerY" constant="-108.5" id="qcw-DW-GkY"/>
+                            <constraint firstItem="QUJ-kn-Ubh" firstAttribute="top" secondItem="crD-Yc-EK9" secondAttribute="bottom" constant="164" id="vtj-sL-nJM"/>
                         </constraints>
-                        <connections>
-                            <outletCollection property="gestureRecognizers" destination="8hO-zb-g85" appends="YES" id="rl9-b8-NMw"/>
-                            <outletCollection property="gestureRecognizers" destination="wh9-zs-FMO" appends="YES" id="Apq-Qt-2K4"/>
-                        </connections>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Item" id="KWm-qc-9RW"/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <connections>
-                        <outlet property="clipboardButton" destination="bfj-xS-5rN" id="mfH-NX-2iX"/>
+                        <outlet property="addressView" destination="h25-q0-rtl" id="6Mv-IE-1qp"/>
+                        <outlet property="amountField" destination="mIE-Mf-HG3" id="19k-j8-Cwo"/>
+                        <outlet property="amountView" destination="3ev-mN-FNd" id="HIo-LH-F8P"/>
                         <outlet property="clipboardText" destination="SgP-DR-cyl" id="pL2-sH-61L"/>
-                        <outlet property="clipboardXLeft" destination="tzu-xe-VUc" id="GHU-QA-qzJ"/>
+                        <outlet property="localCurrencyLabel" destination="2Fb-qs-HIu" id="Cj2-Ob-agz"/>
+                        <outlet property="localCurrencyNameLabel" destination="S0v-Js-xX8" id="HMM-5m-Ij7"/>
+                        <outlet property="localCurrencyView" destination="kfi-Aj-Ca6" id="Rk8-Vq-b4H"/>
                         <outlet property="scanButton" destination="ce6-Wi-wk4" id="tr9-fj-NRa"/>
                         <outlet property="sendLabel" destination="l5l-JR-LKA" id="uWh-qp-akV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6F7-JO-CPd" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="EKr-Gi-AHW">
-                    <connections>
-                        <action selector="tip:" destination="RsQ-W7-grB" id="L5a-Ga-HSE"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <tapGestureRecognizer id="8hO-zb-g85">
-                    <connections>
-                        <action selector="tip:" destination="RsQ-W7-grB" id="m4U-sk-tKD"/>
-                    </connections>
-                </tapGestureRecognizer>
-                <swipeGestureRecognizer direction="left" id="wh9-zs-FMO">
-                    <connections>
-                        <action selector="tip:" destination="RsQ-W7-grB" id="nrd-js-eVc"/>
-                    </connections>
-                </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1014" y="1430"/>
+            <point key="canvasLocation" x="1013.5" y="1429.5"/>
         </scene>
         <!--Page View Controller-->
         <scene sceneID="9U9-46-WI3">
@@ -2589,12 +2675,12 @@ Other devices may be infected.
         <image name="button-bg-white" width="11" height="30"/>
         <image name="button-bg-white-pressed" width="11" height="30"/>
         <image name="cameraguide" width="234" height="234"/>
-        <image name="cameraguide-blue-small" width="20" height="20"/>
         <image name="cameraguide-small" width="20" height="20"/>
         <image name="deletetoleft" width="29" height="23"/>
         <image name="deletetoleft-pressed" width="29" height="23"/>
         <image name="flash" width="33" height="33"/>
         <image name="lock" width="12" height="16"/>
+        <image name="qr-icon" width="133" height="133"/>
         <image name="refresh" width="9" height="11"/>
         <image name="wallpaper-default" width="414" height="736"/>
         <image name="wallpaper-welcome" width="414" height="736"/>
