@@ -791,13 +791,13 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     [tipView popOut];
     
     if ([tipView.text hasPrefix:SCAN_TIP]) {
-        self.tipView = [BRBubbleView viewWithText:CLIPBOARD_TIP
-                        tipPoint:CGPointMake(self.clipboardButton.center.x, self.clipboardButton.center.y + 10.0)
-                        tipDirection:BRBubbleTipDirectionUp];
-        self.tipView.backgroundColor = tipView.backgroundColor;
-        self.tipView.font = tipView.font;
-        self.tipView.userInteractionEnabled = NO;
-        [self.view addSubview:[self.tipView popIn]];
+//        self.tipView = [BRBubbleView viewWithText:CLIPBOARD_TIP
+//                        tipPoint:CGPointMake(self.clipboardButton.center.x, self.clipboardButton.center.y + 10.0)
+//                        tipDirection:BRBubbleTipDirectionUp];
+//        self.tipView.backgroundColor = tipView.backgroundColor;
+//        self.tipView.font = tipView.font;
+//        self.tipView.userInteractionEnabled = NO;
+//        [self.view addSubview:[self.tipView popIn]];
     }
     else if (self.showTips && [tipView.text hasPrefix:CLIPBOARD_TIP]) {
         self.showTips = NO;
@@ -915,12 +915,12 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
         self.showTips = YES;
     }
 
-    self.tipView = [BRBubbleView viewWithText:SCAN_TIP
-                    tipPoint:CGPointMake(self.scanButton.center.x, self.scanButton.center.y - 10.0)
-                    tipDirection:BRBubbleTipDirectionDown];
-    self.tipView.backgroundColor = [UIColor orangeColor];
-    self.tipView.font = [UIFont fontWithName:@"HelveticaNeue" size:15.0];
-    [self.view addSubview:[self.tipView popIn]];
+//    self.tipView = [BRBubbleView viewWithText:SCAN_TIP
+//                    tipPoint:CGPointMake(self.scanButton.center.x, self.scanButton.center.y - 10.0)
+//                    tipDirection:BRBubbleTipDirectionDown];
+//    self.tipView.backgroundColor = [UIColor orangeColor];
+//    self.tipView.font = [UIFont fontWithName:@"HelveticaNeue" size:15.0];
+//    [self.view addSubview:[self.tipView popIn]];
 }
 
 - (IBAction)scanQR:(id)sender

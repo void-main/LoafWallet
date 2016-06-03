@@ -209,15 +209,15 @@
     [tipView popOut];
 
     if ([tipView.text hasPrefix:QR_TIP]) {
-        self.tipView = [BRBubbleView viewWithText:ADDRESS_TIP tipPoint:[self.addressButton.superview
-                        convertPoint:CGPointMake(self.addressButton.center.x, self.addressButton.center.y - 10.0)
-                        toView:self.view] tipDirection:BRBubbleTipDirectionDown];
-        self.tipView.backgroundColor = tipView.backgroundColor;
-        self.tipView.font = tipView.font;
-        self.tipView.userInteractionEnabled = NO;
-        [self.view addSubview:[self.tipView popIn]];
+//        self.tipView = [BRBubbleView viewWithText:ADDRESS_TIP tipPoint:[self.addressButton.superview
+//                        convertPoint:CGPointMake(self.addressButton.center.x, self.addressButton.center.y - 10.0)
+//                       toView:self.view] tipDirection:BRBubbleTipDirectionDown];
+//        self.tipView.backgroundColor = tipView.backgroundColor;
+//        self.tipView.font = tipView.font;
+//        self.tipView.userInteractionEnabled = NO;
+//        [self.view addSubview:[self.tipView popIn]];
     }
-    else if (self.showTips && [tipView.text hasPrefix:ADDRESS_TIP]) {
+   else if (self.showTips && [tipView.text hasPrefix:ADDRESS_TIP]) {
         self.showTips = NO;
         [(id)self.parentViewController.parentViewController tip:self];
     }
@@ -247,12 +247,12 @@
         self.showTips = YES;
     }
 
-    self.tipView = [BRBubbleView viewWithText:QR_TIP
-                    tipPoint:[self.qrView.superview convertPoint:self.qrView.center toView:self.view]
-                    tipDirection:BRBubbleTipDirectionUp];
-    self.tipView.backgroundColor = [UIColor orangeColor];
-    self.tipView.font = [UIFont fontWithName:@"HelveticaNeue" size:15.0];
-    [self.view addSubview:[self.tipView popIn]];
+//    self.tipView = [BRBubbleView viewWithText:QR_TIP
+//                    tipPoint:[self.qrView.superview convertPoint:self.qrView.center toView:self.view]
+//                    tipDirection:BRBubbleTipDirectionUp];
+//    self.tipView.backgroundColor = [UIColor orangeColor];
+//    self.tipView.font = [UIFont fontWithName:@"HelveticaNeue" size:15.0];
+//    [self.view addSubview:[self.tipView popIn]];
 }
 
 - (IBAction)address:(id)sender

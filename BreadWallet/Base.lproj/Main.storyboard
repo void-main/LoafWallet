@@ -85,7 +85,6 @@
             <string>HelveticaNeue-Light</string>
             <string>HelveticaNeue-Light</string>
             <string>HelveticaNeue-Light</string>
-            <string>HelveticaNeue-Light</string>
         </mutableArray>
     </customFonts>
     <scenes>
@@ -2314,66 +2313,43 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ePg-dk-slQ">
-                                <rect key="frame" x="0.0" y="236" width="375" height="195"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wyo-tk-JbR">
-                                        <rect key="frame" x="0.0" y="0.0" width="375" height="1"/>
-                                        <color key="backgroundColor" white="0.67000000000000004" alpha="1" colorSpace="calibratedWhite"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="0.5" id="yy7-el-RW3"/>
-                                        </constraints>
-                                    </view>
                                     <label opaque="NO" clipsSubviews="YES" tag="411" contentMode="left" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="300" translatesAutoresizingMaskIntoConstraints="NO" id="uvz-hk-Nr4">
-                                        <rect key="frame" x="61" y="20" width="253" height="40.5"/>
+                                        <rect key="frame" x="85" y="192" width="207" height="101"/>
                                         <gestureRecognizers/>
-                                        <string key="text">breadwallet v%ver%%net%
-copyright © 2016 breadwallet LLC</string>
+                                        <string key="text">LoafWallet v%ver%%net%
+© 2016 Litecoin Association
+
+Based on BreadWallet
+© BreadWallet LLC</string>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="app support:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lYb-eg-NfF">
-                                        <rect key="frame" x="140" y="78.5" width="94.5" height="21"/>
-                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="support@breadwallet.com" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="300" translatesAutoresizingMaskIntoConstraints="NO" id="5OA-tB-Exg">
-                                        <rect key="frame" x="92" y="100.5" width="191.5" height="20.5"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="contact@litecoin.org" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="300" translatesAutoresizingMaskIntoConstraints="NO" id="5OA-tB-Exg">
+                                        <rect key="frame" x="114" y="354" width="148.5" height="21"/>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
                                         <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="300" translatesAutoresizingMaskIntoConstraints="NO" id="D4H-hd-LsX">
-                                        <rect key="frame" x="85" y="139" width="205" height="35.5"/>
-                                        <string key="text">exchange rate data provided by
-bitpay.com/rates</string>
+                                        <rect key="frame" x="81" y="388" width="213" height="36"/>
+                                        <string key="text">Exchange Rate Data provided by
+litecoin.com</string>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G4X-xw-xAl">
-                                        <rect key="frame" x="0.0" y="194" width="375" height="1"/>
-                                        <color key="backgroundColor" white="0.67000000000000004" alpha="1" colorSpace="calibratedWhite"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="0.5" id="UhR-to-ytR"/>
-                                        </constraints>
-                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="0.5" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="G4X-xw-xAl" secondAttribute="trailing" id="4eh-tn-kSf"/>
-                                    <constraint firstItem="Wyo-tk-JbR" firstAttribute="top" secondItem="ePg-dk-slQ" secondAttribute="top" id="8Rt-J8-gsZ"/>
-                                    <constraint firstAttribute="centerX" secondItem="uvz-hk-Nr4" secondAttribute="centerX" id="DEL-Uu-EPu"/>
+                                    <constraint firstAttribute="centerX" secondItem="uvz-hk-Nr4" secondAttribute="centerX" constant="-1" id="DEL-Uu-EPu"/>
                                     <constraint firstAttribute="centerX" secondItem="D4H-hd-LsX" secondAttribute="centerX" id="DRv-HD-k7o"/>
-                                    <constraint firstAttribute="bottom" secondItem="D4H-hd-LsX" secondAttribute="bottom" constant="20" id="EDS-xg-Geu"/>
-                                    <constraint firstAttribute="trailing" secondItem="Wyo-tk-JbR" secondAttribute="trailing" id="Meb-9n-MCt"/>
-                                    <constraint firstItem="lYb-eg-NfF" firstAttribute="top" secondItem="uvz-hk-Nr4" secondAttribute="bottom" constant="18" id="VvA-41-AWn"/>
+                                    <constraint firstAttribute="bottom" secondItem="D4H-hd-LsX" secondAttribute="bottom" constant="179.5" id="EDS-xg-Geu"/>
+                                    <constraint firstItem="5OA-tB-Exg" firstAttribute="top" secondItem="uvz-hk-Nr4" secondAttribute="bottom" constant="61" id="Tnv-qh-pLq"/>
                                     <constraint firstAttribute="centerX" secondItem="5OA-tB-Exg" secondAttribute="centerX" id="WD5-hb-vC4"/>
-                                    <constraint firstItem="Wyo-tk-JbR" firstAttribute="leading" secondItem="ePg-dk-slQ" secondAttribute="leading" id="XyP-sw-WKb"/>
-                                    <constraint firstItem="uvz-hk-Nr4" firstAttribute="top" secondItem="ePg-dk-slQ" secondAttribute="top" constant="20" id="g7s-20-qcl"/>
-                                    <constraint firstItem="D4H-hd-LsX" firstAttribute="top" secondItem="5OA-tB-Exg" secondAttribute="bottom" constant="18" id="h7P-NE-60e"/>
-                                    <constraint firstAttribute="bottom" secondItem="G4X-xw-xAl" secondAttribute="bottom" id="jM5-Ee-UoQ"/>
-                                    <constraint firstItem="G4X-xw-xAl" firstAttribute="leading" secondItem="ePg-dk-slQ" secondAttribute="leading" id="lQV-GX-C2M"/>
-                                    <constraint firstItem="5OA-tB-Exg" firstAttribute="top" secondItem="lYb-eg-NfF" secondAttribute="bottom" constant="1" id="tyf-6S-EzU"/>
+                                    <constraint firstItem="uvz-hk-Nr4" firstAttribute="top" secondItem="ePg-dk-slQ" secondAttribute="top" constant="192" id="g7s-20-qcl"/>
+                                    <constraint firstItem="D4H-hd-LsX" firstAttribute="top" secondItem="5OA-tB-Exg" secondAttribute="bottom" constant="13.5" id="h7P-NE-60e"/>
                                 </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="68Y-ha-WTV" appends="YES" id="G1L-Kc-zvL"/>
@@ -2388,11 +2364,10 @@ bitpay.com/rates</string>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="centerY" secondItem="ePg-dk-slQ" secondAttribute="centerY" id="LbW-ch-oqm"/>
+                            <constraint firstAttribute="centerY" secondItem="ePg-dk-slQ" secondAttribute="centerY" constant="-32" id="LbW-ch-oqm"/>
                             <constraint firstAttribute="trailing" secondItem="ePg-dk-slQ" secondAttribute="trailing" id="aUN-5v-mGr"/>
                             <constraint firstItem="ePg-dk-slQ" firstAttribute="leading" secondItem="Dle-8P-UY1" secondAttribute="leading" id="bVE-7g-IcS"/>
                             <constraint firstItem="xDQ-J5-6Ey" firstAttribute="top" secondItem="Irz-6P-zvD" secondAttribute="bottom" constant="20" id="d4a-ya-bBL"/>
-                            <constraint firstItem="lYb-eg-NfF" firstAttribute="centerX" secondItem="Dle-8P-UY1" secondAttribute="centerX" id="gOR-hm-zt5"/>
                             <constraint firstItem="Irz-6P-zvD" firstAttribute="trailing" secondItem="Dle-8P-UY1" secondAttribute="trailingMargin" id="hoX-wA-yQC"/>
                         </constraints>
                     </view>

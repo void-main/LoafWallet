@@ -800,21 +800,21 @@
     [tipView popOut];
 
     if ([tipView.text hasPrefix:BALANCE_TIP]) {
-        BRWalletManager *manager = [BRWalletManager sharedInstance];
-        UINavigationBar *navBar = self.navigationController.navigationBar;
-        NSString *text = [NSString stringWithFormat:BITS_TIP,
-                          manager.format.currencySymbol, [manager stringForAmount:SATOSHIS]];
-        CGRect r = [self.navigationItem.title boundingRectWithSize:navBar.bounds.size options:0
-                    attributes:navBar.titleTextAttributes context:nil];
+//        BRWalletManager *manager = [BRWalletManager sharedInstance];
+//        UINavigationBar *navBar = self.navigationController.navigationBar;
+//        NSString *text = [NSString stringWithFormat:BITS_TIP,
+//                          manager.format.currencySymbol, [manager stringForAmount:SATOSHIS]];
+//        CGRect r = [self.navigationItem.title boundingRectWithSize:navBar.bounds.size options:0
+//                    attributes:navBar.titleTextAttributes context:nil];
 
-        self.tipView = [BRBubbleView viewWithText:text
-                        tipPoint:CGPointMake(navBar.center.x + 5.0 - r.size.width/2.0,
-                                             navBar.frame.origin.y + navBar.frame.size.height - 10)
-                        tipDirection:BRBubbleTipDirectionUp];
-        self.tipView.backgroundColor = tipView.backgroundColor;
-        self.tipView.font = tipView.font;
-        self.tipView.userInteractionEnabled = NO;
-        [self.view addSubview:[self.tipView popIn]];
+//        self.tipView = [BRBubbleView viewWithText:text
+//                        tipPoint:CGPointMake(navBar.center.x + 5.0 - r.size.width/2.0,
+//                                             navBar.frame.origin.y + navBar.frame.size.height - 10)
+//                        tipDirection:BRBubbleTipDirectionUp];
+//        self.tipView.backgroundColor = tipView.backgroundColor;
+//        self.tipView.font = tipView.font;
+//        self.tipView.userInteractionEnabled = NO;
+//        [self.view addSubview:[self.tipView popIn]];
     }
     else if (self.showTips) {
         self.showTips = NO;
@@ -846,20 +846,20 @@
         self.showTips = NO;
     }
     else {
-        UINavigationBar *bar = self.navigationController.navigationBar;
-        NSString *tip = (self.percent.hidden) ? BALANCE_TIP :
-                        [NSString stringWithFormat:NSLocalizedString(@"block #%d of %d", nil),
-                        [BRPeerManager sharedInstance].lastBlockHeight,
-                        [BRPeerManager sharedInstance].estimatedBlockHeight];
+//        UINavigationBar *bar = self.navigationController.navigationBar;
+//        NSString *tip = (self.percent.hidden) ? BALANCE_TIP :
+//                        [NSString stringWithFormat:NSLocalizedString(@"block #%d of %d", nil),
+//                        [BRPeerManager sharedInstance].lastBlockHeight,
+//                        [BRPeerManager sharedInstance].estimatedBlockHeight];
 
-        self.tipView = [BRBubbleView viewWithText:tip
-                        tipPoint:CGPointMake(bar.center.x, bar.frame.origin.y + bar.frame.size.height - 10)
-                        tipDirection:BRBubbleTipDirectionUp];
-        self.tipView.backgroundColor = [UIColor orangeColor];
-        self.tipView.font = [UIFont fontWithName:@"HelveticaNeue" size:15.0];
-        self.tipView.userInteractionEnabled = NO;
-        [self.view addSubview:[self.tipView popIn]];
-        if (self.showTips) self.scrollView.scrollEnabled = NO;
+//        self.tipView = [BRBubbleView viewWithText:tip
+//                        tipPoint:CGPointMake(bar.center.x, bar.frame.origin.y + bar.frame.size.height - 10)
+//                        tipDirection:BRBubbleTipDirectionUp];
+//        self.tipView.backgroundColor = [UIColor orangeColor];
+//        self.tipView.font = [UIFont fontWithName:@"HelveticaNeue" size:15.0];
+//        self.tipView.userInteractionEnabled = NO;
+//        [self.view addSubview:[self.tipView popIn]];
+//        if (self.showTips) self.scrollView.scrollEnabled = NO;
     }
 }
 
