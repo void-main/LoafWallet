@@ -196,12 +196,9 @@
         self.selectorType = 1;
         self.selectorOptions =
             @[NSLocalizedString(@"always require passcode", nil),
-              [NSString stringWithFormat:@"%@      (%@)", [manager stringForAmount:SATOSHIS/10],
-               [manager localCurrencyStringForAmount:SATOSHIS/10]],
-              [NSString stringWithFormat:@"%@   (%@)", [manager stringForAmount:SATOSHIS],
-               [manager localCurrencyStringForAmount:SATOSHIS]],
-              [NSString stringWithFormat:@"%@ (%@)", [manager stringForAmount:SATOSHIS*10],
-               [manager localCurrencyStringForAmount:SATOSHIS*10]]];
+              [NSString stringWithFormat:@"%@", [manager stringForAmount:SATOSHIS/10]],
+              [NSString stringWithFormat:@"%@", [manager stringForAmount:SATOSHIS]],
+              [NSString stringWithFormat:@"%@", [manager stringForAmount:SATOSHIS*10]]];
         if (manager.spendingLimit > SATOSHIS*10) manager.spendingLimit = SATOSHIS*10;
         self.selectedOption = self.selectorOptions[(log10(manager.spendingLimit) < 6) ? 0 :
                                                    (NSUInteger)log10(manager.spendingLimit) - 6];

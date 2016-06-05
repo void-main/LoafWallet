@@ -5,7 +5,7 @@
 "%@ is not allowed to access the camera" = "%@ はカメラへのアクセスを拒否されています。";
 
 /* No comment provided by engineer. */
-"%@\n\nbalance: %@ (%@)" = "%1$@\n\n残高: %2$@ (%3$@)";
+"%@\n\nbalance: %@" = "%1$@\n\n残高: %2$@";
 
 /* No comment provided by engineer. */
 "%d confirmations" = "%d承認済み";
@@ -20,7 +20,7 @@
 "\"%@\" is not a recovery phrase word" = "「%@」 は復元フレーズの単語ではありません。";
 
 /* No comment provided by engineer. */
-"\n         total %@ (%@)" = "\n         合計 %1$@ (%2$@)";
+"\n         total %@" = "\n         合計 %1$@";
 
 /* No comment provided by engineer. */
 "\n%@\n\nif you ever lose your phone, you will need it to recover your wallet" = "\n%@\n\n携帯電話を紛失した場合、ウォレットを復元するためにはこのフレーズが必要になります。";
@@ -32,7 +32,7 @@
 "\n1 attempt remaining\n" = "\n失敗 残り 1 回\n";
 
 /* No comment provided by engineer. */
-"\n\n     amount %@ (%@)" = "\n\n     送金額 %1$@ (%2$@)";
+"\n\n     amount %@" = "\n\n     送金額 %1$@";
 
 /* No comment provided by engineer. */
 "\nA device passcode is needed to safeguard your wallet. Go to settings and turn passcode on to continue." = "\n端末のパスコードを設定しないとウォレットを守ることができません。端末設定にてパスコードを有効にしてから進んでください。";
@@ -53,7 +53,7 @@
 "\nDO NOT take a screenshot.\nScreenshots are visible to other apps\nand devices.\n" = "\nスクリーンショットをご遠慮下さい。\n他のアプリや端末に復元フレーズが\n見えてしまう危険性があります。\n";
 
 /* No comment provided by engineer. */
-"\nnetwork fee +%@ (%@)" = "\nネットワーク手数料 +%1$@ (%2$@)";
+"\nnetwork fee +%@" = "\nネットワーク手数料 +%1$@";
 
 /* No comment provided by engineer. */
 "\nNEVER type your recovery phrase into\npassword managers or elsewhere.\nOther devices may be infected.\n" = "パスワード管理アプリや、\n信用できない端末に復元フレーズは\n絶対に打ち込んだり\n写真を撮ったりしないで下さい。\nウィルスやマルウェアによって\n盗まれる可能性があります。";
@@ -317,7 +317,7 @@
 "received" = "受取済み";
 
 /* No comment provided by engineer. */
-"received %@ (%@)" = "着金あり %1$@ (%2$@)";
+"received %@" = "着金あり %1$@";
 
 /* No comment provided by engineer. */
 "recovery phrase" = "復元フレーズ";
@@ -329,7 +329,7 @@
 "recovery phrase must have %d words" = "復元フレーズはスペースで区切られた %d 個の単語でないといけません。";
 
 /* No comment provided by engineer. */
-"reduce payment amount by\n%@ (%@)?" = "%1$@ (%2$@)\n上記の分だけ送金額減らしますか？";
+"reduce payment amount by\n%@?" = "%1$@ \n上記の分だけ送金額減らしますか？";
 
 /* No comment provided by engineer. */
 "request" = "請求";
@@ -368,7 +368,7 @@
 "seen by %d of %d peers" = "%1$d / %2$d ピアにて伝播確認済";
 
 /* No comment provided by engineer. */
-"Send %@ (%@) from this private key into your wallet? The bitcoin network will receive a fee of %@ (%@)." = "スキャンした秘密鍵の全残高\n%1$@ (%2$@) を\nbreadwallet宛に送金しても\n宜しいですか？\nビットコインネットワークへの\n手数料が %3$@ (%4$@) です。";
+"Send %@ from this private key into your wallet? The bitcoin network will receive a fee of %@." = "スキャンした秘密鍵の全残高\n%1$@ を\nbreadwallet宛に送金しても\n宜しいですか？\nビットコインネットワークへの\n手数料が %3$@ です。";
 
 /* No comment provided by engineer. */
 "send address as email" = "ビットコインアドレスをメールにて共有";

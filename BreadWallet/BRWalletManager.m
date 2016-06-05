@@ -46,11 +46,11 @@
 #define DOT     @"\xE2\x97\x8F" // black circle (utf-8)
 
 #define BASE_URL            @"https://api.breadwallet.com"
-#define LITECOIN_URL        @"https://www.loshan.co.uk:4567"
+#define LITECOIN_URL        @"https://www.loshan.co.uk"
 #define UNSPENT_URL         BASE_URL @"/q/addr/%@/utxo"
 #define FEE_PER_KB_URL      BASE_URL @"/fee-per-kb"
 #define TICKER_URL          LITECOIN_URL @"/api/v1/info"
-#define TICKER_FAILOVER_URL @"https://litecoin.com:4567/api/v1/info"
+#define TICKER_FAILOVER_URL @"https://litecoin.com/api/v1/ticker"
 
 #define SEED_ENTROPY_LENGTH   (128/8)
 #define SEC_ATTR_SERVICE      @"com.litecoin.loafwallet"

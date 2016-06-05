@@ -14,7 +14,7 @@
 "\"%@\" is not a recovery phrase word" = "\"%@\" is geen woord uit de herstel zin";
 
 /* No comment provided by engineer. */
-"\n         total %@ (%@)" = "\n         totaal %1$@ (%2$@)";
+"\n         total %@" = "\n         totaal %1$@";
 
 /* No comment provided by engineer. */
 "\n%@\n\nif you ever lose your phone, you will need it to recover your wallet" = "\n%@\n\nje hebt het nodig om te portemonnee te herstellen wanneer je je telefoon kwijt bent geraakt";
@@ -26,7 +26,7 @@
 "\n1 attempt remaining\n" = "\n1 poging over\n";
 
 /* No comment provided by engineer. */
-"\n\n     amount %@ (%@)" = "\n\n     bedrag %1$@ (%2$@)";
+"\n\n     amount %@" = "\n\n     bedrag %1$@";
 
 /* No comment provided by engineer. */
 "\nA device passcode is needed to safeguard your wallet. Go to settings and turn passcode on to continue." = "\nEen toegangscode is nog om je portemonnee te beschermen. Ga naar instellingen en zet toegangscode aan om verder te gaan.";
@@ -44,7 +44,7 @@
 "\nDO NOT let anyone see your recovery\nphrase or they can spend your bitcoins.\n" = "\nLaat je herstel zin aan NIEMAND zien,\nanders hebben zij de mogelijkheid om\njouw bitcoins uit te geven.";
 
 /* No comment provided by engineer. */
-"\nnetwork fee +%@ (%@)" = "\nnetwerkvergoeding +%1$@ (%2$@)";
+"\nnetwork fee +%@" = "\nnetwerkvergoeding +%1$@";
 
 /* No comment provided by engineer. */
 "\nNEVER type your recovery phrase into\npassword managers or elsewhere.\nOther devices may be infected.\n" = "\nType je herstel zin NOOIT in bij wachtwoord\nbeheer programma's of ergens anders.\nAndere apparaten kunnen geïnfecteerd zijn.\n";
@@ -278,7 +278,7 @@
 "received" = "ontvangen";
 
 /* No comment provided by engineer. */
-"received %@ (%@)" = "ontvangen %1$@ (%2$@)";
+"received %@" = "ontvangen %1$@";
 
 /* No comment provided by engineer. */
 "recovery phrase" = "herstel zin";
@@ -290,7 +290,7 @@
 "recovery phrase must have %d words" = "herstel zin moet %d woorden hebben";
 
 /* No comment provided by engineer. */
-"reduce payment amount by\n%@ (%@)?" = "verminder bedrag met\n%1$@ (%2$@)?";
+"reduce payment amount by\n%@?" = "verminder bedrag met\n%1$@?";
 
 /* No comment provided by engineer. */
 "request" = "verzoek";
@@ -329,7 +329,7 @@
 "seen by %d of %d peers" = "gezien door %1$d van %2$d peers";
 
 /* No comment provided by engineer. */
-"Send %@ (%@) from this private key into your wallet? The bitcoin network will receive a fee of %@ (%@)." = "Verstuur %1$@ (%2$@) van deze persoonlijke sleutel naar jouw portemonnee? Het bitcoin netwerk zal een vergoeding krijgen van %3$@ (%4$@).";
+"Send %@ from this private key into your wallet? The bitcoin network will receive a fee of %@." = "Verstuur %1$@ van deze persoonlijke sleutel naar jouw portemonnee? Het bitcoin netwerk zal een vergoeding krijgen van %3$@.";
 
 /* No comment provided by engineer. */
 "send address as email" = "verstuur adres al email";

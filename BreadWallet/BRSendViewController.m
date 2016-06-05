@@ -80,6 +80,7 @@ static NSString *sanitizeString(NSString *s)
 @property (strong, nonatomic) IBOutlet UIView *amountView;
 @property (strong, nonatomic) IBOutlet UIView *localCurrencyView;
 @property (strong, nonatomic) IBOutlet UILabel *localCurrencyNameLabel;
+@property (strong, nonatomic) IBOutlet UIButton *sendButton;
 
 @end
 
@@ -92,18 +93,20 @@ static NSString *sanitizeString(NSString *s)
     
     self.addressView.layer.cornerRadius = 3;
     self.addressView.layer.borderWidth = 3;
-    self.addressView.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.addressView.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:242.0 green:249.0 blue:253.0 alpha:1.0]);
     self.addressView.clipsToBounds = YES;
     self.amountView.layer.cornerRadius = 3;
     self.amountView.layer.borderWidth = 3;
-    self.amountView.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.amountView.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:242.0 green:249.0 blue:253.0 alpha:1.0]);
     self.amountView.clipsToBounds = YES;
     self.localCurrencyView.layer.cornerRadius = 3;
     self.localCurrencyView.layer.borderWidth = 3;
-    self.localCurrencyView.layer.borderColor = [UIColor whiteColor].CGColor;
+    self.localCurrencyView.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:242.0 green:249.0 blue:253.0 alpha:1.0]);
     self.localCurrencyView.clipsToBounds = YES;
-    
-    //manager.localCurrencyCode;
+    self.sendButton.layer.cornerRadius = 3;
+    self.sendButton.layer.borderWidth = 3;
+    self.sendButton.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:40.0 green:40.0 blue:40.0 alpha:0.90]);
+    self.sendButton.clipsToBounds = YES;
     
     // TODO: XXX redesign page with round buttons like the iOS power down screen... apple watch also has round buttons
     self.scanButton.titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -338,14 +341,14 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     if (! isSecure && prompt.length > 0) prompt = [prompt stringByAppendingString:@"\n"];
     if (! isSecure || prompt.length == 0) prompt = [prompt stringByAppendingString:address];
     if (memo.length > 0) prompt = [prompt stringByAppendingFormat:@"\n\n%@", sanitizeString(memo)];
-    prompt = [prompt stringByAppendingFormat:NSLocalizedString(@"\n\n     amount %@ (%@)", nil),
-              [manager stringForAmount:amount - fee], [manager localCurrencyStringForAmount:amount - fee]];
+    prompt = [prompt stringByAppendingFormat:NSLocalizedString(@"\n\n     amount %@", nil),
+              [manager stringForAmount:amount - fee]];
 
     if (fee > 0) {
-        prompt = [prompt stringByAppendingFormat:NSLocalizedString(@"\nnetwork fee +%@ (%@)", nil),
-                  [manager stringForAmount:fee], [manager localCurrencyStringForAmount:fee]];
-        prompt = [prompt stringByAppendingFormat:NSLocalizedString(@"\n         total %@ (%@)", nil),
-                  [manager stringForAmount:amount], [manager localCurrencyStringForAmount:amount]];
+        prompt = [prompt stringByAppendingFormat:NSLocalizedString(@"\nnetwork fee +%@", nil),
+                  [manager stringForAmount:fee]];
+        prompt = [prompt stringByAppendingFormat:NSLocalizedString(@"\n         total %@", nil),
+                  [manager stringForAmount:amount]];
     }
 
     return prompt;
@@ -457,9 +460,8 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
         }
         else amountController.to = address;
 
-        amountController.navigationItem.title = [NSString stringWithFormat:@"%@ (%@)",
-                                                 [manager stringForAmount:manager.wallet.balance],
-                                                 [manager localCurrencyStringForAmount:manager.wallet.balance]];
+        amountController.navigationItem.title = [NSString stringWithFormat:@"%@",
+                                                 [manager stringForAmount:manager.wallet.balance]];
         [self.navigationController pushViewController:amountController animated:YES];
         return;
     }
@@ -539,13 +541,11 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
                 if (amount > 0 && amount < self.amount) {
                     [[[UIAlertView alloc]
                       initWithTitle:NSLocalizedString(@"insufficient funds for bitcoin network fee", nil)
-                      message:[NSString stringWithFormat:NSLocalizedString(@"reduce payment amount by\n%@ (%@)?", nil),
-                               [manager stringForAmount:self.amount - amount],
-                               [manager localCurrencyStringForAmount:self.amount - amount]] delegate:self
+                      message:[NSString stringWithFormat:NSLocalizedString(@"reduce payment amount by\n%@?", nil),
+                               [manager stringForAmount:self.amount - amount]] delegate:self
                       cancelButtonTitle:NSLocalizedString(@"cancel", nil)
-                      otherButtonTitles:[NSString stringWithFormat:@"%@ (%@)",
-                                         [manager stringForAmount:amount - self.amount],
-                                         [manager localCurrencyStringForAmount:amount - self.amount]], nil] show];
+                      otherButtonTitles:[NSString stringWithFormat:@"%@",
+                                         [manager stringForAmount:amount - self.amount]], nil] show];
                     self.amount = amount;
                 }
                 else {
@@ -710,15 +710,12 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
                 for (NSNumber *amt in tx.outputAmounts) amount += amt.unsignedLongLongValue;
                 self.sweepTx = tx;
 
-                NSString *alertFmt = NSLocalizedString(@"Send %@ (%@) from this private key into your wallet? "
-                                                       "The bitcoin network will receive a fee of %@ (%@).", nil);
-                NSString *alertMsg = [NSString stringWithFormat:alertFmt, [manager stringForAmount:amount],
-                                      [manager localCurrencyStringForAmount:amount], [manager stringForAmount:fee],
-                                      [manager localCurrencyStringForAmount:fee]];
+                NSString *alertFmt = NSLocalizedString(@"Send %@ from this private key into your wallet? "
+                                                       "The bitcoin network will receive a fee of %@.", nil);
+                NSString *alertMsg = [NSString stringWithFormat:alertFmt, [manager stringForAmount:amount], [manager stringForAmount:fee]];
                 [[[UIAlertView alloc] initWithTitle:@"" message:alertMsg delegate:self
                   cancelButtonTitle:NSLocalizedString(@"cancel", nil)
-                  otherButtonTitles:[NSString stringWithFormat:@"%@ (%@)", [manager stringForAmount:amount],
-                                     [manager localCurrencyStringForAmount:amount]], nil] show];
+                  otherButtonTitles:[NSString stringWithFormat:@"%@", [manager stringForAmount:amount]], nil] show];
             }
             else [self cancel:nil];
         });
@@ -753,9 +750,8 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
             
                 for (NSNumber *amt in amounts) balance += amt.unsignedLongLongValue;
             
-                NSString *alertMsg = [NSString stringWithFormat:NSLocalizedString(@"%@\n\nbalance: %@ (%@)", nil),
-                                      address, [manager stringForAmount:balance],
-                                      [manager localCurrencyStringForAmount:balance]];
+                NSString *alertMsg = [NSString stringWithFormat:NSLocalizedString(@"%@\n\nbalance: %@", nil),
+                                      address, [manager stringForAmount:balance]];
 
                 [[[UIAlertView alloc] initWithTitle:@"" message:alertMsg delegate:nil
                   cancelButtonTitle:NSLocalizedString(@"ok", nil) otherButtonTitles:nil] show];

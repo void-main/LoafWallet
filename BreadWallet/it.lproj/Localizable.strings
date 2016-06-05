@@ -14,7 +14,7 @@
 "\"%@\" is not a recovery phrase word" = "\"%@\" non è una parola della frase di recupero";
 
 /* No comment provided by engineer. */
-"\n         total %@ (%@)" = "\n         totale %1$@ (%2$@)";
+"\n         total %@" = "\n         totale %1$@";
 
 /* No comment provided by engineer. */
 "\n%@\n\nif you ever lose your phone, you will need it to recover your wallet" = "\n%@ \n\nse perdi il tuo telefono, ti basterà per recuperare il tuo portafoglio";
@@ -26,7 +26,7 @@
 "\n1 attempt remaining\n" = "\n1 tentativo rimasto\n";
 
 /* No comment provided by engineer. */
-"\n\n     amount %@ (%@)" = "\n\n       importo %1$@ (%2$@)";
+"\n\n     amount %@" = "\n\n       importo %1$@";
 
 /* No comment provided by engineer. */
 "\nA device passcode is needed to safeguard your wallet. Go to settings and turn passcode on to continue." = "\nUn codice di accesso è necessario per proteggere il tuo portafoglio. Vai nelle impostazioni e attiva il codice per continuare.";
@@ -44,7 +44,7 @@
 "\nDO NOT let anyone see your recovery\nphrase or they can spend your bitcoins.\n" = "\nNON lasciare che qualcuno veda la tua\nfrase di recupero o potrà usare i tuoi bitcoin.\n";
 
 /* No comment provided by engineer. */
-"\nnetwork fee +%@ (%@)" = "\ntassa di rete +%1$@ (%2$@)";
+"\nnetwork fee +%@" = "\ntassa di rete +%1$@";
 
 /* No comment provided by engineer. */
 "\nNEVER type your recovery phrase into\npassword managers or elsewhere.\nOther devices may be infected.\n" = "\nMAI scrivere la tua frase di recupero\nin qualunque altro programma.\nAltri dispositivi possono essere infetti.\n";
@@ -278,7 +278,7 @@
 "received" = "ricevuto";
 
 /* No comment provided by engineer. */
-"received %@ (%@)" = "ricevuto %1$@ (%2$@)";
+"received %@" = "ricevuto %1$@";
 
 /* No comment provided by engineer. */
 "recovery phrase" = "frase di recupero";
@@ -290,7 +290,7 @@
 "recovery phrase must have %d words" = "la frase di recupero deve avere %d parole";
 
 /* No comment provided by engineer. */
-"reduce payment amount by\n%@ (%@)?" = "ridurre il pagamento di\n%1$@ (%2$@)?";
+"reduce payment amount by\n%@?" = "ridurre il pagamento di\n%1$@?";
 
 /* No comment provided by engineer. */
 "request" = "richiedi";
@@ -329,7 +329,7 @@
 "seen by %d of %d peers" = "visto da %1$d di %2$d pari";
 
 /* No comment provided by engineer. */
-"Send %@ (%@) from this private key into your wallet? The bitcoin network will receive a fee of %@ (%@)." = "Inviare %1$@ (%2$@) da questa chiave privata al tuo portafoglio? La rete bitcoin riceverà una tassa di %3$@ (%4$@).";
+"Send %@ from this private key into your wallet? The bitcoin network will receive a fee of %@." = "Inviare %1$@ da questa chiave privata al tuo portafoglio? La rete bitcoin riceverà una tassa di %3$@.";
 
 /* No comment provided by engineer. */
 "send address as email" = "invia indirizzo per email";

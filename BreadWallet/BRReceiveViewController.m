@@ -84,8 +84,7 @@
     else [self.addressButton setTitle:nil forState:UIControlStateNormal];
     
     if (req.amount > 0) {
-        self.label.text = [NSString stringWithFormat:@"%@ (%@)", [manager stringForAmount:req.amount],
-                           [manager localCurrencyStringForAmount:req.amount]];
+        self.label.text = [NSString stringWithFormat:@"%@", [manager stringForAmount:req.amount]];
     }
 
     self.addressButton.titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -137,8 +136,7 @@
             [self.addressButton setTitle:self.paymentAddress forState:UIControlStateNormal];
             
             if (req.amount > 0) {
-                self.label.text = [NSString stringWithFormat:@"%@ (%@)", [manager stringForAmount:req.amount],
-                                   [manager localCurrencyStringForAmount:req.amount]];
+                self.label.text = [NSString stringWithFormat:@"%@", [manager stringForAmount:req.amount]];
                 
                 if (! self.balanceObserver) {
                     self.balanceObserver =
@@ -179,8 +177,7 @@
 
             [self done:nil];
             [view addSubview:[[[BRBubbleView viewWithText:[NSString
-             stringWithFormat:NSLocalizedString(@"received %@ (%@)", nil), [manager stringForAmount:total],
-             [manager localCurrencyStringForAmount:total]]
+             stringWithFormat:NSLocalizedString(@"received %@", nil), [manager stringForAmount:total]]
              center:CGPointMake(view.bounds.size.width/2, view.bounds.size.height/2)] popIn] popOutAfterDelay:3.0]];
             break;
         }

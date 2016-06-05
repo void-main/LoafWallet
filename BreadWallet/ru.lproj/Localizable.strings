@@ -5,7 +5,7 @@
 "%@ is not allowed to access the camera" = "%@ необходим доступ к камере";
 
 /* No comment provided by engineer. */
-"%@\n\nbalance: %@ (%@)" = "%1$@\n\nбаланс: %2$@ (%3$@)";
+"%@\n\nbalance: %@" = "%1$@\n\nбаланс: %2$@";
 
 /* No comment provided by engineer. */
 "%d confirmations" = "подтверждений: %d";
@@ -20,7 +20,7 @@
 "\"%@\" is not a recovery phrase word" = "«%@» не является словом из фразы восстановления";
 
 /* No comment provided by engineer. */
-"\n         total %@ (%@)" = "\nвсего %1$@ (%2$@)";
+"\n         total %@" = "\nвсего %1$@";
 
 /* No comment provided by engineer. */
 "\n%@\n\nif you ever lose your phone, you will need it to recover your wallet" = "\n%@ \n\nесли Вы потеряете свой телефон, вам понадобится эта фраза, чтобы восстановить Ваш кошелек";
@@ -32,7 +32,7 @@
 "\n1 attempt remaining\n" = "\nосталась 1 попытка\n";
 
 /* No comment provided by engineer. */
-"\n\n     amount %@ (%@)" = "\n\n сумма: %1$@ (%2$@)";
+"\n\n     amount %@" = "\n\n сумма: %1$@";
 
 /* No comment provided by engineer. */
 "\nA device passcode is needed to safeguard your wallet. Go to settings and turn passcode on to continue." = "\nКод доступа необходим для защиты вашего кошелька. Перейдите в настройки и включите код доступа, чтобы продолжить.";
@@ -53,7 +53,7 @@
 "\nDO NOT take a screenshot.\nScreenshots are visible to other apps\nand devices.\n" = "НЕ ДЕЛАЙТЕ скриншот.\nСкриншоты видны другим приложениям и устройствам.";
 
 /* No comment provided by engineer. */
-"\nnetwork fee +%@ (%@)" = "\nкомиссия сети: +%1$@ (%2$@)";
+"\nnetwork fee +%@" = "\nкомиссия сети: +%1$@";
 
 /* No comment provided by engineer. */
 "\nNEVER type your recovery phrase into\npassword managers or elsewhere.\nOther devices may be infected.\n" = "\nНИКОГДА не вводите вашу фразу восстановления в менеджеры паролей или другие приложения. Другие устройства могут быть инфицированы.\n";
@@ -317,7 +317,7 @@
 "received" = "получено";
 
 /* No comment provided by engineer. */
-"received %@ (%@)" = "получено %1$@ (%2$@)";
+"received %@" = "получено %1$@";
 
 /* No comment provided by engineer. */
 "recovery phrase" = "фраза восстановления";
@@ -329,7 +329,7 @@
 "recovery phrase must have %d words" = "фраза восстановления должна состоять из %d слов";
 
 /* No comment provided by engineer. */
-"reduce payment amount by\n%@ (%@)?" = "уменьшить сумму платежа на %1$@ (%2$@)?";
+"reduce payment amount by\n%@?" = "уменьшить сумму платежа на %1$@?";
 
 /* No comment provided by engineer. */
 "request" = "запрос";
@@ -368,7 +368,7 @@
 "seen by %d of %d peers" = "видели %1$d из %2$d узлов";
 
 /* No comment provided by engineer. */
-"Send %@ (%@) from this private key into your wallet? The bitcoin network will receive a fee of %@ (%@)." = "Отправить %1$@ (%2$@) из этого закрытого ключа в ваш кошелёк? Сеть bitcoin получит комиссию в %3$@ (%4$@).";
+"Send %@ from this private key into your wallet? The bitcoin network will receive a fee of %@." = "Отправить %1$@ из этого закрытого ключа в ваш кошелёк? Сеть bitcoin получит комиссию в %3$@.";
 
 /* No comment provided by engineer. */
 "send address as email" = "отправить адрес по почте";

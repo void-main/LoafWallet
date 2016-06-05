@@ -5,7 +5,7 @@
 "%@ is not allowed to access the camera" = "%@不被允许访问相机";
 
 /* No comment provided by engineer. */
-"%@\n\nbalance: %@ (%@)" = "%1$@\n\n余额：%2$@(%3$@)";
+"%@\n\nbalance: %@" = "%1$@\n\n余额：%2$@";
 
 /* No comment provided by engineer. */
 "%d confirmations" = "%d个确认";
@@ -20,7 +20,7 @@
 "\"%@\" is not a recovery phrase word" = "\"%@\"不是一个恢复密语中的单词";
 
 /* No comment provided by engineer. */
-"\n         total %@ (%@)" = "\n      总额%1$@ (%2$@)";
+"\n         total %@" = "\n      总额%1$@";
 
 /* No comment provided by engineer. */
 "\n%@\n\nif you ever lose your phone, you will need it to recover your wallet" = "\n%@\n\n如果你丢失了手机，你需要用它来找回你的钱包。";
@@ -32,7 +32,7 @@
 "\n1 attempt remaining\n" = "\n还剩1次尝试机会\n";
 
 /* No comment provided by engineer. */
-"\n\n     amount %@ (%@)" = "\n\n      金额%1$@ (%2$@)";
+"\n\n     amount %@" = "\n\n      金额%1$@";
 
 /* No comment provided by engineer. */
 "\nA device passcode is needed to safeguard your wallet. Go to settings and turn passcode on to continue." = "你的钱包需要一个设备密码的保护。请转到设置并打开密码再继续。";
@@ -53,7 +53,7 @@
 "\nDO NOT take a screenshot.\nScreenshots are visible to other apps\nand devices.\n" = "\n不要截图。\n截图是对其他应用可见的。\n";
 
 /* No comment provided by engineer. */
-"\nnetwork fee +%@ (%@)" = "\n网络费用+%1$@ (%2$@)";
+"\nnetwork fee +%@" = "\n网络费用+%1$@";
 
 /* No comment provided by engineer. */
 "\nNEVER type your recovery phrase into\npassword managers or elsewhere.\nOther devices may be infected.\n" = "\n永远不要将恢复密语输入到\n密码管理器或其他地方\n其它设备都可能被病毒感染。\n";
@@ -305,7 +305,7 @@
 "received" = "收到";
 
 /* No comment provided by engineer. */
-"received %@ (%@)" = "收到 %1$@ (%2$@)";
+"received %@" = "收到 %1$@";
 
 /* No comment provided by engineer. */
 "recovery phrase" = "恢复密语";
@@ -317,7 +317,7 @@
 "recovery phrase must have %d words" = "恢复密语必须包括 %d 个字";
 
 /* No comment provided by engineer. */
-"reduce payment amount by\n%@ (%@)?" = "减少%1$@ (%2$@)付款金额吗？";
+"reduce payment amount by\n%@?" = "减少%1$@ 付款金额吗？";
 
 /* No comment provided by engineer. */
 "request" = "请求";
@@ -356,7 +356,7 @@
 "seen by %d of %d peers" = "被%2$d中%1$d节点看到";
 
 /* No comment provided by engineer. */
-"Send %@ (%@) from this private key into your wallet? The bitcoin network will receive a fee of %@ (%@)." = "从这个私钥发送%1$@ (%2$@) 到你的钱包吗 ？比特币网络将收到的 %3$@ (%4$@) 的费用。";
+"Send %@ from this private key into your wallet? The bitcoin network will receive a fee of %@." = "从这个私钥发送%1$@ 到你的钱包吗 ？比特币网络将收到的 %3$@ 的费用。";
 
 /* No comment provided by engineer. */
 "send address as email" = "作为电子邮件发送地址";
