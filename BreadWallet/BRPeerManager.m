@@ -161,7 +161,7 @@ static const char *dns_seeds[] = {
 @property (nonatomic, strong) NSMutableOrderedSet *peers;
 @property (nonatomic, strong) NSMutableSet *connectedPeers, *misbehavinPeers, *nonFpTx;
 @property (nonatomic, strong) BRPeer *downloadPeer;
-@property (nonatomic, assign) uint32_t tweak, syncStartHeight, filterUpdateHeight;
+@property (nonatomic, assign) uint32_t syncStartHeight, filterUpdateHeight;
 @property (nonatomic, strong) BRBloomFilter *bloomFilter;
 @property (nonatomic, assign) double fpRate;
 @property (nonatomic, assign) NSUInteger taskId, connectFailures, misbehavinCount;
@@ -196,7 +196,6 @@ static const char *dns_seeds[] = {
     self.connectedPeers = [NSMutableSet set];
     self.misbehavinPeers = [NSMutableSet set];
     self.nonFpTx = [NSMutableSet set];
-    self.tweak = arc4random();
     self.taskId = UIBackgroundTaskInvalid;
     self.q = dispatch_queue_create("peermanager", NULL);
     self.orphans = [NSMutableDictionary dictionary];
@@ -296,7 +295,8 @@ static const char *dns_seeds[] = {
                         NSTimeInterval age = 3*24*60*60 + arc4random_uniform(4*24*60*60); // add between 3 and 7 days
                     
                         [peers[i] addObject:[[BRPeer alloc] initWithAddress:addr port:port
-                                             timestamp:(i > 0 ? now - age : now) services:SERVICES_NODE_NETWORK]];
+                                             timestamp:(i > 0 ? now - age : now)
+                                             services:SERVICES_NODE_NETWORK | SERVICES_NODE_BLOOM]];
                     }
 
                     freeaddrinfo(servinfo);
@@ -318,7 +318,8 @@ static const char *dns_seeds[] = {
                     // give hard coded peers a timestamp between 7 and 14 days ago
                     addr.u32[3] = CFSwapInt32HostToBig(address.unsignedIntValue);
                     [_peers addObject:[[BRPeer alloc] initWithAddress:addr port:BITCOIN_STANDARD_PORT
-                     timestamp:now - (7*24*60*60 + arc4random_uniform(7*24*60*60)) services:SERVICES_NODE_NETWORK]];
+                     timestamp:now - (7*24*60*60 + arc4random_uniform(7*24*60*60))
+                     services:SERVICES_NODE_NETWORK | SERVICES_NODE_BLOOM]];
                 }
             }
             
@@ -435,10 +436,8 @@ static const char *dns_seeds[] = {
     return count;
 }
 
-- (BRBloomFilter *)bloomFilter
+- (BRBloomFilter *)bloomFilterForPeer:(BRPeer *)peer
 {
-    if (_bloomFilter) return _bloomFilter;
-
     BRWalletManager *manager = [BRWalletManager sharedInstance];
     
     // every time a new wallet address is added, the bloom filter has to be rebuilt, and each address is only used for
@@ -456,7 +455,7 @@ static const char *dns_seeds[] = {
     NSData *d;
     NSUInteger i, elemCount = manager.wallet.addresses.count + manager.wallet.unspentOutputs.count;
     BRBloomFilter *filter = [[BRBloomFilter alloc] initWithFalsePositiveRate:self.fpRate
-                             forElementCount:(elemCount < 200 ? 300 : elemCount + 100) tweak:self.tweak
+                             forElementCount:(elemCount < 200 ? 300 : elemCount + 100) tweak:(uint32_t)peer.hash
                              flags:BLOOM_UPDATE_ALL];
 
     for (NSString *address in manager.wallet.addresses) {// add addresses to watch for tx receiveing money to the wallet
@@ -550,8 +549,6 @@ static const char *dns_seeds[] = {
 
             [peers removeObject:p];
         }
-
-        [self bloomFilter]; // initialize wallet and bloomFilter while connecting
 
         if (self.connectedPeers.count == 0) {
             [self syncStopped];
@@ -770,7 +767,7 @@ static const char *dns_seeds[] = {
     
     for (BRPeer *p in self.connectedPeers) { // after syncing, load filters and get mempools from other peers
         if (p != self.downloadPeer || self.fpRate > BLOOM_REDUCED_FALSEPOSITIVE_RATE*5.0) {
-            [p sendFilterloadMessage:self.bloomFilter.data];
+            [p sendFilterloadMessage:[self bloomFilterForPeer:p].data];
         }
         
         [p sendInvMessageWithTxHashes:txHashes]; // publish unconfirmed tx
@@ -879,7 +876,7 @@ static const char *dns_seeds[] = {
         _bloomFilter = nil;
 
         if (self.lastBlockHeight < self.estimatedBlockHeight) { // if we're syncing, only update download peer
-            [self.downloadPeer sendFilterloadMessage:self.bloomFilter.data];
+            [self.downloadPeer sendFilterloadMessage:[self bloomFilterForPeer:self.downloadPeer].data];
             [self.downloadPeer sendPingMessageWithPongHandler:^(BOOL success) { // wait for pong so filter is loaded
                 if (! success) return;
                 self.downloadPeer.needsFilterUpdate = NO;
@@ -893,7 +890,7 @@ static const char *dns_seeds[] = {
         }
         else {
             for (BRPeer *p in self.connectedPeers) {
-                [p sendFilterloadMessage:self.bloomFilter.data];
+                [p sendFilterloadMessage:[self bloomFilterForPeer:p].data];
                 [p sendPingMessageWithPongHandler:^(BOOL success) { // wait for pong so we know filter is loaded
                     if (! success) return;
                     p.needsFilterUpdate = NO;
@@ -1016,6 +1013,12 @@ static const char *dns_seeds[] = {
         return;
     }
 
+    // drop peers that don't support SPV filtering
+    if (peer.version >= 70011 && ! (peer.services & SERVICES_NODE_BLOOM)) {
+        [peer disconnect];
+        return;
+    }
+
     for (BRTransaction *tx in manager.wallet.allTransactions) {
         if (tx.blockHeight != TX_UNCONFIRMED) break;
 
@@ -1026,7 +1029,7 @@ static const char *dns_seeds[] = {
 
     if (self.connected && (self.estimatedBlockHeight >= peer.lastblock || self.lastBlockHeight >= peer.lastblock)) {
         if (self.lastBlockHeight < self.estimatedBlockHeight) return; // don't load bloom filter yet if we're syncing
-        [peer sendFilterloadMessage:self.bloomFilter.data];
+        [peer sendFilterloadMessage:[self bloomFilterForPeer:peer].data];
         [peer sendInvMessageWithTxHashes:self.publishedTx.allKeys]; // publish unconfirmed tx
         [peer sendPingMessageWithPongHandler:^(BOOL success) {
             [peer sendMempoolMessage];
@@ -1052,8 +1055,7 @@ static const char *dns_seeds[] = {
     self.downloadPeer = peer;
     _connected = YES;
     _estimatedBlockHeight = peer.lastblock;
-    _bloomFilter = nil; // make sure the bloom filter is updated with any newly generated addresses
-    [peer sendFilterloadMessage:self.bloomFilter.data];
+    [peer sendFilterloadMessage:[self bloomFilterForPeer:peer].data];
     peer.currentBlockHeight = self.lastBlockHeight;
     
     if (self.lastBlockHeight < peer.lastblock) { // start blockchain sync
@@ -1297,7 +1299,6 @@ static const char *dns_seeds[] = {
         if (self.downloadPeer.status == BRPeerStatusConnected && self.fpRate > BLOOM_DEFAULT_FALSEPOSITIVE_RATE*10.0) {
             NSLog(@"%@:%d bloom filter false positive rate %f too high after %d blocks, disconnecting...", peer.host,
                   peer.port, self.fpRate, self.lastBlockHeight + 1 - self.filterUpdateHeight);
-            self.tweak = arc4random(); // new random filter tweak in case we matched satoshidice or something
             [self.downloadPeer disconnect];
         }
         else if (self.lastBlockHeight + 500 < peer.lastblock && self.fpRate > BLOOM_REDUCED_FALSEPOSITIVE_RATE*10.0) {
@@ -1491,6 +1492,22 @@ static const char *dns_seeds[] = {
     for (NSValue *hash in txHashes) {
         [self.txRelays[hash] removeObject:peer];
         [self.txRequests[hash] removeObject:peer];
+    }
+}
+
+- (void)peer:(BRPeer *)peer setFeePerKb:(uint64_t)feePerKb
+{
+    BRWalletManager *manager = [BRWalletManager sharedInstance];
+    uint64_t maxFeePerKb = 0, secondFeePerKb = 0;
+    
+    for (BRPeer *p in self.connectedPeers) { // find second highest fee rate
+        if (p.feePerKb > maxFeePerKb) secondFeePerKb = maxFeePerKb, maxFeePerKb = p.feePerKb;
+    }
+    
+    if (secondFeePerKb > MIN_FEE_PER_KB && secondFeePerKb <= MAX_FEE_PER_KB &&
+        secondFeePerKb > manager.wallet.feePerKb) {
+        NSLog(@"increasing feePerKb to %llu based on feefilter messages from peers", secondFeePerKb);
+        manager.wallet.feePerKb = secondFeePerKb;
     }
 }
 

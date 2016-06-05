@@ -48,6 +48,7 @@ import Foundation
             let fm = NSFileManager.defaultManager()
             // read the file attributes
             guard let attrs = try? fm.attributesOfItemAtPath(fileURL.path!) else {
+                print("[BRHTTPServer] file not found: \(fileURL)")
                 return next(BRHTTPMiddlewareResponse(request: request, response: nil))
             }
             // generate an etag
@@ -92,6 +93,7 @@ import Foundation
             }).resume()
             dispatch_group_wait(grp, dispatch_time(DISPATCH_TIME_NOW, Int64(30) * Int64(NSEC_PER_SEC)))
             if body == nil {
+                print("[BRHTTPServer] DEBUG file not found \(fileURL)")
                 return next(BRHTTPMiddlewareResponse(request: request, response: nil))
             }
         }

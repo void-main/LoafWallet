@@ -27,9 +27,8 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "BRWallet.h"
+#import "BRMnemonic.h"
 
-#define SATOSHIS     100000000
-#define MAX_MONEY    (84000000LL*SATOSHIS)
 #define BTC          @"\xC5\x81"     // uppercase Ł with stroke (utf-8)
 #define BITS         @"\xC5\x81"     // uppercase Ł with stroke (utf-8)
 #define NARROW_NBSP  @"\xE2\x80\xAF" // narrow no-break space (utf-8)
@@ -39,7 +38,7 @@
                       NSBundle.mainBundle.infoDictionary[@"CFBundleDisplayName"]]
 
 #define WALLET_NEEDS_BACKUP_KEY                @"WALLET_NEEDS_BACKUP"
-#define BRWalletManagerSeedChangedNotification @"BRWalletManagerSeedChangedNotification"
+FOUNDATION_EXPORT NSString* _Nonnull const BRWalletManagerSeedChangedNotification;
 
 @protocol BRMnemonic;
 
@@ -56,6 +55,7 @@
 @property (nonatomic, readonly) NSTimeInterval secureTime; // last known time from an ssl server connection
 @property (nonatomic, assign) uint64_t spendingLimit; // amount that can be spent using touch id without pin entry
 @property (nonatomic, readonly) NSString * _Nullable authPrivateKey; // private key for signing authenticated api calls
+@property (nonatomic, copy) NSDictionary * _Nullable userAccount; // client api user id and auth token
 @property (nonatomic, readonly, getter=isTouchIdEnabled) BOOL touchIdEnabled; // true if touch id is enabled
 @property (nonatomic, readonly, getter=isPasscodeEnabled) BOOL passcodeEnabled; // true if device passcode is enabled
 @property (nonatomic, assign) BOOL didAuthenticate; // true if the user authenticated after this was last set to false
@@ -74,13 +74,13 @@
 - (BOOL)authenticateWithPrompt:(NSString * _Nullable)authprompt andTouchId:(BOOL)touchId; // prompt user to authenticate
 - (BOOL)setPin; // prompts the user to set or change wallet pin and returns true if the pin was successfully set
 
-// queries chain.com and calls the completion block with unspent outputs for the given address
-- (void)utxosForAddress:(NSString * _Nonnull)address
+// queries api.breadwallet.com and calls the completion block with unspent outputs for the given address
+- (void)utxosForAddresses:(NSArray * _Nonnull)address
 completion:(void (^ _Nonnull)(NSArray * _Nonnull utxos, NSArray * _Nonnull amounts, NSArray * _Nonnull scripts,
                               NSError * _Null_unspecified error))completion;
 
-// given a private key, queries chain.com for unspent outputs and calls the completion block with a signed transaction
-// that will sweep the balance into wallet (doesn't publish the tx)
+// given a private key, queries api.breadwallet.com for unspent outputs and calls the completion block with a signed
+// transaction that will sweep the balance into wallet (doesn't publish the tx)
 - (void)sweepPrivateKey:(NSString * _Nonnull)privKey withFee:(BOOL)fee
 completion:(void (^ _Nonnull)(BRTransaction * _Nonnull tx, uint64_t fee, NSError * _Null_unspecified error))completion;
 

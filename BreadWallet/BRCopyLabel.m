@@ -135,6 +135,7 @@
 - (void)copy:(id)sender
 {
     [UIPasteboard generalPasteboard].string = self.copyableText;
+    NSLog(@"%@", [UIPasteboard generalPasteboard].string);
     [self resignFirstResponder];
 }
 

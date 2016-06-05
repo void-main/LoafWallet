@@ -40,24 +40,23 @@
 #import "NSManagedObject+Sugar.h"
 #import "Reachability.h"
 #import <LocalAuthentication/LocalAuthentication.h>
-#import "breadwallet-Swift.h"
 
 #define CIRCLE  @"\xE2\x97\x8C" // dotted circle (utf-8)
 #define DOT     @"\xE2\x97\x8F" // black circle (utf-8)
 
-#define BASE_URL            @"https://api.breadwallet.com"
-#define LITECOIN_URL        @"https://www.loshan.co.uk"
-#define UNSPENT_URL         BASE_URL @"/q/addr/%@/utxo"
-#define FEE_PER_KB_URL      BASE_URL @"/fee-per-kb"
-#define TICKER_URL          LITECOIN_URL @"/api/v1/info"
-#define TICKER_FAILOVER_URL @"https://litecoin.com/api/v1/ticker"
+#define UNSPENT_URL          @"https://api.breadwallet.com/q/addrs/utxo"
+#define UNSPENT_FAILOVER_URL @"https://insight.bitpay.com/api/addrs/utxo"
+#define FEE_PER_KB_URL       @"https://api.breadwallet.com/fee-per-kb"
+#define TICKER_URL           @"https://www.loshan.co.uk/api/v1/info"
+#define TICKER_FAILOVER_URL  @"https://litecoin.com/api/v1/ticker"
+
+#define USER_AGENT [NSString stringWithFormat:@"/loaf:%@/",\
+                    NSBundle.mainBundle.infoDictionary[@"CFBundleShortVersionString"]]
 
 #define SEED_ENTROPY_LENGTH   (128/8)
 #define SEC_ATTR_SERVICE      @"com.litecoin.loafwallet"
 #define DEFAULT_CURRENCY_CODE @"USD"
 #define DEFAULT_SPENT_LIMIT   SATOSHIS
-#define DEFAULT_FEE_PER_KB    ((TX_FEE_PER_KB*1000 + 190)/191) // default fee-per-kb to match standard fee on 191byte tx
-#define MAX_FEE_PER_KB        ((100100*1000 + 190)/191) // slightly higher than a 1000bit fee on 191byte tx
 
 #define LOCAL_CURRENCY_CODE_KEY @"LOCAL_CURRENCY_CODE"
 #define CURRENCY_CODES_KEY      @"CURRENCY_CODES"
@@ -77,6 +76,7 @@
 #define PIN_FAIL_HEIGHT_KEY @"pinfailheight"
 #define AUTH_PRIVKEY_KEY    @"authprivkey"
 #define SEED_KEY            @"seed" // depreceated
+#define USER_ACCOUNT_KEY    @"https://api.breadwallet.com"
 
 static BOOL setKeychainData(NSData *data, NSString *key, BOOL authenticated)
 {
@@ -176,6 +176,24 @@ static NSString *getKeychainString(NSString *key, NSError **error)
 
         return (d) ? CFBridgingRelease(CFStringCreateFromExternalRepresentation(SecureAllocator(), (CFDataRef)d,
                                                                                 kCFStringEncodingUTF8)) : nil;
+    }
+}
+
+static BOOL setKeychainDict(NSDictionary *dict, NSString *key, BOOL authenticated)
+{
+    @autoreleasepool {
+        NSData *d = (dict) ? [NSKeyedArchiver archivedDataWithRootObject:dict] : nil;
+        
+        return setKeychainData(d, key, authenticated);
+    }
+}
+
+static NSDictionary *getKeychainDict(NSString *key, NSError **error)
+{
+    @autoreleasepool {
+        NSData *d = getKeychainData(key, error);
+        
+        return (d) ? [NSKeyedUnarchiver unarchiveObjectWithData:d] : nil;
     }
 }
 
@@ -298,7 +316,7 @@ static NSString *getKeychainString(NSString *key, NSError **error)
 
         _wallet.feePerKb = DEFAULT_FEE_PER_KB;
         feePerKb = [[NSUserDefaults standardUserDefaults] doubleForKey:FEE_PER_KB_KEY];
-        if (feePerKb >= DEFAULT_FEE_PER_KB && feePerKb <= MAX_FEE_PER_KB) _wallet.feePerKb = feePerKb;
+        if (feePerKb >= MIN_FEE_PER_KB && feePerKb <= MAX_FEE_PER_KB) _wallet.feePerKb = feePerKb;
 
         // verify that keychain matches core data, with different access and backup policies it's possible to diverge
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -430,6 +448,16 @@ static NSString *getKeychainString(NSString *key, NSError **error)
 
         return privKey;
     }
+}
+
+- (NSDictionary *)userAccount
+{
+    return getKeychainDict(USER_ACCOUNT_KEY, nil);
+}
+
+- (void)setUserAccount:(NSDictionary *)userAccount
+{
+    setKeychainDict(userAccount, USER_ACCOUNT_KEY, NO);
 }
 
 // true if touch id is enabled
@@ -862,8 +890,11 @@ static NSString *getKeychainString(NSString *key, NSError **error)
 {
     if (self.reachability.currentReachabilityStatus == NotReachable) return;
     
-    NSURLRequest *req = [NSURLRequest requestWithURL:[NSURL URLWithString:tickerURL]
-                         cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:10.0];
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:tickerURL]
+                                cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:10.0];
+
+    [req setValue:USER_AGENT forHTTPHeaderField:@"User-Agent"];
+    NSLog(@"%@", req.URL.absoluteString);
     
     [[[NSURLSession sharedSession] dataTaskWithRequest:req
     completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
@@ -945,34 +976,79 @@ static NSString *getKeychainString(NSString *key, NSError **error)
 {
     if (self.reachability.currentReachabilityStatus == NotReachable) return;
 
-    [[BRAPIClient sharedClient] feePerKb:^(uint64_t newFee, NSString * _Nullable err) {
-        if (err != nil) {
-            NSLog(@"unable to fetch fee-per-kb: %@", err);
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:FEE_PER_KB_URL]
+                                cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:10.0];
+    
+    [req setValue:USER_AGENT forHTTPHeaderField:@"User-Agent"];
+    NSLog(@"%@", req.URL.absoluteString);
+
+    [[[NSURLSession sharedSession] dataTaskWithRequest:req
+    completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error != nil) {
+            NSLog(@"unable to fetch fee-per-kb: %@", error);
             return;
         }
-        if (newFee >= DEFAULT_FEE_PER_KB && newFee <= MAX_FEE_PER_KB) {
-            NSLog(@"setting new fee-per-kb %lld", newFee);
-            _wallet.feePerKb = newFee;
+        
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
 
-            // use setDouble since setInteger won't hold a uint64_t
-            [[NSUserDefaults standardUserDefaults] setDouble:newFee forKey:FEE_PER_KB_KEY];
+        if (error || ! [json isKindOfClass:[NSDictionary class]] ||
+            ! [json[@"fee_per_kb"] isKindOfClass:[NSNumber class]]) {
+            NSLog(@"unexpected response from %@:\n%@", req.URL.host,
+                  [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+            return;
         }
-    }];
+
+        uint64_t newFee = [json[@"fee_per_kb"] unsignedLongLongValue];
+        NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+        
+        if (newFee >= MIN_FEE_PER_KB && newFee <= MAX_FEE_PER_KB && newFee != [defs doubleForKey:FEE_PER_KB_KEY]) {
+            NSLog(@"setting new fee-per-kb %lld", newFee);
+            [defs setDouble:newFee forKey:FEE_PER_KB_KEY]; // use setDouble since setInteger won't hold a uint64_t
+            _wallet.feePerKb = newFee;
+        }
+    }] resume];
 }
 
 #pragma mark - query unspent outputs
 
-// queries chain.com and calls the completion block with unspent outputs for the given address
-- (void)utxosForAddress:(NSString *)address
+// queries api.breadwallet.com and calls the completion block with unspent outputs for the given addresses
+- (void)utxosForAddresses:(NSArray *)addresses
 completion:(void (^)(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError *error))completion
 {
-    NSURL *u = [NSURL URLWithString:[NSString stringWithFormat:UNSPENT_URL, address]];
-//#if BITCOIN_TESTNET
-//    u = [NSURL URLWithString:[NSString stringWithFormat:UNSPENT_URL, @"test3", address]];
-//#endif
-    NSURLRequest *req = [NSURLRequest requestWithURL:u cachePolicy:NSURLRequestReloadIgnoringCacheData
-                         timeoutInterval:20.0];
+    [self utxos:UNSPENT_URL forAddresses:addresses
+    completion:^(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError *error) {
+        if (error) {
+            [self utxos:UNSPENT_FAILOVER_URL forAddresses:addresses
+            completion:^(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError *err) {
+                if (err) err = error;
+                completion(utxos, amounts, scripts, err);
+            }];
+        }
+        else completion(utxos, amounts, scripts, error);
+    }];
+}
 
+- (void)utxos:(NSString *)unspentURL forAddresses:(NSArray *)addresses
+completion:(void (^)(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError *error))completion
+{
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:UNSPENT_URL]
+                                cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:20.0];
+    NSMutableArray *args = [NSMutableArray array];
+    NSMutableCharacterSet *charset = [[NSCharacterSet URLQueryAllowedCharacterSet] mutableCopy];
+    
+    [charset removeCharactersInString:@"&="];
+
+    for (NSString *addr in addresses) {
+        [args addObject:[@"address=" stringByAppendingString:[addr
+         stringByAddingPercentEncodingWithAllowedCharacters:charset]]];
+    }
+
+    [req setValue:USER_AGENT forHTTPHeaderField:@"User-Agent"];
+    req.HTTPMethod = @"POST";
+    req.HTTPBody = [[args componentsJoinedByString:@"&"] dataUsingEncoding:NSUTF8StringEncoding];
+    NSLog(@"%@ POST: %@", req.URL.absoluteString,
+          [[NSString alloc] initWithData:req.HTTPBody encoding:NSUTF8StringEncoding]);
+    
     [[[NSURLSession sharedSession] dataTaskWithRequest:req
     completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if (error) {
@@ -992,8 +1068,10 @@ completion:(void (^)(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError
 
         if (! [json isKindOfClass:[NSArray class]]) {
             completion(nil, nil, nil,
+
                        [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
-                        [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil), u.host]}]);
+                        [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil),
+                         req.URL.host]}]);
             return;
         }
 
@@ -1004,18 +1082,18 @@ completion:(void (^)(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError
                 ! [utxo[@"vout"] isKindOfClass:[NSNumber class]] ||
                 ! [utxo[@"scriptPubKey"] isKindOfClass:[NSString class]] ||
                 ! [utxo[@"scriptPubKey"] hexToData] ||
-                ! [utxo[@"amount"] isKindOfClass:[NSNumber class]]) {
+                ! [utxo[@"satoshis"] isKindOfClass:[NSNumber class]]) {
                 completion(nil, nil, nil,
                            [NSError errorWithDomain:@"LoafWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                             [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil),
-                             u.host]}]);
+                             req.URL.host]}]);
                 return;
             }
 
             o.hash = *(const UInt256 *)[utxo[@"txid"] hexToData].reverse.bytes;
             o.n = [utxo[@"vout"] unsignedIntValue];
             [utxos addObject:brutxo_obj(o)];
-            [amounts addObject:utxo[@"amount"]];
+            [amounts addObject:utxo[@"satoshis"]];
             [scripts addObject:[utxo[@"scriptPubKey"] hexToData]];
         }
 
@@ -1023,7 +1101,7 @@ completion:(void (^)(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError
     }] resume];
 }
 
-// given a private key, queries chain.com for unspent outputs and calls the completion block with a signed transaction
+// given a private key, queries api.breadwallet.com for unspent outputs and calls the completion block with a signed transaction
 // that will sweep the balance into the wallet (doesn't publish the tx)
 - (void)sweepPrivateKey:(NSString *)privKey withFee:(BOOL)fee
 completion:(void (^)(BRTransaction *tx, uint64_t fee, NSError *error))completion
@@ -1059,7 +1137,8 @@ completion:(void (^)(BRTransaction *tx, uint64_t fee, NSError *error))completion
         return;
     }
 
-    [self utxosForAddress:key.address completion:^(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError *error) {
+    [self utxosForAddresses:@[key.address]
+    completion:^(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError *error) {
         BRTransaction *tx = [BRTransaction new];
         uint64_t balance = 0, feeAmount = 0;
         NSUInteger i = 0;

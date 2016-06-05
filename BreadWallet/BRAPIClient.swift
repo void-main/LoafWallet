@@ -168,10 +168,6 @@ func httpDateNow() -> String {
         return "\(proto)://\(host)"
     }
     
-    var userAccountKey: String {
-        return baseUrl
-    }
-    
     private var _serverPubKey: BRKey? = nil
     var serverPubKey: BRKey {
         if _serverPubKey == nil {
@@ -185,13 +181,11 @@ func httpDateNow() -> String {
     static let sharedClient = BRAPIClient()
     
     
-    func log(format: String, args: CVarArgType...) -> Int? {
+    func log(s: String) {
         if !logEnabled {
-            return 1
+            return
         }
-        let s = String(format: format, arguments: args)
         print("[BRAPIClient] \(s)")
-        return 2
     }
     
     // MARK: Networking functions
@@ -218,17 +212,11 @@ func httpDateNow() -> String {
             // add Date header if necessary
             mutableRequest.setValue(httpDateNow(), forHTTPHeaderField: "Date")
         }
-        do {
-            if let tokenData = try BRKeychain.loadDataForUserAccount(userAccountKey),
-                token = tokenData["token"], authKey = getAuthKey() {
-                let sha = buildRequestSigningString(mutableRequest).dataUsingEncoding(NSUTF8StringEncoding)!.SHA256_2()
-                let sig = authKey.compactSign(sha)!.base58String()
-                mutableRequest.setValue("bread \(token):\(sig)", forHTTPHeaderField: "Authorization")
-            }
-        } catch let e as BRKeychainError {
-            log("keychain error fetching tokoen \(e)")
-        } catch let e {
-            log("unexpected error fetching keychain data \(e)")
+        if let manager = BRWalletManager.sharedInstance(), tokenData = manager.userAccount,
+            token = tokenData["token"], authKey = getAuthKey() {
+            let sha = buildRequestSigningString(mutableRequest).dataUsingEncoding(NSUTF8StringEncoding)!.SHA256_2()
+            let sig = authKey.compactSign(sha)!.base58String()
+            mutableRequest.setValue("bread \(token):\(sig)", forHTTPHeaderField: "Authorization")
         }
         return mutableRequest.copy() as! NSURLRequest
     }
@@ -335,13 +323,7 @@ func httpDateNow() -> String {
                         uid = topObj["userID"] as? NSString {
                         // success! store it in the keychain
                         let kcData = ["token": tok, "userID": uid]
-                        do {
-                            try BRKeychain.saveData(kcData, forUserAccount: self.userAccountKey)
-                        } catch let e {
-                            self.log("Error saving token in keychain \(e)")
-                            return handler(NSError(domain: BRAPIClientErrorDomain, code: 500, userInfo: [
-                                NSLocalizedDescriptionKey: NSLocalizedString("Unable to save API token", comment: "")]))
-                        }
+                        BRWalletManager.sharedInstance()!.userAccount = kcData
                     }
                 } catch let e {
                     self.log("JSON Deserialization error \(e)")
@@ -419,8 +401,15 @@ func httpDateNow() -> String {
     }
     
     public func updateFeatureFlags() {
-        let req = NSURLRequest(URL: url("/me/features"))
-        dataTaskWithRequest(req, authenticated: true) { (data, resp, err) in
+        var authenticated = false
+        var furl = "/anybody/features"
+        // only use authentication if the user has previously used authenticated services
+        if let wm = BRWalletManager.sharedInstance(), _ = wm.userAccount {
+            authenticated = true
+            furl = "/me/features"
+        }
+        let req = NSURLRequest(URL: url(furl))
+        dataTaskWithRequest(req, authenticated: authenticated) { (data, resp, err) in
             if let resp = resp, data = data {
                 if resp.statusCode == 200 {
                     let defaults = NSUserDefaults.standardUserDefaults()
@@ -479,6 +468,7 @@ func httpDateNow() -> String {
         let bundlePath = bundleUrl.path!
         let bundleExtractedUrl = bundleDirUrl.URLByAppendingPathComponent("\(bundleName)-extracted")
         let bundleExtractedPath = bundleExtractedUrl.path!
+        print("[BRAPIClient] bundleUrl \(bundlePath)")
         
         // determines if the bundle exists, but also creates the bundles/extracted directory if it doesn't exist
         func exists() throws -> Bool {

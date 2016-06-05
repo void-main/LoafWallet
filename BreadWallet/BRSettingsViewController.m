@@ -57,10 +57,13 @@
     
     self.touchId = [BRWalletManager sharedInstance].touchIdEnabled;
     
-    if ([WKWebView class] && [[BRAPIClient sharedClient] featureEnabled:BRFeatureFlagsEarlyAccess]) { // only available on iOS 8 and above
-        self.eaController = [[BRWebViewController alloc] initWithBundleName:@"bread-buy" mountPoint:@"/ea"];
+    // only available on iOS 8 and above
+    if ([WKWebView class] && [[BRAPIClient sharedClient] featureEnabled:BRFeatureFlagsEarlyAccess]) {
 #if DEBUG
-        //    self.eaController.debugEndpoint = @"http://localhost:8080";
+        self.eaController = [[BRWebViewController alloc] initWithBundleName:@"bread-buy-staging" mountPoint:@"/ea"];
+//        self.eaController.debugEndpoint = @"http://localhost:8080";
+#else
+        self.eaController = [[BRWebViewController alloc] initWithBundleName:@"bread-buy" mountPoint:@"/ea"];
 #endif
         [self.eaController startServer];
         [self.eaController preload];
@@ -217,7 +220,7 @@
     NSUInteger digits = (((manager.format.maximumFractionDigits - 2)/3 + 1) % 3)*3 + 2;
     
     manager.format.currencySymbol = [NSString stringWithFormat:@"%@%@" NARROW_NBSP, (digits == 5) ? @"m" : @"",
-                               (digits == 2) ? BITS : BTC];
+                                     (digits == 2) ? BITS : BTC];
     manager.format.maximumFractionDigits = digits;
     manager.format.maximum = @(MAX_MONEY/(int64_t)pow(10.0, manager.format.maximumFractionDigits));
     [[NSUserDefaults standardUserDefaults] setInteger:digits forKey:SETTINGS_MAX_DIGITS_KEY];
@@ -527,7 +530,9 @@ _switch_cell:
         if (indexPath.row < self.selectorOptions.count) self.selectedOption = self.selectorOptions[indexPath.row];
         
         if (self.selectorType == 0) {
-            if (indexPath.row < manager.currencyCodes.count) manager.localCurrencyCode = manager.currencyCodes[indexPath.row];
+            if (indexPath.row < manager.currencyCodes.count) {
+                manager.localCurrencyCode = manager.currencyCodes[indexPath.row];
+            }
         }
         else manager.spendingLimit = (indexPath.row > 0) ? pow(10, indexPath.row + 6) : 0;
         

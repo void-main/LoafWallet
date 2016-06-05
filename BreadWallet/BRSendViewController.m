@@ -610,7 +610,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
                 self.callback = [NSURL URLWithString:[self.callback.absoluteString stringByAppendingFormat:@"%@txid=%@",
                                                       (self.callback.query.length > 0) ? @"&" : @"?",
                                                       [NSString hexWithData:[NSData dataWithBytes:tx.txHash.u8
-                                                                             length:sizeof(UInt256)]]]];
+                                                                             length:sizeof(UInt256)].reverse]]];
                 [[UIApplication sharedApplication] openURL:self.callback];
             }
             
@@ -667,7 +667,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
                                                               stringByAppendingFormat:@"%@txid=%@",
                                                               (self.callback.query.length > 0) ? @"&" : @"?",
                                                               [NSString hexWithData:[NSData dataWithBytes:tx.txHash.u8
-                                                                                     length:sizeof(UInt256)]]]];
+                                                                                     length:sizeof(UInt256)].reverse]]];
                         [[UIApplication sharedApplication] openURL:self.callback];
                     }
                     
@@ -683,9 +683,10 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
 
 - (void)confirmSweep:(NSString *)privKey
 {
+    BRWalletManager *manager = [BRWalletManager sharedInstance];
+    
     if (! [privKey isValidBitcoinPrivateKey] && ! [privKey isValidBitcoinBIP38Key]) return;
 
-    BRWalletManager *manager = [BRWalletManager sharedInstance];
     BRBubbleView *statusView = [BRBubbleView viewWithText:NSLocalizedString(@"checking private key balance...", nil)
                                 center:CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2)];
 
@@ -736,7 +737,8 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     [(id)statusView.customView startAnimating];
     [self.view addSubview:[statusView popIn]];
 
-    [manager utxosForAddress:address completion:^(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError *error) {
+    [manager utxosForAddresses:@[address]
+    completion:^(NSArray *utxos, NSArray *amounts, NSArray *scripts, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [statusView popOut];
         
@@ -825,11 +827,13 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
         }
         
         if (img && &CIDetectorTypeQRCode) {
-            for (CIQRCodeFeature *qr in [[CIDetector detectorOfType:CIDetectorTypeQRCode
-                                          context:[CIContext contextWithOptions:@{kCIContextUseSoftwareRenderer:@(YES)}]
-                                          options:nil] featuresInImage:[CIImage imageWithCGImage:img.CGImage]]) {
-                [set addObject:[qr.messageString
-                                stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+            @synchronized ([CIContext class]) {
+                for (CIQRCodeFeature *qr in [[CIDetector detectorOfType:CIDetectorTypeQRCode context:[CIContext
+                                              contextWithOptions:@{kCIContextUseSoftwareRenderer:@(YES)}] options:nil]
+                                             featuresInImage:[CIImage imageWithCGImage:img.CGImage]]) {
+                    [set addObject:[qr.messageString
+                                    stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+                }
             }
         }
     
