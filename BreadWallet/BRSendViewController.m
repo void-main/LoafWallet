@@ -178,7 +178,8 @@ static NSString *sanitizeString(NSString *s)
 
 -(void)cancelNumberPad{
     [self.amountField resignFirstResponder];
-    self.amountField.text = @"0.00";
+    self.amountField.text = @"";
+    [self updateLocalCurrencyLabel];
 }
 
 -(void)doneNumberPad{
