@@ -1,9 +1,9 @@
 //
-//  BRRootViewController.h
-//  BreadWallet
+//  BRNavigationItem.h
+//  LoafWallet
 //
-//  Created by Aaron Voisine on 9/15/13.
-//  Copyright (c) 2013 Aaron Voisine <voisine@gmail.com>
+//  Created by Sergey Shvedov on 14.06.16.
+//  Copyright (c) 2016 Aaron Voisine <voisine@gmail.com>
 //  Copyright © 2016 Litecoin Association <loshan1212@gmail.com>
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,20 +26,6 @@
 
 #import <UIKit/UIKit.h>
 
-#define PARALAX_RATIO    0.25
-
-@class BRReceiveViewController, BRSendViewController;
-
-@interface BRRootViewController : UIViewController <UIAlertViewDelegate, UITabBarControllerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate, UIViewControllerAnimatedTransitioning>
-
-@property (nonatomic, strong) IBOutlet BRReceiveViewController *receiveViewController;
-@property (nonatomic, strong) IBOutlet BRSendViewController *sendViewController;
-@property (nonatomic, strong) IBOutlet UITabBarController *tabBarController;
-
-- (IBAction)tip:(id)sender;
-
-- (void)startActivityWithTimeout:(NSTimeInterval)timeout;
-- (void)stopActivityWithSuccess:(BOOL)success;
-- (void)ping;
+@interface BRNavigationItem : UINavigationItem
 
 @end
