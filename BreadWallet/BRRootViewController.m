@@ -98,9 +98,9 @@
     _balance = UINT64_MAX;
 	
 	self.sendViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SendViewController"];
-	self.sendViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"Send" image:[UIImage imageNamed:@"sampleTabIcon"] selectedImage:[UIImage imageNamed:@"sampleTabIconSelected"]];
+	self.sendViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"Send" image:[UIImage imageNamed:@"send-icon"] selectedImage:[UIImage imageNamed:@"send-sel-icon"]];
     self.receiveViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ReceiveViewController"];
-	self.receiveViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"Recieve" image:[UIImage imageNamed:@"sampleTabIcon"] selectedImage:[UIImage imageNamed:@"sampleTabIconSelected"]];
+	self.receiveViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"Recieve" image:[UIImage imageNamed:@"recieve-icon"] selectedImage:[UIImage imageNamed:@"recieve-sel-icon"]];
 
 	self.tabBarController = [self.storyboard instantiateViewControllerWithIdentifier:@"TabBarController"];
 
@@ -936,7 +936,6 @@
         [[UIApplication sharedApplication] setStatusBarHidden:NO];
         self.splash.hidden = YES;
         [self stopActivityWithSuccess:YES];
-		self.ta
 		
 		if ([self.tabBarController.viewControllers containsObject:self.receiveViewController]) {
 			[self.tabBarController setSelectedViewController:self.receiveViewController];

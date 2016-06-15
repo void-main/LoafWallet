@@ -71,7 +71,7 @@ static void *kTitleViewStateObservingContext = &kTitleViewStateObservingContext;
 
 - (UILabel *)labelWithTitle:(NSString *)title {
 	UILabel *label = [[UILabel alloc] init];
-	UIFont *titleFont = [UIFont fontWithName:@"HelveticaNeue" size:25.0];
+	UIFont *titleFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:23.0];
 	UIFont *smallFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0];
 	NSString *simpleString = title;
 	NSRange range = [simpleString rangeOfString:@"  LTC"];
