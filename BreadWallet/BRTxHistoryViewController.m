@@ -68,6 +68,7 @@ static NSString *dateFormat(NSString *template)
 @property (nonatomic, strong) id syncStartedObserver, syncFinishedObserver, syncFailedObserver;
 @property (nonatomic, strong) UIImageView *wallpaper;
 @property (nonatomic, strong) BRWebViewController *buyController;
+@property (strong, nonatomic) IBOutlet UIView *content;
 
 @end
 
@@ -294,7 +295,7 @@ static NSString *dateFormat(NSString *template)
 }
 
 - (void)setBackgroundForCell:(UITableViewCell *)cell tableView:(UITableView *)tableView indexPath:(NSIndexPath *)path
-{    
+{
     [cell viewWithTag:100].hidden = (path.row > 0);
     [cell viewWithTag:101].hidden = (path.row + 1 < [self tableView:tableView numberOfRowsInSection:path.section]);
 }
@@ -322,14 +323,14 @@ static NSString *dateFormat(NSString *template)
     NSDateFormatter *desiredFormatter = (txTime > year) ? monthDayHourFormatter : yearMonthDayHourFormatter;
     
     date = [desiredFormatter stringFromDate:[NSDate dateWithTimeIntervalSinceReferenceDate:txTime]];
-    date = [date stringByReplacingOccurrencesOfString:@"am" withString:@"a"];
-    date = [date stringByReplacingOccurrencesOfString:@"pm" withString:@"p"];
-    date = [date stringByReplacingOccurrencesOfString:@"AM" withString:@"a"];
-    date = [date stringByReplacingOccurrencesOfString:@"PM" withString:@"p"];
-    date = [date stringByReplacingOccurrencesOfString:@"a.m." withString:@"a"];
-    date = [date stringByReplacingOccurrencesOfString:@"p.m." withString:@"p"];
-    date = [date stringByReplacingOccurrencesOfString:@"A.M." withString:@"a"];
-    date = [date stringByReplacingOccurrencesOfString:@"P.M." withString:@"p"];
+//    date = [date stringByReplacingOccurrencesOfString:@"am" withString:@"a"];
+//    date = [date stringByReplacingOccurrencesOfString:@"pm" withString:@"p"];
+//    date = [date stringByReplacingOccurrencesOfString:@"AM" withString:@"a"];
+//    date = [date stringByReplacingOccurrencesOfString:@"PM" withString:@"p"];
+//    date = [date stringByReplacingOccurrencesOfString:@"a.m." withString:@"a"];
+//    date = [date stringByReplacingOccurrencesOfString:@"p.m." withString:@"p"];
+//    date = [date stringByReplacingOccurrencesOfString:@"A.M." withString:@"a"];
+//    date = [date stringByReplacingOccurrencesOfString:@"P.M." withString:@"p"];
     if (tx.blockHeight != TX_UNCONFIRMED) self.txDates[uint256_obj(tx.txHash)] = date;
     return date;
 }
@@ -449,8 +450,8 @@ static NSString *dateFormat(NSString *template)
     static NSString *noTxIdent = @"NoTxCell", *transactionIdent = @"TransactionCell", *actionIdent = @"ActionCell",
                     *disclosureIdent = @"DisclosureCell";
     UITableViewCell *cell = nil;
-    UILabel *textLabel, *unconfirmedLabel, *sentLabel, *localCurrencyLabel, *balanceLabel, *localBalanceLabel,
-            *detailTextLabel;
+    UILabel *textLabel, *unconfirmedLabel, *sentLabel, *localCurrencyLabel, *detailTextLabel;
+    UIImageView *tickChecked, *tickUnchecked;
     BRWalletManager *manager = [BRWalletManager sharedInstance];
 
     switch (indexPath.section) {
@@ -468,13 +469,12 @@ static NSString *dateFormat(NSString *template)
                 unconfirmedLabel = (id)[cell viewWithTag:3];
                 localCurrencyLabel = (id)[cell viewWithTag:5];
                 sentLabel = (id)[cell viewWithTag:6];
-                balanceLabel = (id)[cell viewWithTag:7];
-                localBalanceLabel = (id)[cell viewWithTag:8];
+                tickChecked = (id)[cell viewWithTag:9];
+                tickUnchecked = (id)[cell viewWithTag:10];
 
                 BRTransaction *tx = self.transactions[indexPath.row];
                 uint64_t received = [manager.wallet amountReceivedFromTransaction:tx],
-                         sent = [manager.wallet amountSentByTransaction:tx],
-                         balance = [manager.wallet balanceAfterTransaction:tx];
+                sent = [manager.wallet amountSentByTransaction:tx];
                 uint32_t blockHeight = self.blockHeight;
                 uint32_t confirms = (tx.blockHeight > blockHeight) ? 0 : (blockHeight - tx.blockHeight) + 1;
 
@@ -490,23 +490,20 @@ static NSString *dateFormat(NSString *template)
 
                 textLabel.textColor = [UIColor darkTextColor];
                 sentLabel.hidden = YES;
+                tickChecked.hidden = YES;
                 unconfirmedLabel.hidden = NO;
+                tickUnchecked.hidden = NO;
                 unconfirmedLabel.backgroundColor = [UIColor lightGrayColor];
                 detailTextLabel.text = [self dateForTx:tx];
-                balanceLabel.text = (manager.didAuthenticate) ? [manager stringForAmount:balance] : nil;
-                localBalanceLabel.text = (manager.didAuthenticate) ?
-                    [NSString stringWithFormat:@"(%@)", [manager localCurrencyStringForAmount:balance]] : nil;
 
                 if (confirms == 0 && ! [manager.wallet transactionIsValid:tx]) {
                     unconfirmedLabel.text = NSLocalizedString(@"INVALID", nil);
                     unconfirmedLabel.backgroundColor = [UIColor redColor];
-                    balanceLabel.text = localBalanceLabel.text = nil;
                 }
                 else if (confirms == 0 && [manager.wallet transactionIsPending:tx]) {
                     unconfirmedLabel.text = NSLocalizedString(@"pending", nil);
                     unconfirmedLabel.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.2];
                     textLabel.textColor = [UIColor grayColor];
-                    balanceLabel.text = localBalanceLabel.text = nil;
                 }
                 else if (confirms == 0 && ! [manager.wallet transactionIsVerified:tx]) {
                     unconfirmedLabel.text = NSLocalizedString(@"unverified", nil);
@@ -520,27 +517,31 @@ static NSString *dateFormat(NSString *template)
                 else {
                     unconfirmedLabel.text = nil;
                     unconfirmedLabel.hidden = YES;
+                    tickUnchecked.hidden = YES;
                     sentLabel.hidden = NO;
+                    tickChecked.hidden = NO;
                 }
                 
                 if (sent > 0 && received == sent) {
                     textLabel.text = [manager stringForAmount:sent];
-                    localCurrencyLabel.text = [NSString stringWithFormat:@"(%@)",
+                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
                                                [manager localCurrencyStringForAmount:sent]];
                     sentLabel.text = NSLocalizedString(@"moved", nil);
-                    sentLabel.textColor = [UIColor blackColor];
+                    sentLabel.textColor = [UIColor whiteColor];
                 }
                 else if (sent > 0) {
                     textLabel.text = [manager stringForAmount:received - sent];
-                    localCurrencyLabel.text = [NSString stringWithFormat:@"(%@)",
+                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
                                                [manager localCurrencyStringForAmount:received - sent]];
+                    // Declare sent txs
                     sentLabel.text = NSLocalizedString(@"sent", nil);
                     sentLabel.textColor = [UIColor colorWithRed:1.0 green:0.33 blue:0.33 alpha:1.0];
                 }
                 else {
                     textLabel.text = [manager stringForAmount:received];
-                    localCurrencyLabel.text = [NSString stringWithFormat:@"(%@)",
+                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
                                                [manager localCurrencyStringForAmount:received]];
+                    // Declare recieved txs
                     sentLabel.text = NSLocalizedString(@"received", nil);
                     sentLabel.textColor = [UIColor colorWithRed:0.0 green:0.75 blue:0.0 alpha:1.0];
                 }

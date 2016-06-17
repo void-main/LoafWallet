@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1B49E3E31CFBC32800B64632 /* BRGenerateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B49E3E21CFBC32800B64632 /* BRGenerateViewController.m */; };
+		1BA766201D11AB1A0029F807 /* BRHistoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1BA7661F1D11AB1A0029F807 /* BRHistoryViewController.m */; };
 		22005B961C9276AF00F87733 /* BRLinkPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22005B951C9276AF00F87733 /* BRLinkPlugin.swift */; };
 		220128D31C753C670001CAC1 /* BRSocketHelpers.c in Sources */ = {isa = PBXBuildFile; fileRef = 220128D11C753C670001CAC1 /* BRSocketHelpers.c */; };
 		220128D51C76E1550001CAC1 /* BRWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 220128D41C76E1550001CAC1 /* BRWebSocket.swift */; };
@@ -211,6 +212,8 @@
 /* Begin PBXFileReference section */
 		1B49E3E11CFBC30F00B64632 /* BRGenerateViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BRGenerateViewController.h; sourceTree = "<group>"; };
 		1B49E3E21CFBC32800B64632 /* BRGenerateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRGenerateViewController.m; sourceTree = "<group>"; };
+		1BA7661E1D11AB1A0029F807 /* BRHistoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BRHistoryViewController.h; sourceTree = "<group>"; };
+		1BA7661F1D11AB1A0029F807 /* BRHistoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BRHistoryViewController.m; sourceTree = "<group>"; };
 		22005B951C9276AF00F87733 /* BRLinkPlugin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BRLinkPlugin.swift; sourceTree = "<group>"; };
 		220128D11C753C670001CAC1 /* BRSocketHelpers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BRSocketHelpers.c; sourceTree = "<group>"; };
 		220128D21C753C670001CAC1 /* BRSocketHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BRSocketHelpers.h; sourceTree = "<group>"; };
@@ -801,6 +804,8 @@
 				757BE7E8192D4E880061CB20 /* BRSeedViewController.m */,
 				1B49E3E11CFBC30F00B64632 /* BRGenerateViewController.h */,
 				1B49E3E21CFBC32800B64632 /* BRGenerateViewController.m */,
+				1BA7661E1D11AB1A0029F807 /* BRHistoryViewController.h */,
+				1BA7661F1D11AB1A0029F807 /* BRHistoryViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -1334,6 +1339,7 @@
 				75878BBF192ACD46002505AB /* BRAmountViewController.m in Sources */,
 				759816E719357D6F005060EA /* BRBubbleView.m in Sources */,
 				757BE7E3192C0E9D0061CB20 /* BRRestoreViewController.m in Sources */,
+				1BA766201D11AB1A0029F807 /* BRHistoryViewController.m in Sources */,
 				757BE7E6192C1FF70061CB20 /* BRWelcomeViewController.m in Sources */,
 				757BE7E9192D4E880061CB20 /* BRSeedViewController.m in Sources */,
 				752E28E719234DA200DB5A3C /* NSData+Bitcoin.m in Sources */,

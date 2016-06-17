@@ -1,9 +1,9 @@
 //
-//  BRTxHistoryViewController.h
-//  BreadWallet
+//  BRHistoryViewController.m
+//  LoafWallet
 //
-//  Created by Aaron Voisine on 6/11/13.
-//  Copyright (c) 2013 Aaron Voisine <voisine@gmail.com>
+//  Created by Loshan T on 15/06/2016.
+//  Copyright © 2016 Aaron Voisine. All rights reserved.
 //  Copyright © 2016 Litecoin Association <loshan1212@gmail.com>
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,13 +24,8 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-#import <UIKit/UIKit.h>
+#import "BRHistoryViewController.h"
 
-@class BRTransaction;
-
-@interface BRTxHistoryViewController : UITableViewController <UIAlertViewDelegate, UINavigationControllerDelegate,
-UIViewControllerTransitioningDelegate, UIViewControllerAnimatedTransitioning>
-
-@property (nonatomic, strong) BRTransaction *transaction;
+@implementation BRHistoryViewController
 
 @end
