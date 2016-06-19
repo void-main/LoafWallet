@@ -1137,6 +1137,7 @@
 						CreatedOnToolsVersion = 6.1;
 					};
 					75D5F3BD191EC270004AB296 = {
+						DevelopmentTeam = FAPFEJXE9S;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
