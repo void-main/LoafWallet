@@ -44,7 +44,7 @@ static void *kTitleViewStateObservingContext = &kTitleViewStateObservingContext;
 
 - (void)activateObservers {
 	[self addObserver: self forKeyPath:@"title" options:NSKeyValueObservingOptionNew context: kTitleStateObservingContext];
-	[self addObserver: self forKeyPath:@"titleView" options:NSKeyValueObservingOptionNew context: kTitleViewStateObservingContext];
+	[self addObserver: self forKeyPath:@"titleView" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context: kTitleViewStateObservingContext];
 }
 
 - (void)deactivateObservers {
@@ -57,10 +57,15 @@ static void *kTitleViewStateObservingContext = &kTitleViewStateObservingContext;
 		if ((nil == self.title) || ([self.title rangeOfString:@"  LTC"].location == NSNotFound)) {
 			self.titleView = nil;
 		} else {
-			self.titleView = [self labelWithTitle:self.title];
+			[self updateLabel];
 		}
+		
 	} else if ( context == kTitleViewStateObservingContext ) {
-		if (nil == self.titleView && nil != self.title) {
+		
+		id oldValue = [change objectForKey:@"old"];
+		id newValue = [change objectForKey:@"new"];
+		
+		if ( [NSNull null] != oldValue && [NSNull null] == newValue ) {
 			self.title = self.title;
 		}
 	}
@@ -69,22 +74,29 @@ static void *kTitleViewStateObservingContext = &kTitleViewStateObservingContext;
 	}
 }
 
-- (UILabel *)labelWithTitle:(NSString *)title {
-	UILabel *label = [[UILabel alloc] init];
-	UIFont *titleFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:23.0];
-	UIFont *smallFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0];
-	NSString *simpleString = title;
-	NSRange range = [simpleString rangeOfString:@"  LTC"];
-	range.length = (simpleString.length - range.location);
+- (void)updateLabel {
 	
-	NSMutableAttributedString *stylizedString = [[NSMutableAttributedString alloc] initWithString:simpleString];
-	NSNumber *offsetAmount = @(titleFont.capHeight - smallFont.capHeight);
-	[stylizedString addAttribute:NSFontAttributeName value:smallFont range:range];
-	[stylizedString addAttribute:NSBaselineOffsetAttributeName value:offsetAmount range:range];
-	label.font = titleFont;
-	label.attributedText = stylizedString;
-	[label sizeToFit];
-	return label;
+	if ( NO == [self.titleView isKindOfClass:[UILabel class]] ) {
+		UILabel *newLabel = [[UILabel alloc] init];
+		self.titleView = newLabel;
+	}
+	
+	if ( YES == [self.titleView isKindOfClass:[UILabel class]] ) {
+		UILabel *label = (UILabel *)self.titleView;
+		UIFont *titleFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:23.0];
+		UIFont *smallFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:12.0];
+		NSString *simpleString = self.title;
+		NSRange range = [simpleString rangeOfString:@"  LTC"];
+		range.length = (simpleString.length - range.location);
+		
+		NSMutableAttributedString *stylizedString = [[NSMutableAttributedString alloc] initWithString:simpleString];
+		NSNumber *offsetAmount = @(titleFont.capHeight - smallFont.capHeight);
+		[stylizedString addAttribute:NSFontAttributeName value:smallFont range:range];
+		[stylizedString addAttribute:NSBaselineOffsetAttributeName value:offsetAmount range:range];
+		label.font = titleFont;
+		label.attributedText = stylizedString;
+		[label sizeToFit];
+	}
 }
 
 @end
