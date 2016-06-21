@@ -72,3 +72,9 @@
 
 /* Class = "UILabel"; text = "start a new wallet by generating a wallet recovery phrase"; ObjectID = "wDZ-DN-szv"; */
 "wDZ-DN-szv.text" = "starta en ny plånbok genom att skapa en återställningsfras till plånboken";
+
+/* Class = "UIButton"; text = "Send"; ObjectID = "crD-Yc-EK9"; */
+"crD-Yc-EK9.normalTitle" = "Skicka";
+
+/* Class = "UILabel"; text = "Amount"; ObjectID = "Mt8-yX-D7H"; */
+"Mt8-yX-D7H.text" = "Belopp";

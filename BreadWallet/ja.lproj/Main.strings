@@ -78,3 +78,9 @@
 
 /* Class = "UILabel"; text = "start a new wallet by generating a wallet recovery phrase"; ObjectID = "wDZ-DN-szv"; */
 "wDZ-DN-szv.text" = "新しい復元フレーズを生成し、\n新規ウォレットを作ります。";
+
+/* Class = "UIButton"; text = "Send"; ObjectID = "crD-Yc-EK9"; */
+"crD-Yc-EK9.normalTitle" = "支払う";
+
+/* Class = "UILabel"; text = "Amount"; ObjectID = "Mt8-yX-D7H"; */
+"Mt8-yX-D7H.text" = "Amount";

@@ -501,3 +501,9 @@
 
 /* No comment provided by engineer. */
 "Your wallet may be out of sync.\nThis can often be fixed by rescanning the blockchain." = "你的钱包可能不同步。\n这通常可以通过重新扫描区块链来修复。";
+
+/* No comment provided by engineer. */
+"Send" = "付款";
+
+/* No comment provided by engineer. */
+"Recieve" = "收款";

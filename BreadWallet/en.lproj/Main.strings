@@ -2,8 +2,8 @@
 /* Class = "UIButton"; normalTitle = "recover wallet"; ObjectID = "4w7-k8-9wY"; */
 "4w7-k8-9wY.normalTitle" = "recover wallet";
 
-/* Class = "UILabel"; text = "support@breadwallet.com"; ObjectID = "5OA-tB-Exg"; */
-"5OA-tB-Exg.text" = "support@breadwallet.com";
+/* Class = "UILabel"; text = "contact@loafwallet.xyz"; ObjectID = "5OA-tB-Exg"; */
+"5OA-tB-Exg.text" = "contact@loafwallet.xyz";
 
 /* Class = "UILabel"; text = "local currency"; ObjectID = "8e2-ar-Ehc"; */
 "8e2-ar-Ehc.text" = "local currency";
@@ -15,7 +15,7 @@
 "D1b-HB-lKH.text" = "start/recover another wallet";
 
 /* Class = "UILabel"; text = "exchange rate data provided by\nbitpay.com/rates"; ObjectID = "D4H-hd-LsX"; */
-"D4H-hd-LsX.text" = "exchange rate data provided by\nbitpay.com/rates";
+"D4H-hd-LsX.text" = "Exchange Rate Data provided by\nlitecoin.com";
 
 /* Class = "UILabel"; text = "if you ever lose your phone, you will need this phrase to recover your wallet"; ObjectID = "EQG-Km-ZKY"; */
 "EQG-Km-ZKY.text" = "If you ever lose your phone, you will need this phrase to recover your wallet. Please write it down and keep it secure.";
@@ -84,7 +84,13 @@
 "t1j-JZ-FW0.text" = "no transactions";
 
 /* Class = "UILabel"; text = "breadwallet v%ver%%net%\ncopyright © 2016 breadwallet LLC"; ObjectID = "uvz-hk-Nr4"; */
-"uvz-hk-Nr4.text" = "breadwallet v%ver%%net%\ncopyright © 2016 breadwallet LLC";
+"uvz-hk-Nr4.text" = "LoafWallet v%ver%%net%\n © 2016 Litecoin Association\n\n Based on BreadWallet\n © BreadWallet LLC";
 
 /* Class = "UILabel"; text = "start a new wallet by generating a wallet recovery phrase"; ObjectID = "wDZ-DN-szv"; */
 "wDZ-DN-szv.text" = "start a new wallet by generating a wallet recovery phrase";
+
+/* Class = "UIButton"; text = "Send"; ObjectID = "crD-Yc-EK9"; */
+"crD-Yc-EK9.normalTitle" = "Send";
+
+/* Class = "UILabel"; text = "Amount"; ObjectID = "Mt8-yX-D7H"; */
+"Mt8-yX-D7H.text" = "Amount";

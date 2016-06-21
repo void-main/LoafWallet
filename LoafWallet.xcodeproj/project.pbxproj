@@ -1155,15 +1155,15 @@
 					};
 					BA913BDD1BD57E4D005A7C0E = {
 						CreatedOnToolsVersion = 7.0.1;
-						DevelopmentTeam = 7L2MG8A77J;
+						DevelopmentTeam = FAPFEJXE9S;
 					};
 					BA913BE91BD57E4D005A7C0E = {
 						CreatedOnToolsVersion = 7.0.1;
-						DevelopmentTeam = 7L2MG8A77J;
+						DevelopmentTeam = FAPFEJXE9S;
 					};
 					BAE12BE41B2DEE7F00895CC5 = {
 						CreatedOnToolsVersion = 6.3.2;
-						DevelopmentTeam = 7L2MG8A77J;
+						DevelopmentTeam = FAPFEJXE9S;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;

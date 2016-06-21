@@ -480,3 +480,9 @@
 
 /* No comment provided by engineer. */
 "Your wallet may be out of sync.\nThis can often be fixed by rescanning the blockchain." = "Si duket kuleta juaj nuk është e sinkronizuar.\nKjo shpesh mund të rregullohet duke riskanuar blockchain.";
+
+/* No comment provided by engineer. */
+"Send" = "Send";
+
+/* No comment provided by engineer. */
+"Recieve" = "Recieve";
