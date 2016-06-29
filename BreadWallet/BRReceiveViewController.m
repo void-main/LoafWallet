@@ -55,7 +55,7 @@
 @property (nonatomic, strong) IBOutlet UILabel *label;
 @property (nonatomic, strong) IBOutlet UIButton *addressButton;
 @property (nonatomic, strong) IBOutlet UIImageView *qrView;
-@property (strong, nonatomic) IBOutlet UIButton *recieveButton;
+@property (strong, nonatomic) IBOutlet UIButton *receiveButton;
 
 @end
 
@@ -65,10 +65,10 @@
 {
     [super viewDidLoad];
     
-    self.recieveButton.layer.cornerRadius = 2;
-    self.recieveButton.layer.borderWidth = 2;
-    self.recieveButton.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:40.0 green:40.0 blue:40.0 alpha:0.90]);
-    self.recieveButton.clipsToBounds = YES;
+    self.receiveButton.layer.cornerRadius = 2;
+    self.receiveButton.layer.borderWidth = 2;
+    self.receiveButton.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:40.0 green:40.0 blue:40.0 alpha:0.90]);
+    self.receiveButton.clipsToBounds = YES;
 
     BRWalletManager *manager = [BRWalletManager sharedInstance];
     BRPaymentRequest *req;

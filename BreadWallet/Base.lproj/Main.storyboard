@@ -38,6 +38,8 @@
             <string>HelveticaNeue</string>
             <string>HelveticaNeue</string>
             <string>HelveticaNeue-Bold</string>
+            <string>HelveticaNeue</string>
+            <string>HelveticaNeue-Bold</string>
         </mutableArray>
         <mutableArray key="HelveticaNeueLights.ttc">
             <string>HelveticaNeue-Light</string>
@@ -378,7 +380,7 @@
         <!--Navigation Controller-->
         <scene sceneID="dnG-OK-wXR">
             <objects>
-                <navigationController definesPresentationContext="YES" id="BeO-Yt-c4D" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="Initial" definesPresentationContext="YES" id="BeO-Yt-c4D" sceneMemberID="viewController">
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="BYa-tz-DlK">
                         <autoresizingMask key="autoresizingMask"/>
@@ -1053,6 +1055,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="bottom" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wallpaper-default" translatesAutoresizingMaskIntoConstraints="NO" id="tQ2-Uz-bsZ">
+                                <rect key="frame" x="0.0" y="-833" width="844" height="1500"/>
+                            </imageView>
                             <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ƀ 0.00 ($0.00)" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cRT-Sr-x6R">
                                 <rect key="frame" x="137" y="172" width="101" height="45"/>
                                 <gestureRecognizers/>
@@ -1096,9 +1101,6 @@
                                     <action selector="address:" destination="Zni-gW-a05" eventType="touchUpInside" id="PQb-rP-FxM"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="bottom" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="wallpaper-default" translatesAutoresizingMaskIntoConstraints="NO" id="tQ2-Uz-bsZ">
-                                <rect key="frame" x="0.0" y="-833" width="844" height="1500"/>
-                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -1145,7 +1147,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Recieve Address" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qel-3J-2VC">
+                            <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Receive Address" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qel-3J-2VC">
                                 <rect key="frame" x="128" y="182" width="120" height="26"/>
                                 <gestureRecognizers/>
                                 <constraints>
@@ -1163,7 +1165,7 @@
                                     <constraint firstAttribute="height" constant="204" id="pLx-mz-57e"/>
                                 </constraints>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XV7-2s-hZs">
+                            <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XV7-2s-hZs">
                                 <rect key="frame" x="8" y="228" width="359" height="19"/>
                                 <gestureRecognizers/>
                                 <constraints>
@@ -1181,7 +1183,7 @@
                                     <constraint firstAttribute="height" constant="53" id="UOt-wg-lKM"/>
                                     <constraint firstAttribute="width" secondItem="wgi-qN-zQi" secondAttribute="height" multiplier="79:40" constant="21.324999999999989" id="z9V-nx-DHm"/>
                                 </constraints>
-                                <state key="normal" title="Recieve" backgroundImage="button-bg-brown">
+                                <state key="normal" title="Receive" backgroundImage="button-bg-brown">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <state key="highlighted" backgroundImage="button-bg-white">
@@ -1214,7 +1216,7 @@
                     <connections>
                         <outlet property="addressButton" destination="XV7-2s-hZs" id="jn1-4G-QVT"/>
                         <outlet property="qrView" destination="PTm-4L-adQ" id="Ti4-bc-a9W"/>
-                        <outlet property="recieveButton" destination="wgi-qN-zQi" id="1YE-Fc-7Mq"/>
+                        <outlet property="receiveButton" destination="wgi-qN-zQi" id="Z6C-O1-M1o"/>
                     </connections>
                 </viewController>
                 <swipeGestureRecognizer direction="right" id="lfc-2w-Glf">
@@ -1364,11 +1366,11 @@
                                 <state key="normal" backgroundImage="qr-icon">
                                     <color key="titleShadowColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
-                                <state key="disabled" image="cameraguide-small" backgroundImage="button-bg-blue-pressed">
+                                <state key="disabled" image="cameraguide-small">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </state>
-                                <state key="highlighted" backgroundImage="button-bg-blue-pressed">
+                                <state key="highlighted">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="titleShadowColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </state>
@@ -2802,7 +2804,7 @@ Other devices may be infected.
         <!--Navigation Controller-->
         <scene sceneID="rwD-Uu-WFw">
             <objects>
-                <navigationController storyboardIdentifier="SeedNav" definesPresentationContext="YES" modalTransitionStyle="flipHorizontal" id="go5-eQ-1NR" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="SeedNav" definesPresentationContext="YES" modalTransitionStyle="flipHorizontal" navigationBarHidden="YES" id="go5-eQ-1NR" sceneMemberID="viewController">
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="naK-xP-h9B" customClass="BRNavigationBar">
                         <autoresizingMask key="autoresizingMask"/>
@@ -2839,7 +2841,7 @@ Other devices may be infected.
                                 <size key="shadowOffset" width="0.0" height="1"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.0" tag="-411" contentMode="left" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="296" translatesAutoresizingMaskIntoConstraints="NO" id="dz8-9E-hrc" customClass="BRCopyLabel">
-                                <rect key="frame" x="39.5" y="307" width="296" height="122"/>
+                                <rect key="frame" x="39.5" y="307" width="297" height="122"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="122" id="iPQ-g3-lbn"/>
@@ -2859,21 +2861,94 @@ Other devices may be infected.
                                 </state>
                                 <state key="highlighted" backgroundImage="button-bg-white-pressed"/>
                                 <connections>
-                                    <action selector="done:" destination="IA2-75-hxO" eventType="touchUpInside" id="GGk-Sr-hDq"/>
+                                    <action selector="done:" destination="IA2-75-hxO" eventType="touchUpInside" id="OtG-cH-99h"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8wE-2h-WEI" userLabel="Tutorial View">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lsW-Th-SWM">
+                                        <rect key="frame" x="0.0" y="434" width="375" height="233"/>
+                                        <subviews>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k8O-8O-Md6">
+                                                <rect key="frame" x="33" y="31" width="121" height="21"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="21" id="G15-x1-hx1"/>
+                                                    <constraint firstAttribute="width" constant="121" id="KlY-rH-top"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="16"/>
+                                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A9w-fv-a5B">
+                                                <rect key="frame" x="299" y="193" width="61" height="32"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="61" id="mVO-us-uOw"/>
+                                                </constraints>
+                                                <state key="normal" title="Next"/>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t9D-ef-z2z">
+                                                <rect key="frame" x="18" y="193" width="59" height="32"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="59" id="6GK-yC-0zS"/>
+                                                    <constraint firstAttribute="height" constant="32" id="Gk8-PT-U5h"/>
+                                                </constraints>
+                                                <state key="normal" title="Skip"/>
+                                            </button>
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="300" translatesAutoresizingMaskIntoConstraints="NO" id="84P-qS-Apm">
+                                                <rect key="frame" x="33" y="68" width="309" height="98"/>
+                                                <string key="text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</string>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
+                                                <nil key="highlightedColor"/>
+                                                <size key="shadowOffset" width="0.0" height="1"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstItem="A9w-fv-a5B" firstAttribute="height" secondItem="t9D-ef-z2z" secondAttribute="height" id="3F1-24-Z1h"/>
+                                            <constraint firstItem="A9w-fv-a5B" firstAttribute="top" secondItem="t9D-ef-z2z" secondAttribute="top" id="6NZ-wr-NxW"/>
+                                            <constraint firstItem="84P-qS-Apm" firstAttribute="centerY" secondItem="lsW-Th-SWM" secondAttribute="centerY" id="80B-49-dZG"/>
+                                            <constraint firstItem="84P-qS-Apm" firstAttribute="centerX" secondItem="lsW-Th-SWM" secondAttribute="centerX" id="83a-na-Wa2"/>
+                                            <constraint firstItem="84P-qS-Apm" firstAttribute="leading" secondItem="k8O-8O-Md6" secondAttribute="leading" id="Da0-Z3-RmV"/>
+                                            <constraint firstItem="k8O-8O-Md6" firstAttribute="leading" secondItem="lsW-Th-SWM" secondAttribute="leading" constant="33" id="IbR-tv-eBM"/>
+                                            <constraint firstItem="t9D-ef-z2z" firstAttribute="bottom" secondItem="lsW-Th-SWM" secondAttribute="bottomMargin" id="WvC-1f-rCb"/>
+                                            <constraint firstItem="t9D-ef-z2z" firstAttribute="leading" secondItem="lsW-Th-SWM" secondAttribute="leading" constant="18" id="XZV-EJ-e79"/>
+                                            <constraint firstAttribute="trailing" secondItem="A9w-fv-a5B" secondAttribute="trailing" constant="15" id="aDS-Zq-KO9"/>
+                                            <constraint firstItem="k8O-8O-Md6" firstAttribute="top" secondItem="lsW-Th-SWM" secondAttribute="top" constant="31" id="tD9-RV-Qyu"/>
+                                        </constraints>
+                                    </view>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="phone-template" translatesAutoresizingMaskIntoConstraints="NO" id="CRL-7u-LtP">
+                                        <rect key="frame" x="48" y="36" width="278" height="398"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" red="0.42745098039215684" green="0.74509803921568629" blue="0.92941176470588238" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="lsW-Th-SWM" secondAttribute="bottom" id="11p-Iv-ajR"/>
+                                    <constraint firstAttribute="trailing" secondItem="lsW-Th-SWM" secondAttribute="trailing" id="E3c-cW-Jv2"/>
+                                    <constraint firstItem="lsW-Th-SWM" firstAttribute="top" secondItem="8wE-2h-WEI" secondAttribute="top" constant="434" id="GoY-E8-H7g"/>
+                                    <constraint firstItem="lsW-Th-SWM" firstAttribute="leading" secondItem="8wE-2h-WEI" secondAttribute="leading" id="Uoa-HO-pBE"/>
+                                    <constraint firstItem="CRL-7u-LtP" firstAttribute="leading" secondItem="8wE-2h-WEI" secondAttribute="leading" constant="48" id="awc-fm-FrW"/>
+                                    <constraint firstItem="CRL-7u-LtP" firstAttribute="top" secondItem="8wE-2h-WEI" secondAttribute="top" constant="36" id="i2C-3e-Pk9"/>
+                                    <constraint firstItem="lsW-Th-SWM" firstAttribute="top" secondItem="CRL-7u-LtP" secondAttribute="bottom" id="wU4-YX-9gE"/>
+                                    <constraint firstItem="CRL-7u-LtP" firstAttribute="centerX" secondItem="lsW-Th-SWM" secondAttribute="centerX" id="yAh-le-mAG"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803915" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="dz8-9E-hrc" firstAttribute="top" secondItem="EQG-Km-ZKY" secondAttribute="bottom" constant="59" id="14u-dM-XjR"/>
                             <constraint firstItem="y8A-Lu-sSd" firstAttribute="centerX" secondItem="dz8-9E-hrc" secondAttribute="centerX" id="5AH-lv-Cm0"/>
+                            <constraint firstItem="8wE-2h-WEI" firstAttribute="centerX" secondItem="y8A-Lu-sSd" secondAttribute="centerX" id="7sh-Dd-5mI"/>
+                            <constraint firstItem="8wE-2h-WEI" firstAttribute="top" secondItem="7xM-f1-iRp" secondAttribute="top" id="E28-SU-KBM"/>
                             <constraint firstItem="dqh-Fj-S7p" firstAttribute="leading" secondItem="7xM-f1-iRp" secondAttribute="leading" constant="-38" id="RmH-Ha-LXT"/>
                             <constraint firstItem="dz8-9E-hrc" firstAttribute="centerY" secondItem="7xM-f1-iRp" secondAttribute="centerY" constant="34.5" id="RoC-Lf-Nzm"/>
                             <constraint firstItem="dz8-9E-hrc" firstAttribute="centerX" secondItem="EQG-Km-ZKY" secondAttribute="centerX" id="fxd-Lc-UC7"/>
+                            <constraint firstItem="8wE-2h-WEI" firstAttribute="leading" secondItem="7xM-f1-iRp" secondAttribute="leading" id="ggf-lU-WFZ"/>
                             <constraint firstItem="y8A-Lu-sSd" firstAttribute="top" secondItem="dz8-9E-hrc" secondAttribute="bottom" constant="19" id="kBa-NK-ETC"/>
                             <constraint firstAttribute="bottom" secondItem="dqh-Fj-S7p" secondAttribute="bottom" id="kbM-f4-8YY"/>
                             <constraint firstItem="dz8-9E-hrc" firstAttribute="leading" secondItem="7xM-f1-iRp" secondAttribute="leadingMargin" constant="23.5" id="pTw-TC-OQd"/>
                             <constraint firstItem="y8A-Lu-sSd" firstAttribute="centerX" secondItem="7xM-f1-iRp" secondAttribute="centerX" id="xkT-UE-YHP"/>
+                            <constraint firstItem="8wE-2h-WEI" firstAttribute="bottom" secondItem="NXP-4T-hz3" secondAttribute="top" id="zF9-0g-8Nf"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="pSA-60-Zeg">
@@ -2881,7 +2956,12 @@ Other devices may be infected.
                     </navigationItem>
                     <connections>
                         <outlet property="continueButton" destination="y8A-Lu-sSd" id="3yW-ea-XjM"/>
+                        <outlet property="descriptionLabel" destination="84P-qS-Apm" id="OJo-GO-AlA"/>
+                        <outlet property="progessButton" destination="A9w-fv-a5B" id="JD9-nR-ppu"/>
                         <outlet property="seedLabel" destination="dz8-9E-hrc" id="EuI-Ib-8iZ"/>
+                        <outlet property="skipButton" destination="t9D-ef-z2z" id="vQb-Ui-3oI"/>
+                        <outlet property="titleLabel" destination="k8O-8O-Md6" id="nBg-rw-0I8"/>
+                        <outlet property="tutorialView" destination="8wE-2h-WEI" id="zra-s9-8m4"/>
                         <outlet property="wallpaper" destination="dqh-Fj-S7p" id="9zN-jz-mcU"/>
                     </connections>
                 </viewController>
@@ -2904,6 +2984,7 @@ Other devices may be infected.
         <image name="deletetoleft-pressed" width="29" height="23"/>
         <image name="flash" width="33" height="33"/>
         <image name="lock" width="12" height="16"/>
+        <image name="phone-template" width="389" height="588"/>
         <image name="qr-icon" width="75" height="75"/>
         <image name="refresh" width="9" height="11"/>
         <image name="tick-checked" width="100" height="100"/>

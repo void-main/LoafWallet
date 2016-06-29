@@ -30,12 +30,11 @@
 #import "NSMutableData+Bitcoin.h"
 #import "BREventManager.h"
 
-
 #define LABEL_MARGIN       20.0
 #define WRITE_TOGGLE_DELAY 15.0
-
 #define IDEO_SP   @"\xE3\x80\x80" // ideographic space (utf-8)
 
+int tapCount = 0;
 
 @interface BRSeedViewController ()
 
@@ -47,6 +46,7 @@
 @property (nonatomic, strong) NSString *seedPhrase;
 @property (nonatomic, strong) id resignActiveObserver, screenshotObserver;
 @property (strong, nonatomic) IBOutlet UIButton *continueButton;
+@property (strong, nonatomic) IBOutlet UIView *tutorialView;
 
 @end
 
@@ -93,6 +93,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.tutorialView.hidden = YES;
+    
     self.continueButton.layer.cornerRadius = 2;
     self.continueButton.layer.borderWidth = 2;
     self.continueButton.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:40.0 green:40.0 blue:40.0 alpha:0.90]);
@@ -103,8 +105,10 @@
         self.view.backgroundColor = [UIColor clearColor];
     }
     
-    self.doneButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"done", nil)
-                       style:UIBarButtonItemStylePlain target:self action:@selector(done:)];
+    self.titleLabel.text = NSLocalizedString(@"Pay", nil);
+    self.descriptionLabel.text = NSLocalizedString(@"Easily send Litecoin anywhere in the world with LoafWallet's live currency conversion rates, and QR scanner for quick on-the-go payments.", nil);
+    
+    [self.progessButton addTarget:self action:@selector(tap) forControlEvents:UIControlEventTouchUpInside];
     
     @autoreleasepool {  // @autoreleasepool ensures sensitive data will be dealocated immediately
         if (self.seedPhrase.length > 0 && [self.seedPhrase characterAtIndex:0] > 0x3000) { // ideographic language
@@ -212,16 +216,47 @@
     if (self.screenshotObserver) [[NSNotificationCenter defaultCenter] removeObserver:self.screenshotObserver];
 }
 
+-(void)tap
+{
+    tapCount += 1;
+    
+    if (tapCount == 1) {
+        
+        self.titleLabel.text = NSLocalizedString(@"Receive", nil);
+        self.descriptionLabel.text = NSLocalizedString(@"Receive Litecoins with your receive address. Share you Litecoin Address with others, and request a payment. Your Litecoin address can be copied to your clipboard, sent via email and shared via other forms of social media.", nil);
+    } else if (tapCount == 2) {
+        
+        self.titleLabel.text = NSLocalizedString(@"History", nil);
+        self.descriptionLabel.text = NSLocalizedString(@"Browse through your transaction history, secured with your passcode. This is not visible to others, unless they possess your LoafWallet passcode. Find indepth details about every transaction.", nil);
+        [self.progessButton setTitle:@"→" forState:UIControlStateNormal];
+    } else if (tapCount == 3) {
+        
+        [BREventManager saveEvent:@"seed:toggle_write"];
+        NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+        
+        if ([defs boolForKey:WALLET_NEEDS_BACKUP_KEY]) {
+            [defs removeObjectForKey:WALLET_NEEDS_BACKUP_KEY];
+        }
+        else {
+            [defs setBool:YES forKey:WALLET_NEEDS_BACKUP_KEY];
+        }
+        
+        [defs synchronize];
+        
+        [BREventManager saveEvent:@"seed:dismiss"];
+        if (self.navigationController.viewControllers.firstObject != self) return;
+        
+        self.navigationController.presentingViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        [self.navigationController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES
+                                                                                                        completion:nil];
+    }
+}
+
 #pragma mark - IBAction
 
 - (IBAction)done:(id)sender
 {
-    [BREventManager saveEvent:@"seed:dismiss"];
-    if (self.navigationController.viewControllers.firstObject != self) return;
-    
-    self.navigationController.presentingViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    [self.navigationController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES
-     completion:nil];
+    self.tutorialView.hidden = NO;
 }
 
 @end

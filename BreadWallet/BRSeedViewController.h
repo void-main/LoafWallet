@@ -29,5 +29,9 @@
 @interface BRSeedViewController : UIViewController
 
 @property (nonatomic, readonly) BOOL authSuccess;
+@property (strong, nonatomic) IBOutlet UILabel *titleLabel;
+@property (strong, nonatomic) IBOutlet UILabel *descriptionLabel;
+@property (strong, nonatomic) IBOutlet UIButton *skipButton;
+@property (strong, nonatomic) IBOutlet UIButton *progessButton;
 
 @end

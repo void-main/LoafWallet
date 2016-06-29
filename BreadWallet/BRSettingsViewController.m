@@ -483,7 +483,7 @@ _switch_cell:
     options = [NSMutableArray array];
     
     for (NSString *code in manager.currencyCodes) {
-        [options addObject:[NSString stringWithFormat:@"%@ - %@", code, manager.currencyNames[currencyCodeIndex++]]];
+        [options addObject:[NSString stringWithFormat:@"%@", code]];
     }
     
     self.selectorOptions = options;

@@ -100,7 +100,7 @@
 	self.sendViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SendViewController"];
 	self.sendViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Send", nil) image:[UIImage imageNamed:@"send-icon"] selectedImage:[UIImage imageNamed:@"send-sel-icon"]];
     self.receiveViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ReceiveViewController"];
-	self.receiveViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Recieve", nil) image:[UIImage imageNamed:@"recieve-icon"] selectedImage:[UIImage imageNamed:@"recieve-sel-icon"]];
+	self.receiveViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Receive", nil) image:[UIImage imageNamed:@"recieve-icon"] selectedImage:[UIImage imageNamed:@"recieve-sel-icon"]];
 
 	self.tabBarController = [self.storyboard instantiateViewControllerWithIdentifier:@"TabBarController"];
 
@@ -1023,7 +1023,7 @@
         item.title = nil;
         item.leftBarButtonItem.image = [UIImage imageNamed:@"none"];
         item.titleView = nil;
-        item.rightBarButtonItem = nil;
+//        item.rightBarButtonItem = nil;
         self.navigationItem.leftBarButtonItem.image = [UIImage imageNamed:@"none"];
         [containerView addSubview:self.burger];
         [containerView layoutIfNeeded];

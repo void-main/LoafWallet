@@ -541,7 +541,7 @@ static NSString *dateFormat(NSString *template)
                     textLabel.text = [manager stringForAmount:received];
                     localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
                                                [manager localCurrencyStringForAmount:received]];
-                    // Declare recieved txs
+                    // Declare received txs
                     sentLabel.text = NSLocalizedString(@"received", nil);
                     sentLabel.textColor = [UIColor colorWithRed:0.0 green:0.75 blue:0.0 alpha:1.0];
                 }
