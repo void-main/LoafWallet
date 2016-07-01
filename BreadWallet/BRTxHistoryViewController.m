@@ -384,12 +384,12 @@ static NSString *dateFormat(NSString *template)
 
 - (IBAction)showTx:(id)sender
 {
-    [BREventManager saveEvent:@"tx_history:show_tx"];
-    BRTxDetailViewController *detailController
-        = [self.storyboard instantiateViewControllerWithIdentifier:@"TxDetailViewController"];
-    detailController.transaction = sender;
-    detailController.txDateString = [self dateForTx:sender];
-    [self.navigationController pushViewController:detailController animated:YES];
+//    [BREventManager saveEvent:@"tx_history:show_tx"];
+//    BRTxDetailViewController *detailController
+//        = [self.storyboard instantiateViewControllerWithIdentifier:@"TxDetailViewController"];
+//    detailController.transaction = sender;
+//    detailController.txDateString = [self dateForTx:sender];
+//    [self.navigationController pushViewController:detailController animated:YES];
 }
 
 - (IBAction)more:(id)sender
@@ -434,11 +434,11 @@ static NSString *dateFormat(NSString *template)
 {
     bool buyEnabled = [[BRAPIClient sharedClient] featureEnabled:BRFeatureFlagsBuyBitcoin];
     switch (section) {
-        case 0:
-            if (self.transactions.count == 0) return 1;
-            return (self.moreTx) ? self.transactions.count + 1 : self.transactions.count;
+//        case 0:
+//            if (self.transactions.count == 0) return 1;
+//            return (self.moreTx) ? self.transactions.count + 1 : self.transactions.count;
 
-        case 1:
+        case 0:
             return (buyEnabled ? 3 : 2);
     }
 
@@ -447,122 +447,122 @@ static NSString *dateFormat(NSString *template)
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *noTxIdent = @"NoTxCell", *transactionIdent = @"TransactionCell", *actionIdent = @"ActionCell",
-                    *disclosureIdent = @"DisclosureCell";
+//    static NSString *noTxIdent = @"NoTxCell", *transactionIdent = @"TransactionCell", *actionIdent = @"ActionCell",
+    static NSString *actionIdent = @"ActionCell", *disclosureIdent = @"DisclosureCell";
     UITableViewCell *cell = nil;
-    UILabel *textLabel, *unconfirmedLabel, *sentLabel, *localCurrencyLabel, *detailTextLabel;
-    UIImageView *tickChecked, *tickUnchecked;
-    BRWalletManager *manager = [BRWalletManager sharedInstance];
+//    UILabel *textLabel, *unconfirmedLabel, *sentLabel, *localCurrencyLabel, *detailTextLabel;
+//    UIImageView *tickChecked, *tickUnchecked;
+//    BRWalletManager *manager = [BRWalletManager sharedInstance];
 
     switch (indexPath.section) {
+//        case 0:
+//            if (self.moreTx && indexPath.row >= self.transactions.count) {
+//                cell = [tableView dequeueReusableCellWithIdentifier:actionIdent];
+//                cell.textLabel.text = (indexPath.row > 0) ? NSLocalizedString(@"more...", nil) :
+//                                      NSLocalizedString(@"transaction history", nil);
+//                cell.imageView.image = nil;
+//            }
+//            else if (self.transactions.count > 0) {
+//                cell = [tableView dequeueReusableCellWithIdentifier:transactionIdent];
+//                textLabel = (id)[cell viewWithTag:1];
+//                detailTextLabel = (id)[cell viewWithTag:2];
+//                unconfirmedLabel = (id)[cell viewWithTag:3];
+//                localCurrencyLabel = (id)[cell viewWithTag:5];
+//                sentLabel = (id)[cell viewWithTag:6];
+//                tickChecked = (id)[cell viewWithTag:9];
+//                tickUnchecked = (id)[cell viewWithTag:10];
+//
+//                BRTransaction *tx = self.transactions[indexPath.row];
+//                uint64_t received = [manager.wallet amountReceivedFromTransaction:tx],
+//                sent = [manager.wallet amountSentByTransaction:tx];
+//                uint32_t blockHeight = self.blockHeight;
+//                uint32_t confirms = (tx.blockHeight > blockHeight) ? 0 : (blockHeight - tx.blockHeight) + 1;
+//
+//#if SNAPSHOT
+//                received = [@[@(0), @(0), @(54000000), @(0), @(0), @(93000000)][indexPath.row] longLongValue];
+//                sent = [@[@(1010000), @(10010000), @(0), @(82990000), @(10010000), @(0)][indexPath.row] longLongValue];
+//                balance = [@[@(42980000), @(43990000), @(54000000), @(0), @(82990000), @(93000000)][indexPath.row]
+//                           longLongValue];
+//                [self.txDates removeAllObjects];
+//                tx.timestamp = [NSDate timeIntervalSinceReferenceDate] - indexPath.row*100000;
+//                confirms = 6;
+//#endif
+//
+//                textLabel.textColor = [UIColor darkTextColor];
+//                sentLabel.hidden = YES;
+//                tickChecked.hidden = YES;
+//                unconfirmedLabel.hidden = NO;
+//                tickUnchecked.hidden = NO;
+//                unconfirmedLabel.backgroundColor = [UIColor lightGrayColor];
+//                detailTextLabel.text = [self dateForTx:tx];
+//
+//                if (confirms == 0 && ! [manager.wallet transactionIsValid:tx]) {
+//                    unconfirmedLabel.text = NSLocalizedString(@"INVALID", nil);
+//                    unconfirmedLabel.backgroundColor = [UIColor redColor];
+//                }
+//                else if (confirms == 0 && [manager.wallet transactionIsPending:tx]) {
+//                    unconfirmedLabel.text = NSLocalizedString(@"pending", nil);
+//                    unconfirmedLabel.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.2];
+//                    textLabel.textColor = [UIColor grayColor];
+//                }
+//                else if (confirms == 0 && ! [manager.wallet transactionIsVerified:tx]) {
+//                    unconfirmedLabel.text = NSLocalizedString(@"unverified", nil);
+//                }
+//                else if (confirms < 6) {
+//                    if (confirms == 0) unconfirmedLabel.text = NSLocalizedString(@"0 confirmations", nil);
+//                    else if (confirms == 1) unconfirmedLabel.text = NSLocalizedString(@"1 confirmation", nil);
+//                    else unconfirmedLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%d confirmations", nil),
+//                                                  (int)confirms];
+//                }
+//                else {
+//                    unconfirmedLabel.text = nil;
+//                    unconfirmedLabel.hidden = YES;
+//                    tickUnchecked.hidden = YES;
+//                    sentLabel.hidden = NO;
+//                    tickChecked.hidden = NO;
+//                }
+//
+//                if (sent > 0 && received == sent) {
+//                    textLabel.text = [manager stringForAmount:sent];
+//                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
+//                                               [manager localCurrencyStringForAmount:sent]];
+//                    sentLabel.text = NSLocalizedString(@"moved", nil);
+//                    sentLabel.textColor = [UIColor whiteColor];
+//                }
+//                else if (sent > 0) {
+//                    textLabel.text = [manager stringForAmount:received - sent];
+//                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
+//                                               [manager localCurrencyStringForAmount:received - sent]];
+//                    // Declare sent txs
+//                    sentLabel.text = NSLocalizedString(@"sent", nil);
+//                    sentLabel.textColor = [UIColor colorWithRed:1.0 green:0.33 blue:0.33 alpha:1.0];
+//                }
+//                else {
+//                    textLabel.text = [manager stringForAmount:received];
+//                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
+//                                               [manager localCurrencyStringForAmount:received]];
+//                    // Declare received txs
+//                    sentLabel.text = NSLocalizedString(@"received", nil);
+//                    sentLabel.textColor = [UIColor colorWithRed:0.0 green:0.75 blue:0.0 alpha:1.0];
+//                }
+//
+//                if (! unconfirmedLabel.hidden) {
+//                    unconfirmedLabel.layer.cornerRadius = 3.0;
+//                    unconfirmedLabel.text = [unconfirmedLabel.text stringByAppendingString:@"  "];
+//                }
+//                else {
+//                    sentLabel.layer.cornerRadius = 3.0;
+//                    sentLabel.layer.borderWidth = 0.5;
+//                    sentLabel.text = [sentLabel.text stringByAppendingString:@"  "];
+//                    sentLabel.layer.borderColor = sentLabel.textColor.CGColor;
+//                    sentLabel.highlightedTextColor = sentLabel.textColor;
+//                }
+//            }
+//            else cell = [tableView dequeueReusableCellWithIdentifier:noTxIdent];
+//
+//            break;
+
         case 0:
-            if (self.moreTx && indexPath.row >= self.transactions.count) {
-                cell = [tableView dequeueReusableCellWithIdentifier:actionIdent];
-                cell.textLabel.text = (indexPath.row > 0) ? NSLocalizedString(@"more...", nil) :
-                                      NSLocalizedString(@"transaction history", nil);
-                cell.imageView.image = nil;
-            }
-            else if (self.transactions.count > 0) {
-                cell = [tableView dequeueReusableCellWithIdentifier:transactionIdent];
-                textLabel = (id)[cell viewWithTag:1];
-                detailTextLabel = (id)[cell viewWithTag:2];
-                unconfirmedLabel = (id)[cell viewWithTag:3];
-                localCurrencyLabel = (id)[cell viewWithTag:5];
-                sentLabel = (id)[cell viewWithTag:6];
-                tickChecked = (id)[cell viewWithTag:9];
-                tickUnchecked = (id)[cell viewWithTag:10];
-
-                BRTransaction *tx = self.transactions[indexPath.row];
-                uint64_t received = [manager.wallet amountReceivedFromTransaction:tx],
-                sent = [manager.wallet amountSentByTransaction:tx];
-                uint32_t blockHeight = self.blockHeight;
-                uint32_t confirms = (tx.blockHeight > blockHeight) ? 0 : (blockHeight - tx.blockHeight) + 1;
-
-#if SNAPSHOT
-                received = [@[@(0), @(0), @(54000000), @(0), @(0), @(93000000)][indexPath.row] longLongValue];
-                sent = [@[@(1010000), @(10010000), @(0), @(82990000), @(10010000), @(0)][indexPath.row] longLongValue];
-                balance = [@[@(42980000), @(43990000), @(54000000), @(0), @(82990000), @(93000000)][indexPath.row]
-                           longLongValue];
-                [self.txDates removeAllObjects];
-                tx.timestamp = [NSDate timeIntervalSinceReferenceDate] - indexPath.row*100000;
-                confirms = 6;
-#endif
-
-                textLabel.textColor = [UIColor darkTextColor];
-                sentLabel.hidden = YES;
-                tickChecked.hidden = YES;
-                unconfirmedLabel.hidden = NO;
-                tickUnchecked.hidden = NO;
-                unconfirmedLabel.backgroundColor = [UIColor lightGrayColor];
-                detailTextLabel.text = [self dateForTx:tx];
-
-                if (confirms == 0 && ! [manager.wallet transactionIsValid:tx]) {
-                    unconfirmedLabel.text = NSLocalizedString(@"INVALID", nil);
-                    unconfirmedLabel.backgroundColor = [UIColor redColor];
-                }
-                else if (confirms == 0 && [manager.wallet transactionIsPending:tx]) {
-                    unconfirmedLabel.text = NSLocalizedString(@"pending", nil);
-                    unconfirmedLabel.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.2];
-                    textLabel.textColor = [UIColor grayColor];
-                }
-                else if (confirms == 0 && ! [manager.wallet transactionIsVerified:tx]) {
-                    unconfirmedLabel.text = NSLocalizedString(@"unverified", nil);
-                }
-                else if (confirms < 6) {
-                    if (confirms == 0) unconfirmedLabel.text = NSLocalizedString(@"0 confirmations", nil);
-                    else if (confirms == 1) unconfirmedLabel.text = NSLocalizedString(@"1 confirmation", nil);
-                    else unconfirmedLabel.text = [NSString stringWithFormat:NSLocalizedString(@"%d confirmations", nil),
-                                                  (int)confirms];
-                }
-                else {
-                    unconfirmedLabel.text = nil;
-                    unconfirmedLabel.hidden = YES;
-                    tickUnchecked.hidden = YES;
-                    sentLabel.hidden = NO;
-                    tickChecked.hidden = NO;
-                }
-                
-                if (sent > 0 && received == sent) {
-                    textLabel.text = [manager stringForAmount:sent];
-                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
-                                               [manager localCurrencyStringForAmount:sent]];
-                    sentLabel.text = NSLocalizedString(@"moved", nil);
-                    sentLabel.textColor = [UIColor whiteColor];
-                }
-                else if (sent > 0) {
-                    textLabel.text = [manager stringForAmount:received - sent];
-                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
-                                               [manager localCurrencyStringForAmount:received - sent]];
-                    // Declare sent txs
-                    sentLabel.text = NSLocalizedString(@"sent", nil);
-                    sentLabel.textColor = [UIColor colorWithRed:1.0 green:0.33 blue:0.33 alpha:1.0];
-                }
-                else {
-                    textLabel.text = [manager stringForAmount:received];
-                    localCurrencyLabel.text = [NSString stringWithFormat:@"%@",
-                                               [manager localCurrencyStringForAmount:received]];
-                    // Declare received txs
-                    sentLabel.text = NSLocalizedString(@"received", nil);
-                    sentLabel.textColor = [UIColor colorWithRed:0.0 green:0.75 blue:0.0 alpha:1.0];
-                }
-
-                if (! unconfirmedLabel.hidden) {
-                    unconfirmedLabel.layer.cornerRadius = 3.0;
-                    unconfirmedLabel.text = [unconfirmedLabel.text stringByAppendingString:@"  "];
-                }
-                else {
-                    sentLabel.layer.cornerRadius = 3.0;
-                    sentLabel.layer.borderWidth = 0.5;
-                    sentLabel.text = [sentLabel.text stringByAppendingString:@"  "];
-                    sentLabel.layer.borderColor = sentLabel.textColor.CGColor;
-                    sentLabel.highlightedTextColor = sentLabel.textColor;
-                }
-            }
-            else cell = [tableView dequeueReusableCellWithIdentifier:noTxIdent];
-            
-            break;
-
-        case 1:
             cell = [tableView dequeueReusableCellWithIdentifier:actionIdent];
             bool buyEnabled = [[BRAPIClient sharedClient] featureEnabled:BRFeatureFlagsBuyBitcoin];
             long adjustedRow = !buyEnabled ? indexPath.row + 1 : indexPath.row;
@@ -613,8 +613,8 @@ static NSString *dateFormat(NSString *template)
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.section) {
-        case 0: return (self.moreTx && indexPath.row >= self.transactions.count) ? 44.0 : TRANSACTION_CELL_HEIGHT;
-        case 1: return 44.0;
+//        case 0: return (self.moreTx && indexPath.row >= self.transactions.count) ? 44.0 : TRANSACTION_CELL_HEIGHT;
+        case 0: return 44.0;
     }
     
     return 44.0;
@@ -644,8 +644,8 @@ static NSString *dateFormat(NSString *template)
     l.backgroundColor = [UIColor clearColor];
     l.font = [UIFont fontWithName:@"HelveticaNeue" size:13];
     l.textColor = [UIColor grayColor];
-    l.shadowColor = [UIColor whiteColor];
-    l.shadowOffset = CGSizeMake(0.0, 1.0);
+//    l.shadowColor = [UIColor whiteColor];
+//    l.shadowOffset = CGSizeMake(0.0, 1.0);
     l.numberOfLines = 0;
     r.size.width = [l sizeThatFits:r.size].width;
     r.origin.x = (self.view.frame.size.width - r.size.width)/2;
@@ -676,16 +676,16 @@ static NSString *dateFormat(NSString *template)
     UIViewController *destinationController = nil;
 
     switch (indexPath.section) {
-        case 0: // transaction
-            if (self.moreTx && indexPath.row >= self.transactions.count) { // more...
-                [self performSelector:@selector(more:) withObject:tableView afterDelay:0.0];
-            }
-            else if (self.transactions.count > 0) [self showTx:self.transactions[indexPath.row]]; // transaction details
+//        case 0: // transaction
+//            if (self.moreTx && indexPath.row >= self.transactions.count) { // more...
+//                [self performSelector:@selector(more:) withObject:tableView afterDelay:0.0];
+//            }
+//            else if (self.transactions.count > 0) [self showTx:self.transactions[indexPath.row]]; // transaction details
+//
+//            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+//            break;
 
-            [tableView deselectRowAtIndexPath:indexPath animated:YES];
-            break;
-
-        case 1:
+        case 0:
         {
             bool buyEnabled = [[BRAPIClient sharedClient] featureEnabled:BRFeatureFlagsBuyBitcoin];
             long adjustedRow = !buyEnabled ? indexPath.row + 1 : indexPath.row;

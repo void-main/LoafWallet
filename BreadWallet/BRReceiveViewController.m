@@ -69,6 +69,7 @@
     self.receiveButton.layer.borderWidth = 2;
     self.receiveButton.layer.borderColor = (__bridge CGColorRef _Nullable)([UIColor colorWithRed:40.0 green:40.0 blue:40.0 alpha:0.90]);
     self.receiveButton.clipsToBounds = YES;
+    [self.receiveButton setTitle:NSLocalizedString(@"Receive", nil) forState:UIControlStateNormal];
 
     BRWalletManager *manager = [BRWalletManager sharedInstance];
     BRPaymentRequest *req;
