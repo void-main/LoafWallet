@@ -39,6 +39,7 @@
 #import "UIImage+Utils.h"
 #import "BREventManager.h"
 #import "Reachability.h"
+#import "UIViewController+ECSlidingViewController.h"
 #import <LocalAuthentication/LocalAuthentication.h>
 #import <sys/stat.h>
 #import <mach-o/dyld.h>
@@ -98,14 +99,14 @@
 
     _balance = UINT64_MAX;
 	
-	self.sendViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"SendViewController"];
+	self.sendViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"SendViewController"];
 	self.sendViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Send", nil) image:[UIImage imageNamed:@"send-icon"] selectedImage:[UIImage imageNamed:@"send-sel-icon"]];
-    self.receiveViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"ReceiveViewController"];
+    self.receiveViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"ReceiveViewController"];
 	self.receiveViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"Receive", nil) image:[UIImage imageNamed:@"recieve-icon"] selectedImage:[UIImage imageNamed:@"recieve-sel-icon"]];
-    self.historyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"HistoryViewController"];
+    self.historyViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"HistoryViewController"];
     self.historyViewController.tabBarItem = [[UITabBarItem alloc] initWithTitle:NSLocalizedString(@"History", nil) image:[UIImage imageNamed:@"tx-icon"] selectedImage:[UIImage imageNamed:@"tx-sel-icon"]];
 
-	self.tabBarController = [self.storyboard instantiateViewControllerWithIdentifier:@"TabBarController"];
+	self.tabBarController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"TabBarController"];
 
 	self.tabBarController.delegate = self;
 	self.tabBarController.viewControllers = @[self.sendViewController, self.receiveViewController, self.historyViewController];
@@ -338,7 +339,7 @@
 #if SNAPSHOT
     [self.view viewWithTag:0xbeef].hidden = YES;
     [self.navigationController
-     presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"NewWalletNav"] animated:NO
+     presentViewController:[[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"NewWalletNav"] animated:NO
      completion:^{
         [self.navigationController.presentedViewController.view
          addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(nextScreen:)]];
@@ -451,7 +452,7 @@
         }
         else {
             [self.navigationController
-            presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"NewWalletNav"] animated:NO
+            presentViewController:[[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"NewWalletNav"] animated:NO
             completion:^{
                 self.splash.hidden = YES;
                 self.navigationController.navigationBar.hidden = NO;
@@ -953,6 +954,10 @@
 }
 #endif
 
+- (IBAction)menuTap:(id)sender
+{
+    [self.slidingViewController anchorTopViewToRightAnimated:YES];
+}
 
 #pragma mark - UIAlertViewDelegate
 
@@ -964,7 +969,7 @@
 
     if ([[alertView buttonTitleAtIndex:buttonIndex] isEqual:NSLocalizedString(@"wipe", nil)]) {
         BRRestoreViewController *restoreController =
-            [self.storyboard instantiateViewControllerWithIdentifier:@"WipeViewController"];
+            [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"WipeViewController"];
             
         [self.navigationController pushViewController:restoreController animated:NO];
         return;

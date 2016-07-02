@@ -362,7 +362,7 @@
         }
     }
     else if ([title isEqual:NSLocalizedString(@"request an amount", nil)]) {
-        UINavigationController *amountNavController = [self.storyboard
+        UINavigationController *amountNavController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]
                                                        instantiateViewControllerWithIdentifier:@"AmountNav"];
         
         ((BRAmountViewController *)amountNavController.topViewController).delegate = self;
@@ -404,7 +404,7 @@ error:(NSError *)error
 
     [BREventManager saveEvent:@"receive:show_request"];
     UINavigationController *navController = (UINavigationController *)self.navigationController.presentedViewController;
-    BRReceiveViewController *receiveController = [self.storyboard
+    BRReceiveViewController *receiveController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]
                                                   instantiateViewControllerWithIdentifier:@"RequestViewController"];
     
     receiveController.paymentRequest = self.paymentRequest;

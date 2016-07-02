@@ -264,7 +264,7 @@
     }
     
     [p dismissViewControllerAnimated:NO completion:^{
-        [p presentViewController:[self.storyboard instantiateViewControllerWithIdentifier:@"NewWalletNav"] animated:NO
+        [p presentViewController:[[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"NewWalletNav"] animated:NO
          completion:nil];
     }];
 }

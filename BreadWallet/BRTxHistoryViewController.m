@@ -386,7 +386,7 @@ static NSString *dateFormat(NSString *template)
 {
 //    [BREventManager saveEvent:@"tx_history:show_tx"];
 //    BRTxDetailViewController *detailController
-//        = [self.storyboard instantiateViewControllerWithIdentifier:@"TxDetailViewController"];
+//        = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"TxDetailViewController"];
 //    detailController.transaction = sender;
 //    detailController.txDateString = [self dateForTx:sender];
 //    [self.navigationController pushViewController:detailController animated:YES];
@@ -703,7 +703,7 @@ static NSString *dateFormat(NSString *template)
 
                 case 2: // settings
                     [BREventManager saveEvent:@"tx_history:settings"];
-                    destinationController = [self.storyboard instantiateViewControllerWithIdentifier:@"SettingsViewController"];
+                    destinationController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"SettingsViewController"];
                     [self.navigationController pushViewController:destinationController animated:YES];
                     break;
             }
@@ -724,7 +724,7 @@ static NSString *dateFormat(NSString *template)
 
     if ([[alertView buttonTitleAtIndex:buttonIndex] isEqual:NSLocalizedString(@"show", nil)]) {
         BRSeedViewController *seedController =
-            [self.storyboard instantiateViewControllerWithIdentifier:@"SeedViewController"];
+            [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"SeedViewController"];
     
         if (seedController.authSuccess) [self.navigationController pushViewController:seedController animated:YES];
     }    

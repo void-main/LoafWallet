@@ -160,7 +160,7 @@ static NSString *sanitizeString(NSString *s)
     [super viewDidAppear:animated];
     
     if (! self.scanController) {
-        self.scanController = [self.storyboard instantiateViewControllerWithIdentifier:@"ScanViewController"];
+        self.scanController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"ScanViewController"];
     }
 }
 
@@ -444,7 +444,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
         return;
     }
     else if (amount == 0 || amount == UINT64_MAX) {
-        BRAmountViewController *amountController = [self.storyboard
+        BRAmountViewController *amountController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]
                                                     instantiateViewControllerWithIdentifier:@"AmountViewController"];
         
         amountController.delegate = self;

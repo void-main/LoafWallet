@@ -190,7 +190,7 @@
 {
     [BREventManager saveEvent:@"welcome:new_wallet"];
     
-    UIViewController *c = [self.storyboard instantiateViewControllerWithIdentifier:@"GenerateViewController"];
+    UIViewController *c = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"GenerateViewController"];
     
     self.generateButton = (id)[c.view viewWithTag:1];
     [self.generateButton addTarget:self action:@selector(generate:) forControlEvents:UIControlEventTouchUpInside];
@@ -237,7 +237,7 @@
 {
     [BREventManager saveEvent:@"welcome:recover_wallet"];
 
-    UIViewController *c = [self.storyboard instantiateViewControllerWithIdentifier:@"RecoverViewController"];
+    UIViewController *c = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"RecoverViewController"];
 
     [self.navigationController pushViewController:c animated:YES];
 }
@@ -257,7 +257,7 @@
 
     [self.navigationController.navigationBar.topItem setHidesBackButton:YES animated:YES];
     [sender setEnabled:NO];
-    self.seedNav = [self.storyboard instantiateViewControllerWithIdentifier:@"SeedNav"];
+    self.seedNav = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"SeedNav"];
     self.warningLabel.hidden = self.showButton.hidden = NO;
     self.warningLabel.alpha = self.showButton.alpha = 0.0;
         

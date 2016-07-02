@@ -30,6 +30,10 @@
 #import "BREventManager.h"
 #import "breadwallet-Swift.h"
 #import "BRPhoneWCSessionManager.h"
+#import "BRMenuViewController.h"
+#import "BRRootViewController.h"
+#import "ECSlidingViewController.h"
+#import "UIViewController+ECSlidingViewController.h"
 #import <WebKit/WebKit.h>
 
 #if BITCOIN_TESTNET
@@ -41,6 +45,8 @@
 #endif
 
 @interface BRAppDelegate ()
+
+@property (nonatomic, strong) ECSlidingViewController *slidingViewController;
 
 // the nsnotificationcenter observer for wallet balance
 @property id balanceObserver;
@@ -96,6 +102,24 @@
     // observe balance and create notifications
     [self setupBalanceNotification:application];
     [self setupPreferenceDefaults];
+    
+    // drawer
+    UIViewController *topViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"RootViewController"];
+    UIViewController *menuViewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"MenuViewController"];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:topViewController];
+
+    self.slidingViewController = [ECSlidingViewController slidingWithTopViewController:navigationController];
+    self.slidingViewController.underLeftViewController  = menuViewController;
+
+    // enable swiping on the top view
+    [navigationController.view addGestureRecognizer:self.slidingViewController.panGesture];
+    
+    // configure anchored layout
+    self.slidingViewController.anchorRightPeekAmount  = 100.0;
+    self.slidingViewController.anchorLeftRevealAmount = 250.0;
+    
+    self.window.rootViewController = self.slidingViewController;
+    [self.window makeKeyAndVisible];
     return YES;
 }
 

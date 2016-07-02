@@ -428,7 +428,7 @@ _switch_cell:
 - (void)showAbout
 {
     [BREventManager saveEvent:@"settings:show_about"];
-    UIViewController *c = [self.storyboard instantiateViewControllerWithIdentifier:@"AboutViewController"];
+    UIViewController *c = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"AboutViewController"];
     UILabel *l = (id)[c.view viewWithTag:411];
     NSMutableAttributedString *s = [[NSMutableAttributedString alloc] initWithAttributedString:l.attributedText];
     
@@ -629,7 +629,7 @@ error:(NSError *)error
     }
     
     BRSeedViewController *seedController
-        = [self.storyboard instantiateViewControllerWithIdentifier:@"SeedViewController"];
+        = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"SeedViewController"];
     
     if (seedController.authSuccess) {
         [self.navigationController pushViewController:seedController animated:YES];
